@@ -1,4 +1,4 @@
-    SubjectS = 4; % Start
+   SubjectS = 2; % Start
     SubjectE = 11; % End
 
     for SubjN = SubjectS:SubjectE
@@ -17,18 +17,18 @@
 
         matlabbatch{2}.spm.stats.con.spmmat = {target_output_spm};
         matlabbatch{2}.spm.stats.con.consess{1}.fcon.name = 'PROSOCIAL';
-        matlabbatch{2}.spm.stats.con.consess{1}.fcon.weights = [ones(1056, 12), zeros(1056, 120)];
+        matlabbatch{2}.spm.stats.con.consess{1}.fcon.weights = [eye(12, 12)];
         matlabbatch{2}.spm.stats.con.consess{1}.fcon.sessrep = 'none';
         matlabbatch{2}.spm.stats.con.consess{2}.fcon.name = 'PURCHASE';
-        matlabbatch{2}.spm.stats.con.consess{2}.fcon.weights = [zeros(1056, 12), ones(1056, 12), zeros(1056, 108)];
+        matlabbatch{2}.spm.stats.con.consess{2}.fcon.weights = [zeros(12,12), eye(12,12)];
         matlabbatch{2}.spm.stats.con.consess{2}.fcon.sessrep = 'none';
         matlabbatch{2}.spm.stats.con.consess{3}.fcon.name = 'NEUTRAL';
-        matlabbatch{2}.spm.stats.con.consess{3}.fcon.weights = [zeros(1056, 24), ones(1056, 12), zeros(1056, 96)];
+        matlabbatch{2}.spm.stats.con.consess{3}.fcon.weights = [zeros(12,24), eye(12,12)];
         matlabbatch{2}.spm.stats.con.consess{3}.fcon.sessrep = 'none';
         matlabbatch{2}.spm.stats.con.consess{4}.fcon.name = 'UNCOMMON';
-        matlabbatch{2}.spm.stats.con.consess{4}.fcon.weights = [zeros(1056, 36), ones(1056, 12), zeros(1056, 84)];
+        matlabbatch{2}.spm.stats.con.consess{4}.fcon.weights = [zeros(12,36), eye(12,12)];
         matlabbatch{2}.spm.stats.con.consess{4}.fcon.sessrep = 'none';
-        matlabbatch{2}.spm.stats.con.delete = 0;
+        matlabbatch{2}.spm.stats.con.delete = 1;
 
         spm_jobman('run', matlabbatch)
 
