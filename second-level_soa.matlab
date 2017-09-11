@@ -6,7 +6,7 @@ for SubjN = SubjectS:SubjectE
 
     final_dir = '/bml/Data/Bank5/PROS/Pilot_image/Convert_data/first_level_matrix/tryFIR';
     final_dirin = dir(final_dir);
-    final_dirin(1:4) = [];
+    final_dirin(1:2) = [];
     final_dirin(end) = [];
     target_output_dir = {}; 
     target_output_dir = [final_dir filesep final_dirin(SubjN).name];
