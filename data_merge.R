@@ -51,10 +51,12 @@ for (i in c(1:nrow(behavior.df))){
 for (i in c(1:nrow(behavior.df))){
   behavior.df[i, ncolbehavior.df+9] <- behavior.df[i, 21] - behavior.df[i, 5] #LongFixation總時間( 21 -5 )
   behavior.df[i, ncolbehavior.df+10] <- behavior.df[i, 19] + behavior.df[i, 20] + 24000 #default duartion per trial =  behavior.df[i, ncolbehavior.df+8]
-}
+  }
 behavior.df[1, ncolbehavior.df+8] <- behavior.df[1, ncolbehavior.df+7] - behavior.df[1, ncolbehavior.df+9] #第一個Trial的總時間
 colnames(behavior.df)[(ncolbehavior.df+1):(ncolbehavior.df+10)] <- c("MoneyD_RT", "EmoD_RT", "ITI_D", "MoneyD", "ISI_D","EmoD","DTriggerOnset","TrialD","LongD","DefaultT")
 # adding tags
+
+
 
 behavior.con <- behavior.df
 behavior.con$SIT <- NULL 
@@ -276,7 +278,8 @@ dev.off()
 count_trial <- c(1:length(behavior.df$MDRT))
 png(sprintf("RTplot_ALL.png"), width = 1200, height = 700)
 print(RTplot <- ggplot(behavior.df, aes(count_trial, MDRT, colour = SubjectN)) 
-      + geom_point(aes(shape = factor(GroupN))) + geom_smooth(method = "lm"))
+      + geom_point(aes(shape = factor(GroupN))) + geom_smooth(method = "lm")
+      + geom_linerange(aes(ymin = MDFirstP, ymax = MDRT)))
 dev.off()
 dev.off()
 
