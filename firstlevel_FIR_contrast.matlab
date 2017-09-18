@@ -1,3 +1,4 @@
+
     SubjectS = 2; % Start
     SubjectE = 11; % End
 
@@ -25,39 +26,18 @@
         matlabbatch{1}.spm.stats.con.consess{4}.fcon.name = 'UNCOMMON_F';
         matlabbatch{1}.spm.stats.con.consess{4}.fcon.weights = [zeros(12,36), eye(12,12)];
         matlabbatch{1}.spm.stats.con.consess{4}.fcon.sessrep = 'none';
-        matlabbatch{1}.spm.stats.con.consess{5}.tcon.name = 'PROSOCIAL_T';
-        matlabbatch{1}.spm.stats.con.consess{5}.tcon.weights =[ones(1,12)];
-        matlabbatch{1}.spm.stats.con.consess{5}.tcon.sessrep = 'none';
-        matlabbatch{1}.spm.stats.con.consess{6}.tcon.name = 'PURCHASE_T';
-        matlabbatch{1}.spm.stats.con.consess{6}.tcon.weights =[zeros(1,12), ones(1,12)];
-        matlabbatch{1}.spm.stats.con.consess{6}.tcon.sessrep = 'none';
-        matlabbatch{1}.spm.stats.con.consess{7}.tcon.name = 'NEUTRAL_T';
-        matlabbatch{1}.spm.stats.con.consess{7}.tcon.weights =[zeros(1,24), ones(1,12)];
-        matlabbatch{1}.spm.stats.con.consess{7}.tcon.sessrep = 'none';
-        matlabbatch{1}.spm.stats.con.consess{8}.tcon.name = 'UNCOMMON_T';
-        matlabbatch{1}.spm.stats.con.consess{8}.tcon.weights =[zeros(1,36), ones(1,12)];
-        matlabbatch{1}.spm.stats.con.consess{8}.tcon.sessrep = 'none';
-        matlabbatch{1}.spm.stats.con.consess{9}.tcon.name = 'PROSOCIAL_T-PURCHASE_T';
-        matlabbatch{1}.spm.stats.con.consess{9}.tcon.weights =[ones(1,12), -ones(1,12)];
-        matlabbatch{1}.spm.stats.con.consess{9}.tcon.sessrep = 'none';
-        matlabbatch{1}.spm.stats.con.consess{10}.tcon.name = 'PROSOCIAL_T-NEUTRAL_T';
-        matlabbatch{1}.spm.stats.con.consess{10}.tcon.weights =[ones(1,12), zeros(1,12), -ones(1,12)];
-        matlabbatch{1}.spm.stats.con.consess{10}.tcon.sessrep = 'none';
-        matlabbatch{1}.spm.stats.con.consess{11}.tcon.name = 'PROSOCIAL_T-UNCOMMON_T';
-        matlabbatch{1}.spm.stats.con.consess{11}.tcon.weights =[ones(1,12), zeros(1,24), -ones(1,12)];
-        matlabbatch{1}.spm.stats.con.consess{11}.tcon.sessrep = 'none';
-        matlabbatch{1}.spm.stats.con.consess{12}.tcon.name = 'PURCHASE_T-NEUTRAL_T';
-        matlabbatch{1}.spm.stats.con.consess{12}.tcon.weights =[zeros(1,12), ones(1,12), -ones(1,12)];
-        matlabbatch{1}.spm.stats.con.consess{12}.tcon.sessrep = 'none';
-        matlabbatch{1}.spm.stats.con.consess{13}.tcon.name = 'PURCHASE_T-UNCOMMON_T';
-        matlabbatch{1}.spm.stats.con.consess{13}.tcon.weights =[zeros(1,12), ones(1,12), zeros(1,12), -ones(1,12)];
-        matlabbatch{1}.spm.stats.con.consess{13}.tcon.sessrep = 'none';
-        matlabbatch{1}.spm.stats.con.consess{14}.tcon.name = 'UNCOMMON_T-NEUTRAL_T';
-        matlabbatch{1}.spm.stats.con.consess{14}.tcon.weights =[zeros(1,24), -ones(1,12), ones(1,12)];
-        matlabbatch{1}.spm.stats.con.consess{14}.tcon.sessrep = 'none';
         
+        for columnNum = 1:132
+            ConName = ['T_test_' int2str(columnNum)];
+            matlabbatch{1}.spm.stats.con.consess{(columnNum+4)}.tcon.name = ConName;
+            matlabbatch{1}.spm.stats.con.consess{(columnNum+4)}.tcon.weights =[zeros(1,(columnNum-1)), ones(1,1), zeros(1,(132-columnNum))];
+            matlabbatch{1}.spm.stats.con.consess{(columnNum+4)}.fcon.sessrep = 'none';
+        end
+
         matlabbatch{1}.spm.stats.con.delete = 1;
         
         spm_jobman('run', matlabbatch)
+        
+        clear matlabbatch;
 
     end
