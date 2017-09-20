@@ -113,31 +113,31 @@ for (i in c(1:Subject.number)){
   png(sprintf("Average of money giving_%d.png", i+1), width = MG.plot.width, height = 700)
   print(MD.plot <- ggplot() +
           
-          geom_bar(mapping = aes(x = Situation, y = Money),
-                   stat = 'identity', position = 'dodge', color="black") +
-          
-          labs(title = title.name, x = "Conditions", y = "Unit: dollars") +
-          ylim(c(0, 300)) +
-          
-          theme(plot.title = element_text(hjust = 0.5),
-                title = element_text(size=15),
-                legend.text = element_text(size=15),
-                legend.title = element_text(size=15),
-                axis.text = element_text(size=13),
-                axis.title = element_text(size=13,face="bold")) +
-          
-          geom_text(mapping = aes(x = Situation, y = Money),
-                    size = 4, colour = 'black', vjust = -0.5, hjust = .5,
-                    label=format(Money, digits=4),
-                    position = position_dodge(.9)) +
-          
-          scale_x_discrete(labels=c("1" = "Prosocial", "2" = "Purchase",
-                                    "3" = "Neutral", "4" = "Uncommon")) +
-          
-          geom_errorbar(aes(x = Situation, ymin = Money, ymax = Money+money.sd), width = .3,
-                        position = position_dodge(.9))
-  )
-  dev.off()
+                   geom_bar(mapping = aes(x = Situation, y = Money),
+                            stat = 'identity', position = 'dodge', color="black") +
+                  
+                   labs(title = title.name, x = "Conditions", y = "Unit: dollars") +
+                   ylim(c(0, 300)) +
+                  
+                   theme(plot.title = element_text(hjust = 0.5),
+                         title = element_text(size=15),
+                         legend.text = element_text(size=15),
+                         legend.title = element_text(size=15),
+                         axis.text = element_text(size=13),
+                         axis.title = element_text(size=13,face="bold")) +
+                  
+                   geom_text(mapping = aes(x = Situation, y = Money),
+                             size = 4, colour = 'black', vjust = -0.5, hjust = .5,
+                             label=format(Money, digits=4),
+                             position = position_dodge(.9)) +
+                  
+                   scale_x_discrete(labels=c("1" = "Prosocial", "2" = "Purchase",
+                                             "3" = "Neutral", "4" = "Uncommon")) +
+                  
+                   geom_errorbar(aes(x = Situation, ymin = Money, ymax = Money+money.sd), width = .3,
+                                 position = position_dodge(.9))
+)
+dev.off()
   
   ##### emotion plotting ######
   
@@ -154,24 +154,24 @@ for (i in c(1:Subject.number)){
   png(sprintf("Emotional degree_%d.png", i+1), width = 1000, height = 700)
   print(Emo.plot <- ggplot(data = Emo.dataframe, aes(x = SIT.type, y = Emo.mean)) +
           
-          geom_bar(aes(fill = moneyReg.type),
-                   stat = 'identity', position = 'dodge', color="black") +
-          
-          labs(title = title.name.emotion, x = "Situations", y = "Mean emotion degree", fill = "money regulation type") +
-          
-          ylim(c(-4, 4)) +
-          
-          theme(plot.title = element_text(hjust = 0.5),
-                title = element_text(size=15),
-                legend.text = element_text(size=12),
-                legend.title = element_text(size=15),
-                axis.text = element_text(size=13),
-                axis.title = element_text(size=13,face="bold")) +
-          
-          geom_text(mapping = aes(x = SIT.type, y = Emo.mean, group = moneyReg.type),
-                    size = 4, colour = 'black', vjust = -0.5, hjust = .5,
-                    label=format(Emo.mean, digits=2),
-                    position = position_dodge(width= .9))
+                           geom_bar(aes(fill = moneyReg.type),
+                                    stat = 'identity', position = 'dodge', color="black") +
+                          
+                           labs(title = title.name.emotion, x = "Situations", y = "Mean emotion degree", fill = "money regulation type") +
+                           
+                           ylim(c(-4, 4)) +
+                          
+                           theme(plot.title = element_text(hjust = 0.5),
+                                 title = element_text(size=15),
+                                 legend.text = element_text(size=12),
+                                 legend.title = element_text(size=15),
+                                 axis.text = element_text(size=13),
+                                 axis.title = element_text(size=13,face="bold")) +
+                          
+                           geom_text(mapping = aes(x = SIT.type, y = Emo.mean, group = moneyReg.type),
+                                     size = 4, colour = 'black', vjust = -0.5, hjust = .5,
+                                     label=format(Emo.mean, digits=2),
+                                     position = position_dodge(width= .9))
   )
   dev.off()
   
@@ -183,6 +183,8 @@ for (i in c(1:Subject.number)){
 }
 
 ############################## ALL plotting MD + Emo ##########################################
+
+## Total MD plot ##
 
 ALL_Money <- as.vector(tapply(behavior.df$giveM, list(behavior.df$SITtag, behavior.df$GroupN), mean))
 ALL_Money <- replace(ALL_Money, c(2,3), ALL_Money[c(3,2)])
@@ -212,28 +214,30 @@ title.name <- sprintf("Average of money givilang pilot_ALL(Old: %d, Young: %d)",
 png(sprintf("Average of money giving_pilot_ALL.png"), width = MG.plot.width, height = 700)
 print(total.MD.plot <- ggplot() +
         
-        geom_bar(mapping = aes(x = x, y = ALL_Money, fill = Group),
-                 stat = 'identity', position = 'dodge', color="black") +
-        
-        labs(title = title.name, x = "Conditions", y = "Unit: dollars") +
-        ylim(c(0,300)) +
-        
-        theme(plot.title = element_text(hjust = 0.5),
-              title = element_text(size=15),
-              legend.text = element_text(size=15),
-              legend.title = element_text(size=15),
-              axis.text = element_text(size=13),
-              axis.title = element_text(size=13,face="bold")) +
-        
-        geom_text(mapping = aes(x = x, y = ALL_Money, group = Group),
-                  size = 4, colour = 'black', vjust = -0.5, hjust = .5,
-                  label=format(ALL_Money, digits=4),
-                  position = position_dodge(.9)) +
-        
-        geom_errorbar(aes(x = x, ymin = ALL_Money, ymax = ALL_Money + ALL_Money.se, group = Group), width= .3,
-                      position = position_dodge(.9)) 
+                       geom_bar(mapping = aes(x = x, y = ALL_Money, fill = Group),
+                                stat = 'identity', position = 'dodge', color="black") +
+                      
+                       labs(title = title.name, x = "Conditions", y = "Unit: dollars") +
+                       ylim(c(0,300)) +
+                      
+                       theme(plot.title = element_text(hjust = 0.5),
+                             title = element_text(size=15),
+                             legend.text = element_text(size=15),
+                             legend.title = element_text(size=15),
+                             axis.text = element_text(size=13),
+                             axis.title = element_text(size=13,face="bold")) +
+                      
+                       geom_text(mapping = aes(x = x, y = ALL_Money, group = Group),
+                                 size = 4, colour = 'black', vjust = -0.5, hjust = .5,
+                                 label=format(ALL_Money, digits=4),
+                                 position = position_dodge(.9)) +
+                      
+                       geom_errorbar(aes(x = x, ymin = ALL_Money, ymax = ALL_Money + ALL_Money.se, group = Group), width= .3,
+                                    position = position_dodge(.9)) 
 )
 dev.off()
+
+## Total emoD plot ##
 
 Emo.mean.bySIT <- tapply(behavior.df$EmoTag, list(behavior.df$RegMtag, behavior.df$SITtag), mean)
 moneyReg.type <- as.factor(rep(c("300", "+50", "+20", "same", "-20", "-50", "0"),4))
@@ -248,38 +252,94 @@ Emo.dataframe$moneyReg.type = factor(Emo.dataframe$moneyReg.type, levels = c('no
 png(sprintf("Emotional degree_All.png"), width = 1000, height = 700)
 print(total.emo.plot <- ggplot(data = Emo.dataframe, aes(x = SIT.type, y = Emo.means)) +
         
-        geom_bar(aes(fill = moneyReg.type, group = moneyReg.type),
-                 stat = 'identity', position = 'dodge', color="black") +
-        
-        labs(title = sprintf("Emotional degree_All (Old: %d, Young: %d)", oldnum, youngnum), x = "Situations", y = "Mean emotion degree", fill = "money regulation type") +
-        
-        ylim(c(-4, 4)) +
-        
-        theme(plot.title = element_text(hjust = 0.5),
-              title = element_text(size=15),
-              legend.text = element_text(size=12),
-              legend.title = element_text(size=15),
-              axis.text = element_text(size=13),
-              axis.title = element_text(size=13,face="bold")) +
-        
-        geom_text(mapping = aes(x = SIT.type, y = Emo.means, label = "labs", group = moneyReg.type),
-                  size = 4, colour = 'black', vjust = -0.5, hjust = .5,
-                  label=format(Emo.means, digits=2),
-                  stat = 'identity',
-                  position = position_dodge(width = 0.9))
-)
+                        geom_bar(aes(fill = moneyReg.type, group = moneyReg.type),
+                                 stat = 'identity', position = 'dodge', color="black") +
+                        
+                        labs(title = sprintf("Emotional degree_All (Old: %d, Young: %d)", oldnum, youngnum), x = "Situations", y = "Mean emotion degree", fill = "money regulation type") +
+                        
+                        ylim(c(-4, 4)) +
+                        
+                        theme(plot.title = element_text(hjust = 0.5),
+                              title = element_text(size=15),
+                              legend.text = element_text(size=12),
+                              legend.title = element_text(size=15),
+                              axis.text = element_text(size=13),
+                              axis.title = element_text(size=13,face="bold")) +
+                        
+                        geom_text(mapping = aes(x = SIT.type, y = Emo.means, label = "labs", group = moneyReg.type),
+                                  size = 4, colour = 'black', vjust = -0.5, hjust = .5,
+                                  label=format(Emo.means, digits=2),
+                                  stat = 'identity',
+                                  position = position_dodge(width = 0.9))
+                )
 dev.off()
 
+## Group emoD ploting ##
+
+Emo.mean.byGroup <- tapply(behavior.df$EmoTag, list(behavior.df$RegMtag, behavior.df$SITtag, behavior.df$GroupN), mean)
+Emo.young.means <- c(Emo.mean.byGroup[1:28])
+Emo.old.means <- c(Emo.mean.byGroup[29:56])
+Emo.group.dataframe <- data.frame(Emo.young.means, Emo.old.means, SIT.type, moneyReg.type)
+Emo.dataframe$moneyReg.type = factor(Emo.dataframe$moneyReg.type, levels = c('none_give','fifty_less','twenty_less','same','twenty_more','fifty_more','all_give'), order = T)
+
+group.emo.y.plot <- ggplot(data = Emo.dataframe, aes(x = SIT.type, y = Emo.young.means)) +
+  
+                    geom_bar(aes(fill = moneyReg.type, group = moneyReg.type),
+                             stat = 'identity', position = 'dodge', color="black") +
+  
+                    theme(plot.title = element_text(hjust = 0.5),
+                          title = element_text(size=15),
+                          legend.text = element_text(size=12),
+                          legend.title = element_text(size=15),
+                          axis.text = element_text(size=13),
+                          axis.title = element_text(size=13,face="bold")) +
+                    
+                    geom_text(mapping = aes(x = SIT.type, y = Emo.young.means, label = "labs", group = moneyReg.type),
+                              size = 4, colour = 'black', vjust = -0.5, hjust = .5,
+                              label=format(Emo.means, digits=2),
+                              stat = 'identity',
+                              position = position_dodge(width = 0.9)) +
+  
+                    ylim(c(-3, 3))
+
+group.emo.o.plot <- ggplot(data = Emo.dataframe, aes(x = SIT.type, y = Emo.old.means)) +
+                    
+                    geom_bar(aes(fill = moneyReg.type, group = moneyReg.type),
+                             stat = 'identity', position = 'dodge', color="black") +
+  
+                    theme(plot.title = element_text(hjust = 0.5),
+                          title = element_text(size=15),
+                          legend.text = element_text(size=12),
+                          legend.title = element_text(size=15),
+                          axis.text = element_text(size=13),
+                          axis.title = element_text(size=13,face="bold")) +
+                    
+                    geom_text(mapping = aes(x = SIT.type, y = Emo.old.means, label = "labs", group = moneyReg.type),
+                              size = 4, colour = 'black', vjust = -0.5, hjust = .5,
+                              label=format(Emo.means, digits=2),
+                              stat = 'identity',
+                              position = position_dodge(width = 0.9)) +
+  
+                    ylim(c(-3, 3))
+
+## Total MD and Emo merge ploting ##
 png(sprintf("Total_merge.png"), width = 1200, height = 700)
 print(final_plot <- ggarrange(total.MD.plot, total.emo.plot,
                               ncol = 2, nrow = 1))
 dev.off()
 
+## Total group Emo ploting ##
+png(sprintf("Total_groupEmo_merge.png"), width = 1400, height = 700)
+print(final_plot <- ggarrange(group.emo.y.plot, group.emo.o.plot,
+                              ncol = 2, nrow = 1))
+dev.off()
+
+## RT plot ##
 count_trial <- c(1:length(behavior.df$MDRT))
 png(sprintf("RTplot_ALL.png"), width = 1200, height = 700)
-print(RTplot <- ggplot(behavior.df, aes(count_trial, MDRT, colour = SubjectN)) 
-      + geom_point(aes(shape = factor(GroupN))) + geom_smooth(method = "lm")
-      + geom_linerange(aes(ymin = MDFirstP, ymax = MDRT)))
+print(RTplot <- ggplot(behavior.df, aes(count_trial, MDRT, colour = SubjectN)) +
+                geom_point(aes(shape = factor(GroupN))) + geom_smooth(method = "lm") +
+                geom_linerange(aes(ymin = MDFirstP, ymax = MDRT)))
 dev.off()
 dev.off()
 
@@ -315,20 +375,20 @@ png(sprintf("Average of money giving_pilot_boxplot_ALL.png"), width = MG.plot.wi
 print(total.MD.boxplot <- ggplot(total.boxplot, 
                                  aes(x = total.boxplot.sit.vector, 
                                      y = total.boxplot.mean_money.vector, fill = total.boxplot.group.vector)) +
-        geom_boxplot(aes(fill = total.boxplot.group.vector), 
-                     position=position_dodge(.9)) +
-        geom_dotplot(binaxis='y', stackdir='center', binwidth=3,
-                     position=position_dodge(.9)) +
-        stat_summary(fun.y=mean, geom="point", shape=18, size=3,
-                     position=position_dodge(.9)) +
-        labs(title = title.name, x = "Conditions", y = "Unit: dollars", fill = "Group") +
-        theme(plot.title = element_text(hjust = 0.5),
-              title = element_text(size=15),
-              legend.text = element_text(size=15),
-              legend.title = element_text(size=15),
-              axis.text = element_text(size=13),
-              axis.title = element_text(size=13,face="bold")) +
-        ylim(c(0,300))
+                          geom_boxplot(aes(fill = total.boxplot.group.vector), 
+                                       position=position_dodge(.9)) +
+                          geom_dotplot(binaxis='y', stackdir='center', binwidth=3,
+                                       position=position_dodge(.9)) +
+                          stat_summary(fun.y=mean, geom="point", shape=18, size=3,
+                                       position=position_dodge(.9)) +
+                          labs(title = title.name, x = "Conditions", y = "Unit: dollars", fill = "Group") +
+                          theme(plot.title = element_text(hjust = 0.5),
+                                title = element_text(size=15),
+                                legend.text = element_text(size=15),
+                                legend.title = element_text(size=15),
+                                axis.text = element_text(size=13),
+                                axis.title = element_text(size=13,face="bold")) +
+                          ylim(c(0,300))
 )
 dev.off()
 
