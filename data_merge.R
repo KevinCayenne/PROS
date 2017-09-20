@@ -296,7 +296,7 @@ group.emo.y.plot <- ggplot(data = Emo.dataframe, aes(x = SIT.type, y = Emo.young
                     
                     geom_text(mapping = aes(x = SIT.type, y = Emo.young.means, label = "labs", group = moneyReg.type),
                               size = 4, colour = 'black', vjust = -0.5, hjust = .5,
-                              label=format(Emo.means, digits=2),
+                              label=format(Emo.young.means, digits=2),
                               stat = 'identity',
                               position = position_dodge(width = 0.9)) +
   
@@ -316,7 +316,7 @@ group.emo.o.plot <- ggplot(data = Emo.dataframe, aes(x = SIT.type, y = Emo.old.m
                     
                     geom_text(mapping = aes(x = SIT.type, y = Emo.old.means, label = "labs", group = moneyReg.type),
                               size = 4, colour = 'black', vjust = -0.5, hjust = .5,
-                              label=format(Emo.means, digits=2),
+                              label=format(Emo.old.means, digits=2),
                               stat = 'identity',
                               position = position_dodge(width = 0.9)) +
   
