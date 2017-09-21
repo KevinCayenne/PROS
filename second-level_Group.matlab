@@ -30,7 +30,7 @@ for group = 1:2
                 if group == 1 
                     SubjectN = [2, 3, 5, 6, 7, 8, 10, 11];
                     run = length(SubjectN);
-                elseif group == 0
+                elseif group == 2
                     SubjectN = [4, 9, 12];
                     run = length(SubjectN);
                 end
