@@ -13,7 +13,8 @@
 	4. covariance script -> generate the .mat file for second level script 
 	5. second level script -> generate the proper design matrix for contrast
 	6. firstlevel_estimate script -> estimate
-	7. firstlevel_contrast script ->generate F-contrasts and T-contrast
+	7. firstlevel_contrast script -> generate F-contrasts and T-contrast
+	8. secondlevel_group_analysis -> group analysis
 
 
 	
