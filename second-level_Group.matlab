@@ -22,10 +22,14 @@ matlabbatch{1}.spm.stats.factorial_design.des.fd.fact(3).gmsca = 0;
 matlabbatch{1}.spm.stats.factorial_design.des.fd.fact(3).ancova = 0;
 
 %%
+group_num = 2;
+situation_num = 11;
+time_points = 12;
+
 for group = 1:2
     for situation = 1:11
         for time_course = 1:12 
-                matlabbatch{1}.spm.stats.factorial_design.des.fd.icell(132*(group-1)+12*(situation-1)+time_course).levels = [group situation time_course];
+                matlabbatch{1}.spm.stats.factorial_design.des.fd.icell(situation_num*time_points*(group-1)+(situation-1)*time_points+time_course).levels = [group situation time_course];
                 
                 if group == 1 
                     SubjectN = [2, 3, 5, 6, 7, 8, 10, 11];
@@ -43,10 +47,10 @@ for group = 1:2
                     final_dirin(end-2:end) = [];
                     target_dir = [final_dir filesep final_dirin(SubjN).name];
                     target_dirin = dir(target_dir);
-                    target_confile = [target_confile; target_dir filesep target_dirin(150+(situation-1)*12+time_course).name];
+                    target_confile = [target_confile; target_dir filesep target_dirin(150+(situation-1)*time_points+time_course).name]; %#ok<AGROW>
                 end
                 
-                matlabbatch{1}.spm.stats.factorial_design.des.fd.icell(132*(group-1)+12*(situation-1)+time_course).scans = target_confile;
+                matlabbatch{1}.spm.stats.factorial_design.des.fd.icell(situation_num*time_points*(group-1)+(situation-1)*time_points+time_course).scans = target_confile;
         end
     end
 end
