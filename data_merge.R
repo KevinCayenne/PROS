@@ -404,10 +404,15 @@ group_rt_boxplot <- ggplot(behavior.df, aes(x=GroupN, y=MDRT, group = GroupN)) +
                     ylim(0, 12000)
 
 group_firstP__boxplot <- ggplot(behavior.df, aes(x=GroupN, y=MDFirstP, group = GroupN)) + 
-                    geom_boxplot() + 
-                    geom_dotplot(binaxis='y', stackdir='center', dotsize=.2) +
-                    ylim(0, 12000)
+                         geom_boxplot() + 
+                         geom_dotplot(binaxis='y', stackdir='center', dotsize=.2) +
+                         ylim(0, 12000)
 
-grid.arrange(group_firstP__boxplot, group_rt_boxplot, nrow=1, ncol=2)
+group_Ddur__boxplot <- ggplot(behavior.df, aes(x=GroupN, y=(MDRT-MDFirstP), group = GroupN)) + 
+                         geom_boxplot() + 
+                         geom_dotplot(binaxis='y', stackdir='center', dotsize=.2) +
+                         ylim(0, 12000)
+
+grid.arrange(group_firstP__boxplot, group_rt_boxplot, group_Ddur__boxplot, nrow=1, ncol=3)
                     
 
