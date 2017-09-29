@@ -3,6 +3,7 @@ setwd("C:/Users/acer/Desktop/PROS/Data/fMRI_PilotData")
 library(ggplot2)
 library(ggpubr)
 library(gtools)
+library(gridExtra)
 
 File.list = mixedsort(list.files("behaviorD"))
 #list.files命令將behavior文件夾下所有文件名輸入File.list
@@ -66,26 +67,26 @@ write.csv(behavior.con, file = sprintf("behavior.CSV"),  row.names=FALSE)
 
 ########################## End of adding columns #####################################
 
-for (j in c(1:Subject.number)){
-  
-  tryy.1 <- behavior.df[(1+((j-1)*64)):(j*64),]
-  MD.mm <- matrix(list(), 4, 6)
-  ED.mm <- matrix(list(), 7, 6)
-  
-  for (i in c(1:6)) {
-    for (k in c(1:4)) {
-      MD.mm[[k, i]] <- tryy.1[tryy.1$SessionN ==i & tryy.1$SITtag==k,]$MDOnsettime
-    }
-  }
-  
-  for (i in c(1:6)) {
-    for (k in c(1:7)) {
-      ED.mm[[k, i]] <- tryy.1[tryy.1$SessionN ==i & tryy.1$RegMtag ==k,]$EmoOnsettime
-    }
-  }
-  # write.csv(MD.mm, file = sprintf("%d-MD.csv", j), row.names = FALSE)
-  # write.csv(ED.mm, file = sprintf("%d-ED.csv", j), row.names = FALSE)
-}
+# for (j in c(1:Subject.number)){
+#   
+#   tryy.1 <- behavior.df[(1+((j-1)*64)):(j*64),]
+#   MD.mm <- matrix(list(), 4, 6)
+#   ED.mm <- matrix(list(), 7, 6)
+#   
+#   for (i in c(1:6)) {
+#     for (k in c(1:4)) {
+#       MD.mm[[k, i]] <- tryy.1[tryy.1$SessionN ==i & tryy.1$SITtag==k,]$MDOnsettime
+#     }
+#   }
+#   
+#   for (i in c(1:6)) {
+#     for (k in c(1:7)) {
+#       ED.mm[[k, i]] <- tryy.1[tryy.1$SessionN ==i & tryy.1$RegMtag ==k,]$EmoOnsettime
+#     }
+#   }
+#  write.csv(MD.mm, file = sprintf("%d-MD.csv", j), row.names = FALSE)
+#  write.csv(ED.mm, file = sprintf("%d-ED.csv", j), row.names = FALSE)
+# }
 
 ########################## loop preprocessing ########################################
 
@@ -184,7 +185,7 @@ dev.off()
 
 ############################## ALL plotting MD + Emo ##########################################
 
-## Total MD plot ##
+## Total MD plot #####
 
 ALL_Money <- as.vector(tapply(behavior.df$giveM, list(behavior.df$SITtag, behavior.df$GroupN), mean))
 ALL_Money <- replace(ALL_Money, c(2,3), ALL_Money[c(3,2)])
@@ -237,7 +238,7 @@ print(total.MD.plot <- ggplot() +
 )
 dev.off()
 
-## Total emoD plot ##
+## Total emoD plot ####
 
 Emo.mean.bySIT <- tapply(behavior.df$EmoTag, list(behavior.df$RegMtag, behavior.df$SITtag), mean)
 moneyReg.type <- as.factor(rep(c("300", "+50", "+20", "same", "-20", "-50", "0"),4))
@@ -274,7 +275,7 @@ print(total.emo.plot <- ggplot(data = Emo.dataframe, aes(x = SIT.type, y = Emo.m
                 )
 dev.off()
 
-## Group emoD ploting ##
+#### Group emoD ploting ####
 
 Emo.mean.byGroup <- tapply(behavior.df$EmoTag, list(behavior.df$RegMtag, behavior.df$SITtag, behavior.df$GroupN), mean)
 Emo.young.means <- c(Emo.mean.byGroup[1:28])
@@ -300,7 +301,7 @@ group.emo.y.plot <- ggplot(data = Emo.dataframe, aes(x = SIT.type, y = Emo.young
                               stat = 'identity',
                               position = position_dodge(width = 0.9)) +
   
-                    ylim(c(-3, 3))
+                    ylim(c(-4, 3))
 
 group.emo.o.plot <- ggplot(data = Emo.dataframe, aes(x = SIT.type, y = Emo.old.means)) +
                     
@@ -320,15 +321,15 @@ group.emo.o.plot <- ggplot(data = Emo.dataframe, aes(x = SIT.type, y = Emo.old.m
                               stat = 'identity',
                               position = position_dodge(width = 0.9)) +
   
-                    ylim(c(-3, 3))
+                    ylim(c(-4, 3))
 
-## Total MD and Emo merge ploting ##
+##### Total MD and Emo merge ploting ####
 png(sprintf("Total_merge.png"), width = 1200, height = 700)
 print(final_plot <- ggarrange(total.MD.plot, total.emo.plot,
                               ncol = 2, nrow = 1))
 dev.off()
 
-## Total group Emo ploting ##
+#### Total group Emo ploting ####
 png(sprintf("Total_groupEmo_merge.png"), width = 1400, height = 700)
 print(final_plot <- ggarrange(group.emo.y.plot, group.emo.o.plot,
                               ncol = 2, nrow = 1))
@@ -392,4 +393,21 @@ print(total.MD.boxplot <- ggplot(total.boxplot,
 )
 dev.off()
 
+##### plot group RT boxplot #### 
+
+tapply(behavior.df$MDRT, behavior.df$GroupN, mean)
+tapply(behavior.df$MDFirstP, behavior.df$GroupN, mean)
+
+group_rt_boxplot <- ggplot(behavior.df, aes(x=GroupN, y=MDRT, group = GroupN)) + 
+                    geom_boxplot() + 
+                    geom_dotplot(binaxis='y', stackdir='center', dotsize=.2) +
+                    ylim(0, 12000)
+
+group_firstP__boxplot <- ggplot(behavior.df, aes(x=GroupN, y=MDFirstP, group = GroupN)) + 
+                    geom_boxplot() + 
+                    geom_dotplot(binaxis='y', stackdir='center', dotsize=.2) +
+                    ylim(0, 12000)
+
+grid.arrange(group_firstP__boxplot, group_rt_boxplot, nrow=1, ncol=2)
+                    
 
