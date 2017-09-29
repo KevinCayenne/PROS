@@ -398,21 +398,36 @@ dev.off()
 tapply(behavior.df$MDRT, behavior.df$GroupN, mean)
 tapply(behavior.df$MDFirstP, behavior.df$GroupN, mean)
 
-group_rt_boxplot <- ggplot(behavior.df, aes(x=GroupN, y=MDRT, group = GroupN)) + 
-                    geom_boxplot() + 
-                    geom_dotplot(binaxis='y', stackdir='center', dotsize=.2) +
-                    ylim(0, 12000)
+group_MDrt_boxplot <- ggplot(behavior.df, aes(x=GroupN, y=MDRT, group = GroupN)) + 
+                      geom_boxplot() + 
+                      geom_dotplot(binaxis='y', stackdir='center', dotsize=.2) +
+                      ylim(0, 12000)
 
-group_firstP__boxplot <- ggplot(behavior.df, aes(x=GroupN, y=MDFirstP, group = GroupN)) + 
-                         geom_boxplot() + 
-                         geom_dotplot(binaxis='y', stackdir='center', dotsize=.2) +
-                         ylim(0, 12000)
+group_MDfirstP__boxplot <- ggplot(behavior.df, aes(x=GroupN, y=MDFirstP, group = GroupN)) + 
+                           geom_boxplot() + 
+                           geom_dotplot(binaxis='y', stackdir='center', dotsize=.2) +
+                           ylim(0, 12000)
 
-group_Ddur__boxplot <- ggplot(behavior.df, aes(x=GroupN, y=(MDRT-MDFirstP), group = GroupN)) + 
-                         geom_boxplot() + 
-                         geom_dotplot(binaxis='y', stackdir='center', dotsize=.2) +
-                         ylim(0, 12000)
+group_MD_RTdur__boxplot <- ggplot(behavior.df, aes(x=GroupN, y=(MDRT-MDFirstP), group = GroupN)) + 
+                           geom_boxplot() + 
+                           geom_dotplot(binaxis='y', stackdir='center', dotsize=.2) +
+                           ylim(0, 12000)
 
-grid.arrange(group_firstP__boxplot, group_rt_boxplot, group_Ddur__boxplot, nrow=1, ncol=3)
+group_EMrt_boxplot <- ggplot(behavior.df, aes(x=GroupN, y=EmoRT, group = GroupN)) + 
+                      geom_boxplot() + 
+                      geom_dotplot(binaxis='y', stackdir='center', dotsize=.2) +
+                      ylim(0, 12000)
+
+group_EMfirstP__boxplot <- ggplot(behavior.df, aes(x=GroupN, y=EFirstP, group = GroupN)) + 
+                           geom_boxplot() + 
+                           geom_dotplot(binaxis='y', stackdir='center', dotsize=.2) +
+                           ylim(0, 12000)
+
+group_EM_RTdur__boxplot <- ggplot(behavior.df, aes(x=GroupN, y=(EmoRT-EFirstP), group = GroupN)) + 
+                           geom_boxplot() + 
+                           geom_dotplot(binaxis='y', stackdir='center', dotsize=.2) +
+                           ylim(0, 12000)
+
+grid.arrange(group_MDfirstP__boxplot, group_MDrt_boxplot, group_MD_RTdur__boxplot, group_EMfirstP__boxplot, group_EMrt_boxplot, group_EM_RTdur__boxplot, nrow=2, ncol=3)
                     
 
