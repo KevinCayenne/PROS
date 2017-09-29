@@ -428,6 +428,7 @@ group_EM_RTdur__boxplot <- ggplot(behavior.df, aes(x=GroupN, y=(EmoRT-EFirstP), 
                            geom_dotplot(binaxis='y', stackdir='center', dotsize=.2) +
                            ylim(0, 12000)
 
-grid.arrange(group_MDfirstP__boxplot, group_MDrt_boxplot, group_MD_RTdur__boxplot, group_EMfirstP__boxplot, group_EMrt_boxplot, group_EM_RTdur__boxplot, nrow=2, ncol=3)
-                    
+png(sprintf("RT_boxplot_ALL.png"), width = 1000, height = 800)  
+  print(grid.arrange(group_MDfirstP__boxplot, group_MDrt_boxplot, group_MD_RTdur__boxplot, group_EMfirstP__boxplot, group_EMrt_boxplot, group_EM_RTdur__boxplot, nrow=2, ncol=3))
+dev.off()            
 
