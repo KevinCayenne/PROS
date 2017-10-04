@@ -29,8 +29,8 @@ behavior.df <- data.frame(merge.data)
 
 ############################## Adding columns ########################################
 
-youngnum <- table(behavior.df$GroupN)[1]/64
-oldnum <- table(behavior.df$GroupN)[2]/64
+youngnum <- ceiling(table(behavior.df$GroupN)[1]/64)
+oldnum <- ceiling(table(behavior.df$GroupN)[2]/64)
 #calculate the subjects number in groups 
 
 ncolbehavior.df <- ncol(behavior.df) #計算column number
@@ -56,8 +56,6 @@ for (i in c(1:nrow(behavior.df))){
 behavior.df[1, ncolbehavior.df+8] <- behavior.df[1, ncolbehavior.df+7] - behavior.df[1, ncolbehavior.df+9] #第一個Trial的總時間
 colnames(behavior.df)[(ncolbehavior.df+1):(ncolbehavior.df+10)] <- c("MoneyD_RT", "EmoD_RT", "ITI_D", "MoneyD", "ISI_D","EmoD","DTriggerOnset","TrialD","LongD","DefaultT")
 # adding tags
-
-
 
 behavior.con <- behavior.df
 behavior.con$SIT <- NULL 
@@ -105,13 +103,14 @@ for (i in c(1:Subject.number)){
   
   if (behavior.df$GroupN[(1+((i-1)*64))] == 1) { sub.group <- "Young" } else { sub.group <- "Old" }
   if (behavior.df$SexN[(1+((i-1)*64))] == 1) { sub.gender <- "Male" } else { sub.gender <- "Female" }
+  sub.number <- as.character(behavior.df$SubjectN[(1+((i-1)*64))])
   
   money.sd <- as.vector(tapply(behavior.df$giveM[(1+((i-1)*64)):(i*64)], behavior.df$SITtag[(1+((i-1)*64)):(i*64)], sd)/8)
   
-  title.name <- sprintf("Average of money giving pilot_%d_%s_%s.", i+1, sub.group, sub.gender)
-  title.name.emotion <- sprintf("Emotional degree_%d_%s_%s.", i+1, sub.group, sub.gender)
+  title.name <- sprintf("Average of money giving pilot_%s_%s_%s.", sub.number, sub.group, sub.gender)
+  title.name.emotion <- sprintf("Emotional degree_%s_%s_%s.", sub.number, sub.group, sub.gender)
   
-  png(sprintf("Average of money giving_%d.png", i+1), width = MG.plot.width, height = 700)
+  png(sprintf("Average of money giving_%s.png", sub.number), width = MG.plot.width, height = 700)
   print(MD.plot <- ggplot() +
           
                    geom_bar(mapping = aes(x = Situation, y = Money),
@@ -152,7 +151,7 @@ dev.off()
   Emo.dataframe <- data.frame(Emo.mean, SIT.type, moneyReg.type)
   Emo.dataframe$moneyReg.type = factor(Emo.dataframe$moneyReg.type, levels = c('none_give','fifty_less','twenty_less','same','twenty_more','fifty_more','all_give'), order = T)
   
-  png(sprintf("Emotional degree_%d.png", i+1), width = 1000, height = 700)
+  png(sprintf("Emotional degree_%s.png", sub.number), width = 1000, height = 700)
   print(Emo.plot <- ggplot(data = Emo.dataframe, aes(x = SIT.type, y = Emo.mean)) +
           
                            geom_bar(aes(fill = moneyReg.type),
@@ -176,7 +175,7 @@ dev.off()
   )
   dev.off()
   
-  png(sprintf("Subject_%d_mergedplot.png", i+1), width = 1200, height = 700)
+  png(sprintf("Subject_%s_mergedplot.png", sub.number), width = 1200, height = 700)
   print(subj_plot <- ggarrange(MD.plot, Emo.plot,
                                ncol = 2, nrow = 1))
   dev.off()
@@ -395,6 +394,8 @@ dev.off()
 
 ##### plot group RT boxplot #### 
 
+mean(behavior.df$MDFirstP)
+mean(behavior.df$MDRT)
 tapply(behavior.df$MDRT, behavior.df$GroupN, mean)
 tapply(behavior.df$MDFirstP, behavior.df$GroupN, mean)
 
@@ -432,3 +433,4 @@ png(sprintf("RT_boxplot_ALL.png"), width = 1000, height = 800)
   print(grid.arrange(group_MDfirstP__boxplot, group_MDrt_boxplot, group_MD_RTdur__boxplot, group_EMfirstP__boxplot, group_EMrt_boxplot, group_EM_RTdur__boxplot, nrow=2, ncol=3))
 dev.off()            
 
+dev.off()
