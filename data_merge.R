@@ -434,3 +434,11 @@ png(sprintf("RT_boxplot_ALL.png"), width = 1000, height = 800)
 dev.off()            
 
 dev.off()
+
+par(mfrow=c(1,4)) 
+boxplot(behavior.df$MDRT, behavior.df$EmoD_RT)
+boxplot(c(behavior.df$MDRT, behavior.df$EmoD_RT))
+boxplot(behavior.df$MDFirstP, behavior.df$EFirstP)
+boxplot(c(behavior.df$MDFirstP, behavior.df$EFirstP))
+
+dev.off()
