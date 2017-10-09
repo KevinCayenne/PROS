@@ -6,6 +6,12 @@ for i = 0:11
     matlabbatch{1}.spm.stats.con.consess{i+1}.tcon.sessrep = 'none';
 end
 
+for j = 0:11
+    matlabbatch{1}.spm.stats.con.consess{i+j+1}.tcon.name = ['Group_MDstarttime_' int2str(2*j+1)];
+    matlabbatch{1}.spm.stats.con.consess{i+j+1}.tcon.weights = [repmat([repmat(-1/11,1,j) ones(1,1) repmat(-1/11,1,11-j)],1,4) zeros(1,12*7) repmat([repmat(1/11,1,j) repmat(-1,1,1) repmat(1/11,1,11-j)],1,4) zeros(1,12*7)];
+    matlabbatch{1}.spm.stats.con.consess{i+j+1}.tcon.sessrep = 'none';
+end
+
 matlabbatch{1}.spm.stats.con.delete = 0;
 
 spm_jobman('run', matlabbatch)
