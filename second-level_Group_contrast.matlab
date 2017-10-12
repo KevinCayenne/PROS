@@ -140,6 +140,9 @@ for Contrast_Cond = 1:11 %% contrast conditions
 				    matlabbatch{1}.spm.stats.con.consess{counter}.tcon.sessrep = 'none';
 				    counter = counter + 1;
 				end
+
+			case 12 
+				
 		end
 	end
 end
