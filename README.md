@@ -5,10 +5,11 @@
 	
 	data_merge
 	
-# fMRI analysis procedure:
+# spm fMRI analysis procedure:
 
 	1. preprocessing script
 	2. first_level_generate_matfile script-> generate SOA.mat for first level (just do once)
+		* transport the behavior.csv to the server
 	3. firstlevel_FIR script ->  without estimate
 		1. % motion orthogonalize:  spm_fmri_concatenate(target_output_spm, scans); 
 	4. covariance script -> generate the .mat file for second level script 
@@ -20,11 +21,4 @@
 	8. secondlevel_group_analysis -> generate group design matrix
 	9. grouplevel model estimate script -> model estimate for group matrix
 	10. secondlevel_group_contrast -> group contrast
-
-
-
-
-
-	
-	
 
