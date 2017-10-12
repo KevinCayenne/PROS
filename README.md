@@ -8,8 +8,10 @@
 # spm fMRI analysis procedure:
 
 	1. preprocessing script
-	2. first_level_generate_matfile script-> generate SOA.mat for first level (just do once)
-		* transport the behavior.csv to the server
+	2. first_level_generate_matfile script -> generate SOA.mat for first level (just do once)
+		* before run the file:
+			1. transport the behavior.csv to the server
+			2. combine txt files into combinedtxt.txt
 	3. firstlevel_FIR script ->  without estimate
 		1. % motion orthogonalize:  spm_fmri_concatenate(target_output_spm, scans); 
 	4. covariance script -> generate the .mat file for second level script 
