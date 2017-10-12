@@ -47,7 +47,7 @@ for SubjN = SubjectS:SubjectE
     T1file = dir('MPRAGE*.nii');
     targetT1 = strcat(targetdir, T1file.name);
 
-    T2file = dir('t2tsetra2563mms024*.nii');
+    T2file = dir('t2tsetra*.nii');
     targetT2 = strcat(targetdir, T2file.name);
 
     % Flowfield = dir('u_rc*.nii');
