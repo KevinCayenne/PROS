@@ -1,8 +1,6 @@
 PROS
 ====
 
- 
-
 raw data processing:
 ====================
 
@@ -40,7 +38,8 @@ spm fMRI analysis procedure:
 
 2.  first_level_generate_matfile script -\> generate SOA.mat for first level
     (just do once)  
-    \* before run the file:  
+    \* before run the file:
+
     1. transport the behavior.csv to the server  
     2. combine txt files into combinedtxt.txt  
     \* cat rp_aep2dmoco4mm181A\* rp_aep2dmoco4mm181B\* rp_aep2dmoco4mm181C\*
