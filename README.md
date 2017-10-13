@@ -51,14 +51,10 @@ spm fMRI analysis procedure:
         rp_aep2dmoco4mm181C*\* rp_aep2dmoco4mm181D\* rp_aep2dmoco4mm181E\*
         rp_aep2dmoco4mm151F\* \> combinedtxt.txt
 
- 
-
-1.  firstlevel_FIR script -\> without estimate  
+2.  firstlevel_FIR script -\> without estimate  
     \* % motion orthogonalize: spm_fmri_concatenate(target_output_spm, scans);
 
- 
-
-1.  covariance script -\> generate the .mat file for second level script
+3.  covariance script -\> generate the .mat file for second level script
 
  
 
@@ -68,9 +64,7 @@ spm fMRI analysis procedure:
 
     2.  % change '19' to '1': SPM.xX.X(SPM.xX.X(:,:)==19) = 1;
 
- 
-
-1.  firstlevel model estimate script -\> model estimate for first level matrix
+2.  firstlevel model estimate script -\> model estimate for first level matrix
 
  
 
