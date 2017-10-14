@@ -40,11 +40,13 @@ spm fMRI analysis procedure:
     (just do once)  
     \* before run the file:
 
-    1. transport the behavior.csv to the server  
-    2. combine txt files into combinedtxt.txt  
-    \* cat rp_aep2dmoco4mm181A\* rp_aep2dmoco4mm181B\* rp_aep2dmoco4mm181C\*
-    rp_aep2dmoco4mm181D\* rp_aep2dmoco4mm181E\* rp_aep2dmoco4mm151F\* \>
-    combinedtxt.txt
+    1.  transport the behavior.csv to the server  
+        
+
+    2.  combine txt files into combinedtxt.txt  
+        \* cat rp_aep2dmoco4mm181A\* rp_aep2dmoco4mm181B\* rp_aep2dmoco4mm181C\*
+        rp_aep2dmoco4mm181D\* rp_aep2dmoco4mm181E\* rp_aep2dmoco4mm151F\* \>
+        combinedtxt.txt
 
 3.  firstlevel_FIR script -\> without estimate  
     \* % motion orthogonalize: spm_fmri_concatenate(target_output_spm, scans);
@@ -65,3 +67,7 @@ spm fMRI analysis procedure:
 8.  secondlevel_group_analysis -\> generate group design matrix and estiamte
 
 9.  secondlevel_group_contrast -\> group contrast
+
+10. group_contrast_masking -\> add mask to each Tcon file
+
+11. group_3D_to_4D -\> combine 3D 12 time courses contrast to 4D contrast
