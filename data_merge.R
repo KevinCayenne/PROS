@@ -29,8 +29,8 @@ behavior.df <- data.frame(merge.data)
 
 ############################## Adding columns ########################################
 
-youngnum <- ceiling(table(behavior.df$GroupN)[1]/64)
-oldnum <- ceiling(table(behavior.df$GroupN)[2]/64)
+youngnum <- round(table(behavior.df$GroupN)[1]/64)
+oldnum <- round(table(behavior.df$GroupN)[2]/64)
 #calculate the subjects number in groups 
 
 ncolbehavior.df <- ncol(behavior.df) #­pºâcolumn number
