@@ -4,7 +4,9 @@ PROS
 raw data processing:
 ====================
 
--   rsync NCCUFTP to your own directory :
+-   Sign into the root
+
+-   Rsync NCCUFTP to your own directory :
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 rsync -avhr myfile.gz /home/pi/tmp/
@@ -15,6 +17,13 @@ rsync -avhr myfile.gz /home/pi/tmp/
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 chown -R kevincayenne:kevincayenne
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-   Exit the root
+
+-   Creat the directories: 
+    
+    1. Converted_files 
+    2. tryFIR 
 
 -   Unzip nii files:
 
