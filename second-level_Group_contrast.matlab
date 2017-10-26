@@ -1,10 +1,10 @@
 counter = 1; %% Define contrast number 
-timeCourseC = 11; %% Define time coureses for loop (0:11)
+timeCourseC = 11; %% Define time coureses for loop (0:11) (12 - 1)
 AllTC = 12; %% Define 12 time coureses
 MDcondNum = 4; %% Define MD conditions num
 EDcondNum = 7; %% Define ED conditions num
 GroupNum = 2; %% Define Group conditons num
-SitCount = MDcondNum + EDcondNum;
+SitCount = MDcondNum + EDcondNum; %% 11 conditions
 
 matlabbatch{1}.spm.stats.con.spmmat = {'/bml/Data/Bank5/PROS/Pilot_image/Convert_data/first_level_matrix/seconlevel_analysis/SPM.mat'};
 
@@ -170,7 +170,90 @@ for Contrast_Cond = 1:13 %% contrast conditions
 				    															 ];
 				    matlabbatch{1}.spm.stats.con.consess{counter}.tcon.sessrep = 'none';
 				    counter = counter + 1;
-				end		
+				end
+
+			%% One group contrast %%
+
+			case 14 %% Y_PROS-PUR Sit (Y) 12/1
+					matlabbatch{1}.spm.stats.con.consess{counter}.tcon.name = ['Y_PROS_PUR_Situ'];
+					matlabbatch{1}.spm.stats.con.consess{counter}.tcon.weights = [...
+					    														  repmat(-1/timeCourseC,1,TimeC) ones(1,1) repmat(-1/timeCourseC,1,timeCourseC-TimeC)...
+					    														  repmat(1/timeCourseC,1,TimeC) ones(-1,1) repmat(1/timeCourseC,1,timeCourseC-TimeC)...
+					    														 ];
+					matlabbatch{1}.spm.stats.con.consess{counter}.tcon.sessrep = 'none';
+					counter = counter + 1;
+
+			case 15 %% Y_PROS-NEU Sit (Y) 12/1
+					matlabbatch{1}.spm.stats.con.consess{counter}.tcon.name = ['Y_PROS_NEU_Situ'];
+					matlabbatch{1}.spm.stats.con.consess{counter}.tcon.weights = [...
+					    														  repmat(-1/timeCourseC,1,TimeC) ones(1,1) repmat(-1/timeCourseC,1,timeCourseC-TimeC)...
+					    														  zeros(1, AllTC)...
+					    														  repmat(1/timeCourseC,1,TimeC) ones(-1,1) repmat(1/timeCourseC,1,timeCourseC-TimeC)...
+					    														 ];
+					matlabbatch{1}.spm.stats.con.consess{counter}.tcon.sessrep = 'none';
+					counter = counter + 1;
+
+			case 16 %% Y_PROS-UNCOM Sit (Y) 12/1
+					matlabbatch{1}.spm.stats.con.consess{counter}.tcon.name = ['Y_PROS_UNCOM_Situ'];
+					matlabbatch{1}.spm.stats.con.consess{counter}.tcon.weights = [...
+					    														  repmat(-1/timeCourseC,1,TimeC) ones(1,1) repmat(-1/timeCourseC,1,timeCourseC-TimeC)...
+					    														  zeros(1, AllTC*2)...
+					    														  repmat(1/timeCourseC,1,TimeC) ones(-1,1) repmat(1/timeCourseC,1,timeCourseC-TimeC)...
+					    														 ];
+					matlabbatch{1}.spm.stats.con.consess{counter}.tcon.sessrep = 'none';
+					counter = counter + 1;
+
+			case 17 %% Y_PUR-PROS Sit (Y) 12/1
+					matlabbatch{1}.spm.stats.con.consess{counter}.tcon.name = ['Y_PUR_PROS_1Situ'];
+					matlabbatch{1}.spm.stats.con.consess{counter}.tcon.weights = [...
+					    														  repmat(1/timeCourseC,1,TimeC) ones(-1,1) repmat(1/timeCourseC,1,timeCourseC-TimeC)...
+					    														  repmat(-1/timeCourseC,1,TimeC) ones(1,1) repmat(-1/timeCourseC,1,timeCourseC-TimeC)...
+					    														 ];
+					matlabbatch{1}.spm.stats.con.consess{counter}.tcon.sessrep = 'none';
+					counter = counter + 1;
+
+			case 18 %% Y_PUR-NEU Sit (Y) 12/1
+					matlabbatch{1}.spm.stats.con.consess{counter}.tcon.name = ['Y_PUR_NEU_Situ'];
+					matlabbatch{1}.spm.stats.con.consess{counter}.tcon.weights = [...
+																				  zeros(1, AllTC)...
+					    														  repmat(-1/timeCourseC,1,TimeC) ones(1,1) repmat(-1/timeCourseC,1,timeCourseC-TimeC)...
+					    														  repmat(1/timeCourseC,1,TimeC) ones(-1,1) repmat(1/timeCourseC,1,timeCourseC-TimeC)...
+					    														 ];
+					matlabbatch{1}.spm.stats.con.consess{counter}.tcon.sessrep = 'none';
+					counter = counter + 1;
+
+			case 19 %% Y_UNCOM-PROS Sit (Y) 12/1
+					matlabbatch{1}.spm.stats.con.consess{counter}.tcon.name = ['Y_UNCOM_PROS_Situ'];
+					matlabbatch{1}.spm.stats.con.consess{counter}.tcon.weights = [...
+					    														  repmat(1/timeCourseC,1,TimeC) ones(-1,1) repmat(1/timeCourseC,1,timeCourseC-TimeC)...
+					    														  zeros(1, AllTC*2)...
+					    														  repmat(-1/timeCourseC,1,TimeC) ones(1,1) repmat(-1/timeCourseC,1,timeCourseC-TimeC)...
+					    														 ];
+					matlabbatch{1}.spm.stats.con.consess{counter}.tcon.sessrep = 'none';
+					counter = counter + 1;
+
+			case 20 %% Y_UNCOM-PUR Sit (Y) 12/1
+					matlabbatch{1}.spm.stats.con.consess{counter}.tcon.name = ['Y_UNCOM_PUR_Situ'];
+					matlabbatch{1}.spm.stats.con.consess{counter}.tcon.weights = [...
+																				  zeros(1, AllTC)...
+																				  repmat(1/timeCourseC,1,TimeC) ones(-1,1) repmat(1/timeCourseC,1,timeCourseC-TimeC)...
+																				  zeros(1, AllTC)...
+					    														  repmat(-1/timeCourseC,1,TimeC) ones(1,1) repmat(-1/timeCourseC,1,timeCourseC-TimeC)...
+					    														 ];
+					matlabbatch{1}.spm.stats.con.consess{counter}.tcon.sessrep = 'none';
+					counter = counter + 1;
+
+			case 21 %% Y_UNCOM-NEU Sit (Y) 12/1
+					matlabbatch{1}.spm.stats.con.consess{counter}.tcon.name = ['Y_UNCOM_NEU_Situ'];
+					matlabbatch{1}.spm.stats.con.consess{counter}.tcon.weights = [...
+																				  zeros(1, AllTC*2)...
+																				  repmat(1/timeCourseC,1,TimeC) ones(-1,1) repmat(1/timeCourseC,1,timeCourseC-TimeC)...
+					    														  repmat(-1/timeCourseC,1,TimeC) ones(1,1) repmat(-1/timeCourseC,1,timeCourseC-TimeC)...
+					    														 ];
+					matlabbatch{1}.spm.stats.con.consess{counter}.tcon.sessrep = 'none';
+					counter = counter + 1;				
+
+
 		end
 	end
 end
