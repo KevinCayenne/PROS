@@ -3,7 +3,7 @@ final_dirin = dir(final_dir);
 ContConNum = 59;
 totalTcon = ContConNum*12;
 
-for conditionC = 1:43
+for conditionC = 1:ContConNum
     
     targetdir = {};
     

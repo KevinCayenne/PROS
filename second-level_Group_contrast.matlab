@@ -21,6 +21,7 @@ for Contrast_Cond = 1:29 %% contrast conditions
 				    															 		],1,GroupNum);
 				    matlabbatch{1}.spm.stats.con.consess{counter}.tcon.sessrep = 'none';
 				    counter = counter + 1;
+
 			case 2 %% All ED contrasts (ALL_ED - Baseline) 12/1
 				    matlabbatch{1}.spm.stats.con.consess{counter}.tcon.name = ['ALLED_' int2str(TimeC+1)];
 				    matlabbatch{1}.spm.stats.con.consess{counter}.tcon.weights = repmat([...
@@ -46,6 +47,7 @@ for Contrast_Cond = 1:29 %% contrast conditions
 				    															 zeros(1,AllTC*EDcondNum)];
 				    matlabbatch{1}.spm.stats.con.consess{counter}.tcon.sessrep = 'none';
 				    counter = counter + 1;
+
 		    case 4 %% All GroupMD_2 (Y_MD - Baseline) 12/1
 				    matlabbatch{1}.spm.stats.con.consess{counter}.tcon.name = ['All GroupMD_2_' int2str(TimeC+1)];
 				    matlabbatch{1}.spm.stats.con.consess{counter}.tcon.weights = [repmat([...
@@ -56,6 +58,7 @@ for Contrast_Cond = 1:29 %% contrast conditions
 				    															  zeros(1,AllTC*EDcondNum)];
 				    matlabbatch{1}.spm.stats.con.consess{counter}.tcon.sessrep = 'none';
 				    counter = counter + 1;
+				    
 			case 5 %% All GroupMD_3 (O_MD - Baseline) 12/1
 				    matlabbatch{1}.spm.stats.con.consess{counter}.tcon.name = ['All GroupMD_3_' int2str(TimeC+1)];
 				    matlabbatch{1}.spm.stats.con.consess{counter}.tcon.weights = [zeros(1,AllTC*MDcondNum)...
@@ -66,6 +69,7 @@ for Contrast_Cond = 1:29 %% contrast conditions
 				    															  zeros(1,AllTC*EDcondNum)];
 				    matlabbatch{1}.spm.stats.con.consess{counter}.tcon.sessrep = 'none';
 				    counter = counter + 1;
+
 			case 6 %% All GroupMD_4 (O_MD - Y_MD) 12/1
 				    matlabbatch{1}.spm.stats.con.consess{counter}.tcon.name = ['All GroupMD_4_' int2str(TimeC+1)];
 				    matlabbatch{1}.spm.stats.con.consess{counter}.tcon.weights = [repmat([...
@@ -94,6 +98,8 @@ for Contrast_Cond = 1:29 %% contrast conditions
 				    															 ];
 				    matlabbatch{1}.spm.stats.con.consess{counter}.tcon.sessrep = 'none';
 				    counter = counter + 1;
+
+
 		    case 8 %% All GroupED_2 (Y_ED - Baseline) 12/1
 				    matlabbatch{1}.spm.stats.con.consess{counter}.tcon.name = ['All GroupED_2_' int2str(TimeC+1)];
 				    matlabbatch{1}.spm.stats.con.consess{counter}.tcon.weights = [zeros(1,AllTC*MDcondNum)...
@@ -104,6 +110,7 @@ for Contrast_Cond = 1:29 %% contrast conditions
 				    															  zeros(1,AllTC*EDcondNum)];
 				    matlabbatch{1}.spm.stats.con.consess{counter}.tcon.sessrep = 'none';
 				    counter = counter + 1;
+
 			case 9 %% All GroupED_3 (O_ED - Baseline) 12/1
 				    matlabbatch{1}.spm.stats.con.consess{counter}.tcon.name = ['All GroupED_3_' int2str(TimeC+1)];
 				    matlabbatch{1}.spm.stats.con.consess{counter}.tcon.weights = [zeros(1,AllTC*MDcondNum)...
@@ -115,6 +122,7 @@ for Contrast_Cond = 1:29 %% contrast conditions
 				    															  ];
 				    matlabbatch{1}.spm.stats.con.consess{counter}.tcon.sessrep = 'none';
 				    counter = counter + 1;
+
 			case 10 %% All GroupED_4 (O_ED - Y_ED) 12/1
 				    matlabbatch{1}.spm.stats.con.consess{counter}.tcon.name = ['All GroupED_4_' int2str(TimeC+1)];
 				    matlabbatch{1}.spm.stats.con.consess{counter}.tcon.weights = [zeros(1,AllTC*MDcondNum)...
