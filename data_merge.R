@@ -357,12 +357,14 @@ O.NEU.mean <- as.vector(na.omit(as.vector(tapply(behavior.df$giveM, list(behavio
 Y.UNC.mean <- as.vector(na.omit(as.vector(tapply(behavior.df$giveM, list(behavior.df$SITtag, behavior.df$SubjectN, behavior.df$GroupN), mean)[4,,1])))
 O.UNC.mean <- as.vector(na.omit(as.vector(tapply(behavior.df$giveM, list(behavior.df$SITtag, behavior.df$SubjectN, behavior.df$GroupN), mean)[4,,2])))
 
+T.PRO.oneT <- t.test(O.PRO.mean,Y.PRO.mean, alternative = "greater")
 T.PRO <- t.test(Y.PRO.mean,O.PRO.mean)
 T.PUR <- t.test(Y.PUR.mean,O.PUR.mean)
 T.NEU <- t.test(Y.NEU.mean,O.NEU.mean)
 T.UNC <- t.test(Y.UNC.mean,O.UNC.mean)
 ALL_T_MD_Y_O <- c(T.PRO$p.value, T.PUR$p.value, T.NEU$p.value, T.UNC$p.value)
 names(ALL_T_MD_Y_O) <- c("T.PRO", "T.PUR", "T.NEU", "T.UNC")
+ALL_T_MD_Y_O
 
 YT.PRO_PUR <- t.test(Y.PRO.mean, Y.PUR.mean)
 YT.PRO_NEU <- t.test(Y.PRO.mean, Y.NEU.mean)
@@ -461,3 +463,12 @@ boxplot(behavior.df$MDFirstP, behavior.df$EFirstP)
 boxplot(c(behavior.df$MDFirstP, behavior.df$EFirstP))
 
 dev.off()
+
+#### ggline ####
+
+ggline(total.boxplot, x = "total.boxplot.sit.vector", y = "total.boxplot.mean_money.vector", add = "mean_se",
+       color = "total.boxplot.group.vector", palette = "jco") +
+  labs(title = "Group difference in each situation", x = "Situations", y = "Money", fill = "Groups") +
+  theme(plot.title = element_text(hjust = 0.5, size= 15)) +
+  stat_compare_means(aes(group = total.boxplot.group.vector), label = "p.signif", 
+                     label.y = 160)

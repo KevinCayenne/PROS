@@ -1,6 +1,8 @@
 PROS
 ====
 
+PROS scripts are the Matlab and R scripts for the analysis of PROS(Age differences in prosocial decision making) project 2017 Z.Y.C. . Matlab for brain image analysis(using SPM12 package), and R for behavioral analysis. 
+
 raw data processing:
 ====================
 
