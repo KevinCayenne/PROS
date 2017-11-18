@@ -468,7 +468,9 @@ dev.off()
 
 ggline(total.boxplot, x = "total.boxplot.sit.vector", y = "total.boxplot.mean_money.vector", add = "mean_se",
        color = "total.boxplot.group.vector", palette = "jco") +
-  labs(title = "Group difference in each situation", x = "Situations", y = "Money", fill = "Groups") +
+  labs(title = "Group difference in each situation", x = "Situations", y = "Money", colour = "Groups") +   
   theme(plot.title = element_text(hjust = 0.5, size= 15)) +
   stat_compare_means(aes(group = total.boxplot.group.vector), label = "p.signif", 
                      label.y = 160)
+TT <- lm(total.boxplot.mean_money.vector ~ total.boxplot.sit.vector * total.boxplot.group.vector, data = total.boxplot)
+summary(TT)
