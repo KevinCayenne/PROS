@@ -378,11 +378,13 @@ OT.PRO_UNC <- t.test(O.PRO.mean, O.UNC.mean)
 OT.PUR_NEU <- t.test(O.PUR.mean, O.NEU.mean)
 OT.PUR_UNC <- t.test(O.PUR.mean, O.UNC.mean)
 OT.UNC_NEU <- t.test(O.UNC.mean, O.NEU.mean)
+
 ALL_Young_T <- c(YT.PRO_PUR$p.value, YT.PRO_NEU$p.value, YT.PRO_UNC$p.value, YT.PUR_NEU$p.value, YT.PUR_UNC$p.value, YT.UNC_NEU$p.value)
 names(ALL_Young_T) <- c("T.PRO_PUR", "T.PRO_NEU", "T.PRO_UNC", "T.PUR_NEU", "T.PUR_UNC", "T.UNC_NEU")
 ALL_Old_T <- c(OT.PRO_PUR$p.value, OT.PRO_NEU$p.value, OT.PRO_UNC$p.value, OT.PUR_NEU$p.value, OT.PUR_UNC$p.value, OT.UNC_NEU$p.value)
 names(ALL_Old_T) <- c("T.PRO_PUR", "T.PRO_NEU", "T.PRO_UNC", "T.PUR_NEU", "T.PUR_UNC", "T.UNC_NEU")
 rbind(ALL_Young_T, ALL_Old_T)
+
 ###################### ALL boxplot ###########################
 
 total.boxplot.mean_money.vector <- c(Y.PRO.mean, O.PRO.mean, Y.PUR.mean, O.PUR.mean, Y.NEU.mean, O.NEU.mean, Y.UNC.mean, O.UNC.mean)
@@ -466,11 +468,49 @@ dev.off()
 
 #### ggline ####
 
-ggline(total.boxplot, x = "total.boxplot.sit.vector", y = "total.boxplot.mean_money.vector", add = "mean_se",
-       color = "total.boxplot.group.vector", palette = "jco") +
-  labs(title = "Group difference in each situation", x = "Situations", y = "Money", colour = "Groups") +   
-  theme(plot.title = element_text(hjust = 0.5, size= 15)) +
-  stat_compare_means(aes(group = total.boxplot.group.vector), label = "p.signif", 
-                     label.y = 160)
+p <- ggline(total.boxplot, x = "total.boxplot.sit.vector", y = "total.boxplot.mean_money.vector", add= "mean_se",
+      color = "total.boxplot.group.vector", palette = "jco") +
+      labs(title = "Group difference in money giving for each situation", x = "Situations", y = "Money (NT dollars)", colour = "Groups") +   
+      stat_compare_means(aes(group = total.boxplot.group.vector), label = "p.signif", 
+                         label.y = 150) +
+      theme(plot.title = element_text(hjust = 0.5, size= 15)) 
+
+
+p <- ggplot(data = total.boxplot, aes(x = total.boxplot.sit.vector, y = total.boxplot.mean_money.vector, 
+            fill = total.boxplot.sit.vector)) +
+     geom_line(aes(group = total.boxplot.group.vector, colour = total.boxplot.group.vector), position = position_dodge(1))
+
+v <- ggviolin(total.boxplot, x = "total.boxplot.sit.vector", y = "total.boxplot.mean_money.vector", 
+              color = "total.boxplot.group.vector", palette = "jco",  width = 1.5) +
+     labs(title = "Group difference in money giving for each situation", x = "Situations", y = "Money (NT dollars)", colour = "Groups", fill = "Fill") +
+     stat_compare_means(aes(group = total.boxplot.group.vector), label = "p.signif", 
+                        label.y = 300) +
+     theme(plot.title = element_text(hjust = 0.5, size= 15)) +
+     ylim(0,300) 
+ggadd(v, add = c("mean_se", "dotplot"), fill = "total.boxplot.group.vector", position = position_dodge(0.8), binwidth = 6)
+
 TT <- lm(total.boxplot.mean_money.vector ~ total.boxplot.sit.vector * total.boxplot.group.vector, data = total.boxplot)
 summary(TT)
+
+#### All ggline emotional section ####
+
+all.emo.vector <- as.vector(na.omit(as.vector(tapply(behavior.df$EmoTag, list(behavior.df$SITtag, behavior.df$RegMtag, behavior.df$SubjectN, behavior.df$GroupN), mean))))
+all.emo.group.tag <- as.factor(rep(c("Young","Old"),c((youngnum*28), (oldnum*28))))
+all.emo.sit.tag <- as.factor(rep(c("PRO","PUR","NEU","UNC"), length(all.emo.vector)/4))
+all.emo.tag <- as.factor(rep(rep(c("300", "+50", "+20", "same", "-20", "-50", "0"), c(4,4,4,4,4,4,4)), Subject.number))
+
+levels(all.emo.sit.tag) <- list(PRO = "PRO", PUR = "PUR", NEU = "NEU", UNC = "UNC")
+levels(all.emo.group.tag) <- list(Young = "Young", Old = "Old")
+levels(all.emo.tag) <- list(none_give = "0", fifty_less = "-50", twenty_less = "-20", same = "same", twenty_more = "+20", fifty_more = "+50", all_give = "300")
+
+all.emo.dataf <- data.frame(all.emo.vector, all.emo.group.tag, all.emo.sit.tag, all.emo.tag)
+
+ggline(all.emo.dataf, x = "all.emo.tag", y = "all.emo.vector", add = c("mean_se", "jitter"),
+          color = "all.emo.group.tag", palette = "jco", facet.by = "all.emo.sit.tag") +
+          labs(title = "Group difference in emotion choices by groups", x = "Money regulation type", y = "Emotional rate", colour = "Group") +   
+          theme(plot.title = element_text(hjust = 0.5, size= 15)) +
+          stat_compare_means(aes(group = all.emo.group.tag), label = "p.signif", 
+                             label.y = 4.5)
+
+emlm <- lm(all.emo.vector ~ all.emo.group.tag * all.emo.sit.tag * all.emo.tag , data = all.emo.dataf)
+summary(emlm)
