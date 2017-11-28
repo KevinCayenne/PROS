@@ -393,6 +393,7 @@ levels(total.boxplot.sit.vector) <- list(PROS = "PROS", PUR = "PUR", NEU = "NEU"
 total.boxplot.group.vector <- as.factor(c(rep(c(rep("Young", youngnum),rep("Old", oldnum)),4)))
 
 total.boxplot <- data.frame(total.boxplot.mean_money.vector, total.boxplot.sit.vector, total.boxplot.group.vector)
+levels(total.boxplot$total.boxplot.group.vector) <- list(Young = "Young", Old = "Old")
 
 png(sprintf("Average of money giving_pilot_boxplot_ALL.png"), width = MG.plot.width, height = 700)  
 print(total.MD.boxplot <- ggplot(total.boxplot, 
@@ -467,18 +468,18 @@ boxplot(c(behavior.df$MDFirstP, behavior.df$EFirstP))
 dev.off()
 
 #### ggline ####
-
-p <- ggline(total.boxplot, x = "total.boxplot.sit.vector", y = "total.boxplot.mean_money.vector", add= "mean_se",
+png(sprintf("Mean money giving ggline by situations.png"), width = 600, height = 600)  
+print(ggline(total.boxplot, x = "total.boxplot.sit.vector", y = "total.boxplot.mean_money.vector", add= "mean_se",
       color = "total.boxplot.group.vector", palette = "jco") +
       labs(title = "Group difference in money giving for each situation", x = "Situations", y = "Money (NT dollars)", colour = "Groups") +   
       stat_compare_means(aes(group = total.boxplot.group.vector), label = "p.signif", 
-                         label.y = 150) +
-      theme(plot.title = element_text(hjust = 0.5, size= 15)) 
+                         label.y = 170) +
+      theme(plot.title = element_text(hjust = 0.5, size= 15)))
+dev.off()
 
-
-p <- ggplot(data = total.boxplot, aes(x = total.boxplot.sit.vector, y = total.boxplot.mean_money.vector, 
-            fill = total.boxplot.sit.vector)) +
-     geom_line(aes(group = total.boxplot.group.vector, colour = total.boxplot.group.vector), position = position_dodge(1))
+# p <- ggplot(data = total.boxplot, aes(x = total.boxplot.sit.vector, y = total.boxplot.mean_money.vector, 
+#             fill = total.boxplot.sit.vector)) +
+#      geom_line(aes(group = total.boxplot.group.vector, colour = total.boxplot.group.vector), position = position_dodge(1))
 
 v <- ggviolin(total.boxplot, x = "total.boxplot.sit.vector", y = "total.boxplot.mean_money.vector", 
               color = "total.boxplot.group.vector", palette = "jco",  width = 1.5) +
