@@ -1,6 +1,6 @@
 final_dir = '/bml/Data/Bank5/PROS/Pilot_image/Convert_data/first_level_matrix/seconlevel_analysis';
 final_dirin = dir(final_dir);
-ContConNum = 59;
+ContConNum = 87;
 totalTcon = ContConNum*12;
 
 for conditionC = 1:ContConNum
