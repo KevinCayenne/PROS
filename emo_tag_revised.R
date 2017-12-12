@@ -10,6 +10,10 @@ library(gridExtra)
 rawdf <- read.csv("behavior.CSV")
 T.num <- length(rawdf$SubjectN)/64
 ncolrawdf <- ncol(rawdf)
+
+rawdf$GroupN <- as.factor(rawdf$GroupN)
+rawdf$SITtag <- as.factor(rawdf$SITtag)
+
 rawdf[,ncolrawdf+1] <- rawdf$RegMtag
 rawdf[,ncolrawdf+2] <- rawdf$RegM - rawdf$giveM
 colnames(rawdf)[ncol(rawdf)-1] <- c("rev_reg_M")
@@ -44,7 +48,7 @@ all.emo.vector <- c(Yg, Og)
 
 all.emo.group.tag <- as.factor(rep(c("Young","Old"),c((youngnum*28), (oldnum*28))))
 all.emo.sit.tag <- as.factor(rep(c("PRO","PUR","NEU","UNC"), length(all.emo.vector)/4))
-all.emo.tag <- as.factor(rep(rep(c("300", "+50", "+20", "same", "-20", "-50", "0"), c(4,4,4,4,4,4,4)), Subject.number))
+all.emo.tag <- as.factor(rep(rep(c("300", "+50", "+20", "same", "-20", "-50", "0"), c(4,4,4,4,4,4,4)), youngnum + oldnum))
 
 levels(all.emo.sit.tag) <- list(PRO = "PRO", PUR = "PUR", NEU = "NEU", UNC = "UNC")
 levels(all.emo.group.tag) <- list(Young = "Young", Old = "Old")
@@ -64,7 +68,7 @@ ggline(all.emo.dataf, x = "all.emo.tag", y = "all.emo.vector", add = c("mean_se"
   geom_hline(yintercept = 0)
 
 ###
-rawdf$rev_dist[rawdf$rev_dist==0]
+# rawdf$rev_dist[rawdf$rev_dist==0]
 
 rawdf[ncol(rawdf)+1] <- rawdf$rev_dist
 colnames(rawdf)[ncol(rawdf)] <- c("rev_dist_tag")
@@ -77,6 +81,7 @@ for(i in seq(0,-250,-50)){
   rawdf$rev_dist_tag[rawdf$rev_dist_tag>=i-50 & rawdf$rev_dist_tag < i] <- iter
   iter <- iter - 1
 }
+
 iter <- 1
 for(i in seq(0,250,50)){
   rawdf$rev_dist_tag[rawdf$rev_dist_tag>=i & rawdf$rev_dist_tag < i+50] <- iter
@@ -100,8 +105,8 @@ for(i in c(1:T.num)){
 }
 
 T.E <- c(YgE, OgE)
-length(T.E)
 
+# length(T.E)
 #hist(rawdf$rev_dist_tag)
 
 all.emo.group.tag.R <- as.factor(rep(c("Young","Old"),c((youngnum*52), (oldnum*52))))
@@ -113,7 +118,7 @@ levels(all.emo.group.tag.R) <- list(Young = "Young", Old = "Old")
 levels(all.emo.tag.R) <- list("-7" = "-7", "-5" = "-5", "-4" = "-4", "-3" = "-3", "-2" = "-2", "-1" = "-1", "0" = "0", "1" = "1", "2" = "2", "3" = "3", "4" = "4", "5" = "5", "6" = "6", "7" = "7")
 
 all.emo.dataf.R <- data.frame(T.E, all.emo.group.tag.R, all.emo.sit.tag.R, all.emo.tag.R)
-all.emo.dataf.R[!is.na(T.E),]
+# all.emo.dataf.R[!is.na(T.E),]
 
 ggline(all.emo.dataf.R, x = "all.emo.tag.R", y = "T.E", add = c("mean_se", "jitter"),
        color = "all.emo.group.tag.R", palette = "jco", facet.by = "all.emo.sit.tag.R") +
@@ -125,3 +130,18 @@ ggline(all.emo.dataf.R, x = "all.emo.tag.R", y = "T.E", add = c("mean_se", "jitt
   geom_hline(yintercept = 0) +
   geom_vline(xintercept = 0)
 
+ggplot(data = rawdf, aes(x = EmoTag, y = rev_dist, colour = GroupN, group = GroupN)) +
+  geom_point() +
+  geom_smooth(method = 'loess') +
+  facet_grid(~ SITtag)  
+
+# tapply(rawdf$rev_dist, list(rawdf$GroupN, rawdf$SITtag))
+
+ggplot(data = rawdf, aes(x = rev_dist, y = EmoTag, colour = GroupN, group = GroupN)) +
+  geom_point() +
+  geom_smooth(method = 'lm') +
+  facet_grid(~ SITtag)
+
+E.T <- tapply(rawdf$EmoTag, list(rawdf$SITtag, rawdf$SubjectN, rawdf$GroupN), mean)
+# E.T
+# length(na.omit(as.vector(E.T)))
