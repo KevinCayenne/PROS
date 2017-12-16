@@ -362,9 +362,9 @@ T.PRO <- t.test(Y.PRO.mean,O.PRO.mean)
 T.PUR <- t.test(Y.PUR.mean,O.PUR.mean)
 T.NEU <- t.test(Y.NEU.mean,O.NEU.mean)
 T.UNC <- t.test(Y.UNC.mean,O.UNC.mean)
-ALL_T_MD_Y_O <- c(T.PRO$p.value, T.PUR$p.value, T.NEU$p.value, T.UNC$p.value)
+ALL_T_MD_Y_O <- c(T.PRO$p.value, T.PUR$p.vALL_T_MD_Y_Oalue, T.NEU$p.value, T.UNC$p.value)
 names(ALL_T_MD_Y_O) <- c("T.PRO", "T.PUR", "T.NEU", "T.UNC")
-ALL_T_MD_Y_O
+
 
 YT.PRO_PUR <- t.test(Y.PRO.mean, Y.PUR.mean)
 YT.PRO_NEU <- t.test(Y.PRO.mean, Y.NEU.mean)

@@ -139,7 +139,7 @@ ggplot(data = rawdf, aes(x = EmoTag, y = rev_dist, colour = GroupN, group = Grou
 
 ggplot(data = rawdf, aes(x = rev_dist, y = EmoTag, colour = GroupN, group = GroupN)) +
   geom_point() +
-  geom_smooth(method = 'lm') +
+  geom_smooth(method = 'lm', formula = y ~ poly(x,2)) +
   facet_grid(~ SITtag)
 
 E.T <- tapply(rawdf$EmoTag, list(rawdf$SITtag, rawdf$SubjectN, rawdf$GroupN), mean)
