@@ -56,7 +56,7 @@ levels(all.emo.tag) <- list(none_give = "0", fifty_less = "-50", twenty_less = "
 
 all.emo.dataf <- data.frame(all.emo.vector, all.emo.group.tag, all.emo.sit.tag, all.emo.tag)
 is.na(all.emo.vector)
-all.emo.dataf[!is.na(all.emo.vector),]
+all.emo.dataf <- all.emo.dataf[!is.na(all.emo.vector),]
 
 ggline(all.emo.dataf, x = "all.emo.tag", y = "all.emo.vector", add = c("mean_se", "jitter"),
        color = "all.emo.group.tag", palette = "jco", facet.by = "all.emo.sit.tag") +
@@ -145,3 +145,6 @@ ggplot(data = rawdf, aes(x = rev_dist, y = EmoTag, colour = GroupN, group = Grou
 E.T <- tapply(rawdf$EmoTag, list(rawdf$SITtag, rawdf$SubjectN, rawdf$GroupN), mean)
 # E.T
 # length(na.omit(as.vector(E.T)))
+
+tapply(all.emo.dataf$all.emo.vector, list(all.emo.dataf$all.emo.group.tag, all.emo.dataf$all.emo.sit.tag, all.emo.dataf$all.emo.tag), mean)
+tapply(all.emo.dataf$all.emo.vector, list(all.emo.dataf$all.emo.group.tag, all.emo.dataf$all.emo.sit.tag, all.emo.dataf$all.emo.tag), sd)

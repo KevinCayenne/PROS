@@ -543,7 +543,7 @@ for Contrast_Cond = 1:37 %% contrast conditions
 					counter = counter + 1;
 				end
 		end
-	end
+	
 end
 
 matlabbatch{1}.spm.stats.con.delete = 0;
