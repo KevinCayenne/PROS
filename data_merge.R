@@ -371,6 +371,9 @@ sd(O.PRO.mean)
 mean(Y.PRO.mean)
 sd(Y.PRO.mean)
 
+std <- function(x) sd(x)/sqrt(length(x))
+std(Y.PRO.mean)
+
 T.PRO.oneT <- t.test(O.PRO.mean,Y.PRO.mean, alternative = "greater")
 T.PRO <- t.test(Y.PRO.mean,O.PRO.mean)
 T.PUR <- t.test(Y.PUR.mean,O.PUR.mean)
