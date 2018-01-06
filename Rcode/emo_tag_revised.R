@@ -58,14 +58,20 @@ all.emo.dataf <- data.frame(all.emo.vector, all.emo.group.tag, all.emo.sit.tag, 
 is.na(all.emo.vector)
 all.emo.dataf <- all.emo.dataf[!is.na(all.emo.vector),]
 
-ggline(all.emo.dataf, x = "all.emo.tag", y = "all.emo.vector", add = c("mean_se", "jitter"),
-       color = "all.emo.group.tag", palette = "jco", facet.by = "all.emo.sit.tag") +
-  labs(title = "Group difference in emotion choices by groups",
-       x = "Money regulation type", y = "Emotional rate", colour = "Group") +
-  theme(plot.title = element_text(hjust = 0.5, size= 15)) +
-  stat_compare_means(aes(group = all.emo.group.tag), label = "p.signif",
-                     label.y = 4.5) +
-  geom_hline(yintercept = 0)
+all.emo.dataf <- rbind(all.emo.dataf, c(as.numeric(0), "Young", "NEU", "fifty_less"), c(as.numeric(0), "Old", "UNC", "fifty_less"))
+
+all.emo.dataf$all.emo.vector<- as.numeric(all.emo.dataf$all.emo.vector)
+
+png(sprintf("RT_boxplot_ALL.png"), width = 1000, height = 800)  
+  ggline(all.emo.dataf, x = "all.emo.tag", y = "all.emo.vector", add = c("mean_se", "jitter"),
+         color = "all.emo.group.tag", palette = "jco", facet.by = "all.emo.sit.tag") +
+    labs(title = "Group difference in emotion choices by groups",
+         x = "Money regulation type", y = "Emotional rate", colour = "Group") +
+    theme(plot.title = element_text(hjust = 0.5, size= 15)) +
+    stat_compare_means(aes(group = all.emo.group.tag), label = "p.signif",
+                       label.y = 4.5) +
+    geom_hline(yintercept = 0)
+dev.off()
 
 ###
 # rawdf$rev_dist[rawdf$rev_dist==0]
@@ -117,6 +123,8 @@ levels(all.emo.sit.tag.R) <- list(PRO = "PRO", PUR = "PUR", NEU = "NEU", UNC = "
 levels(all.emo.group.tag.R) <- list(Young = "Young", Old = "Old")
 levels(all.emo.tag.R) <- list("-7" = "-7", "-5" = "-5", "-4" = "-4", "-3" = "-3", "-2" = "-2", "-1" = "-1", "0" = "0", "1" = "1", "2" = "2", "3" = "3", "4" = "4", "5" = "5", "6" = "6", "7" = "7")
 
+length(all.emo.group.tag.R)
+
 all.emo.dataf.R <- data.frame(T.E, all.emo.group.tag.R, all.emo.sit.tag.R, all.emo.tag.R)
 # all.emo.dataf.R[!is.na(T.E),]
 
@@ -140,6 +148,11 @@ ggplot(data = rawdf, aes(x = EmoTag, y = rev_dist, colour = GroupN, group = Grou
 ggplot(data = rawdf, aes(x = rev_dist, y = EmoTag, colour = GroupN, group = GroupN)) +
   geom_point() +
   geom_smooth(method = 'lm', formula = y ~ poly(x,2)) +
+  facet_grid(~ SITtag)
+
+ggplot(data = rawdf, aes(x = rev_dist, y = EmoTag, colour = GroupN, group = GroupN)) +
+  geom_point() +
+  geom_smooth(method = 'lm') +
   facet_grid(~ SITtag)
 
 E.T <- tapply(rawdf$EmoTag, list(rawdf$SITtag, rawdf$SubjectN, rawdf$GroupN), mean)

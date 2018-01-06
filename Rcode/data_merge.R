@@ -4,6 +4,7 @@ library(ggplot2)
 library(ggpubr)
 library(gtools)
 library(gridExtra)
+library(magrittr)
 
 File.list = mixedsort(list.files("behaviorD"))
 #list.files命令將behavior文件夾下所有文件名輸入File.list
@@ -504,8 +505,11 @@ v <- ggviolin(total.boxplot, x = "total.boxplot.sit.vector", y = "total.boxplot.
                         label.y = 300) +
      theme(plot.title = element_text(hjust = 0.5, size= 15)) +
      ylim(0,300) 
-ggadd(v, add = c("mean_se", "dotplot"), fill = "total.boxplot.group.vector", position = position_dodge(0.8), binwidth = 6)
 
+png(sprintf("Mean money giving ggline by situations_violin.png"), width = 600, height = 600) 
+  ggadd(v, add = c("mean_se", "dotplot"), fill = "total.boxplot.group.vector", position = position_dodge(0.8), binwidth = 6)
+dev.off()
+  
 TT <- lm(total.boxplot.mean_money.vector ~ total.boxplot.sit.vector * total.boxplot.group.vector, data = total.boxplot)
 summary(TT)
 
