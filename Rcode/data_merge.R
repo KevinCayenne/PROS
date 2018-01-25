@@ -5,6 +5,11 @@ library(ggpubr)
 library(gtools)
 library(gridExtra)
 library(magrittr)
+library(tidyr)
+library(dplyr)
+library(gridExtra)
+library(ggsignif)
+library(lmerTest)
 
 File.list = mixedsort(list.files("behaviorD"))
 #list.files命令將behavior文件夾下所有文件名輸入File.list
@@ -32,6 +37,7 @@ behavior.df <- data.frame(merge.data)
 
 youngnum <- round(table(behavior.df$GroupN)[1]/64)
 oldnum <- round(table(behavior.df$GroupN)[2]/64)
+allnum <- youngnum + oldnum
 #calculate the subjects number in groups 
 
 ncolbehavior.df <- ncol(behavior.df) #計算column number
@@ -486,12 +492,20 @@ dev.off()
 
 #### ggline ####
 png(sprintf("Mean money giving ggline by situations.png"), width = 600, height = 600)  
-print(ggline(total.boxplot, x = "total.boxplot.sit.vector", y = "total.boxplot.mean_money.vector", add= "mean_se",
-      color = "total.boxplot.group.vector", palette = "jco") +
+print(total.ggplot.mmoney <- ggline(total.boxplot, x = "total.boxplot.sit.vector", y = "total.boxplot.mean_money.vector", add= c("mean_se","jitter"),
+      color = "total.boxplot.group.vector", palette = "jco", size=1) +
       labs(title = "Group difference in money giving for each situation", x = "Situations", y = "Money (NT dollars)", colour = "Groups") +   
       stat_compare_means(aes(group = total.boxplot.group.vector), label = "p.signif", 
-                         label.y = 170) +
-      theme(plot.title = element_text(hjust = 0.5, size= 15)))
+                         label.y = 230) +
+      theme(plot.title = element_text(hjust = 0.5, size= 18, face="bold")) +
+      theme(plot.title = element_text(hjust = 0.5),
+              title = element_text(size=15),
+              legend.text = element_text(size=18),
+              legend.title = element_text(size=18),
+              axis.text = element_text(size=18),
+              axis.title = element_text(size=18,face="bold")
+              )
+      )
 dev.off()
 
 # p <- ggplot(data = total.boxplot, aes(x = total.boxplot.sit.vector, y = total.boxplot.mean_money.vector, 
@@ -519,19 +533,87 @@ all.emo.vector <- as.vector(na.omit(as.vector(tapply(behavior.df$EmoTag, list(be
 all.emo.group.tag <- as.factor(rep(c("Young","Old"),c((youngnum*28), (oldnum*28))))
 all.emo.sit.tag <- as.factor(rep(c("PRO","PUR","NEU","UNC"), length(all.emo.vector)/4))
 all.emo.tag <- as.factor(rep(rep(c("300", "+50", "+20", "same", "-20", "-50", "0"), c(4,4,4,4,4,4,4)), Subject.number))
+all.subject.tag <- as.factor(rep(1:allnum, each = 28))
 
 levels(all.emo.sit.tag) <- list(PRO = "PRO", PUR = "PUR", NEU = "NEU", UNC = "UNC")
 levels(all.emo.group.tag) <- list(Young = "Young", Old = "Old")
 levels(all.emo.tag) <- list(none_give = "0", fifty_less = "-50", twenty_less = "-20", same = "same", twenty_more = "+20", fifty_more = "+50", all_give = "300")
 
-all.emo.dataf <- data.frame(all.emo.vector, all.emo.group.tag, all.emo.sit.tag, all.emo.tag)
+all.emo.dataf.o <- data.frame(all.emo.vector, all.emo.group.tag, all.emo.sit.tag, all.emo.tag, all.subject.tag)
 
-ggline(all.emo.dataf, x = "all.emo.tag", y = "all.emo.vector", add = c("mean_se", "jitter"),
+ggline(all.emo.dataf.o, x = "all.emo.tag", y = "all.emo.vector", add = c("mean_se", "jitter"),
           color = "all.emo.group.tag", palette = "jco", facet.by = "all.emo.sit.tag") +
           labs(title = "Group difference in emotion choices by groups", x = "Money regulation type", y = "Emotional rate", colour = "Group") +   
           theme(plot.title = element_text(hjust = 0.5, size= 15)) +
           stat_compare_means(aes(group = all.emo.group.tag), label = "p.signif", 
                              label.y = 4.5)
 
+anova(lmer(all.emo.vector ~ all.emo.tag*all.emo.sit.tag + (1|all.subject.tag) + (1|all.emo.tag:all.subject.tag) + (1|all.emo.sit.tag:all.subject.tag), data = all.emo.dataf.o))
+
+aa <- lmer(all.emo.vector ~ all.emo.tag*all.emo.sit.tag*all.emo.group.tag + 
+             (1|all.subject.tag) + 
+             (1|all.emo.tag:all.subject.tag) + (1|all.emo.sit.tag:all.subject.tag) + (1|all.emo.group.tag:all.subject.tag) +
+             (1|all.emo.sit.tag:all.emo.group.tag:all.subject.tag)  + 
+             (1|all.emo.tag:all.emo.group.tag:all.subject.tag), data = all.emo.dataf.o)
+
 emlm <- lm(all.emo.vector ~ all.emo.group.tag * all.emo.sit.tag * all.emo.tag , data = all.emo.dataf)
 summary(emlm)
+
+em.lmer <- lmer(all.emo.vector ~ all.emo.group.tag * all.emo.sit.tag * (1|all.emo.tag) , data = all.emo.dataf)
+summary(em.lmer)
+
+Y.PRO.vec <- total.boxplot[total.boxplot$total.boxplot.group.vector=="Young" & total.boxplot$total.boxplot.sit.vector=="PROS",] 
+Y.PUR.vec <- total.boxplot[total.boxplot$total.boxplot.group.vector=="Young" & total.boxplot$total.boxplot.sit.vector=="PUR",] 
+Y.NEU.vec <- total.boxplot[total.boxplot$total.boxplot.group.vector=="Young" & total.boxplot$total.boxplot.sit.vector=="NEU",] 
+O.PRO.vec <- total.boxplot[total.boxplot$total.boxplot.group.vector=="Old" & total.boxplot$total.boxplot.sit.vector=="PROS",] 
+O.PUR.vec <- total.boxplot[total.boxplot$total.boxplot.group.vector=="Old" & total.boxplot$total.boxplot.sit.vector=="PUR",] 
+O.NEU.vec <- total.boxplot[total.boxplot$total.boxplot.group.vector=="Old" & total.boxplot$total.boxplot.sit.vector=="NEU",] 
+
+inter.Y.PRO.PUR <- Y.PRO.vec$total.boxplot.mean_money.vector - Y.PUR.vec$total.boxplot.mean_money.vector
+inter.Y.PRO.NEU <- Y.PRO.vec$total.boxplot.mean_money.vector - Y.NEU.vec$total.boxplot.mean_money.vector
+inter.O.PRO.PUR <- O.PRO.vec$total.boxplot.mean_money.vector - O.PUR.vec$total.boxplot.mean_money.vector
+inter.O.PRO.NEU <- O.PRO.vec$total.boxplot.mean_money.vector - O.NEU.vec$total.boxplot.mean_money.vector
+
+t.test(inter.Y.PRO.PUR, inter.O.PRO.PUR)
+t.test(inter.Y.PRO.NEU, inter.O.PRO.NEU)
+
+inter.Y.PRO.PUR.mean <- mean(inter.Y.PRO.PUR)
+inter.Y.PRO.PUR.se <- sd(inter.Y.PRO.PUR)/sqrt(length(inter.Y.PRO.PUR))
+
+inter.Y.PRO.NEU.mean <- mean(inter.Y.PRO.NEU)
+inter.Y.PRO.NEU.se <- sd(inter.Y.PRO.NEU)/sqrt(length(inter.Y.PRO.NEU))
+
+inter.O.PRO.PUR.mean <- mean(inter.O.PRO.PUR)
+inter.O.PRO.PUR.se <- sd(inter.O.PRO.PUR)/sqrt(length(inter.O.PRO.PUR))
+
+inter.O.PRO.NEU.mean <- mean(inter.O.PRO.NEU)
+inter.O.PRO.NEU.se <- sd(inter.O.PRO.NEU)/sqrt(length(inter.O.PRO.NEU))
+
+inter.mean <- c(inter.Y.PRO.PUR.mean, inter.O.PRO.PUR.mean, inter.Y.PRO.NEU.mean, inter.O.PRO.NEU.mean)
+inter.se <- c(inter.Y.PRO.PUR.se, inter.O.PRO.PUR.se, inter.Y.PRO.NEU.se, inter.O.PRO.NEU.se)
+inter.tag <- as.factor(c("PRO-PUR", "PRO-PUR", "PRO-NEU", "PRO-NEU"))
+inter.group <- as.factor(c("Young","Old","Young","Old"))
+inter.total.money <- data.frame(inter.mean, inter.se, inter.tag, inter.group)
+
+a <- ggplot(inter.total.money, aes(x=inter.tag, y=inter.mean, fill=inter.group)) + 
+  geom_bar(position=position_dodge(), stat="identity",
+           colour="black", # Use black outlines,
+           size=.3) +      # Thinner lines
+  geom_errorbar(aes(ymin=inter.mean, ymax=inter.mean+inter.se),
+                size=.3,    # Thinner lines
+                width=.2,
+                position=position_dodge(.9)) +
+  geom_signif(y_position=c(140, 100), xmin=c(0.8, 1.8), xmax=c(1.2, 2.2),
+              annotation=c("**", "**"), tip_length=0) +
+  labs(title = "Group X Situation interaction in money giving", 
+       x = "Situation group", y = "Money (NT dollars)", 
+       colour = "Groups", fill = "Group") +
+  theme(plot.title = element_text(hjust = 0.5),
+        title = element_text(size=15, face="bold"),
+        legend.text = element_text(size=18),
+        legend.title = element_text(size=18),
+        axis.text = element_text(size=18),
+        axis.title = element_text(size=18,face="bold")
+        )
+
+grid.arrange(total.ggplot.mmoney, a, ncol=2)

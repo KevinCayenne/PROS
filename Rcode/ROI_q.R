@@ -7,8 +7,9 @@ library(gtools)
 library(gridExtra)
 
 ROI_try <- read.csv("ROI.csv", header = T)
+ROI_W <- read.csv("ROIW.csv", header = T)
 
-young.num <- 18
+young.num <- 20
 old.num <- 9
 total.num <- young.num + old.num
 cond.num <- 11
@@ -28,6 +29,9 @@ tc.tag <- c(rep(rep(0:11, each = young.num), cond.num), rep(rep(0:11, each = old
 
 ROI_try <- cbind(ROI_try, age.tag, cond.tag, tc.tag)
 tydi.ROI <- gather(ROI_try, ROI, value, -age.tag, -cond.tag, -tc.tag)
+
+ROI_W <- cbind(ROI_W, age.tag, cond.tag, tc.tag)
+W.ROI <- gather(ROI_W, ROI, value, -age.tag, -cond.tag, -tc.tag)
 
 for (t in 0:2){
   for (i in 1:4){
@@ -138,10 +142,9 @@ for (t in 0:2){
 # young.vmpfc <- cbind(rep(1:12, 2), young.vmpfc)
 # names(young.vmpfc)[1] <- "tc"
 
-for(ROIR in c("RH", "insulaR", "VMPFC", "insulaL", "LH")){
+for(ROIR in c("motor1", "Avent", "motor2", "V")){
   for(i in 2:3){
 
-    
     data.tydi <- as.data.frame(tydi.ROI[tydi.ROI$ROI == ROIR & (tydi.ROI$cond.tag == 1 | tydi.ROI$cond.tag == i) ,])
     
     titl <- as.character(data.tydi$ROI[1])
@@ -158,6 +161,39 @@ for(ROIR in c("RH", "insulaR", "VMPFC", "insulaL", "LH")){
       )
     dev.off()
   }
+}
+
+iter <- 1
+for(ROIR in c("motor1", "Avent", "motor2", "V", "Rin", "Lin",	"RPH", "VMPFC")){
+
+    data.tydi <- as.data.frame(W.ROI[W.ROI$ROI == ROIR & (W.ROI$cond.tag == 1) ,])
+    data.tydi.2 <- as.data.frame(W.ROI[W.ROI$ROI == ROIR & (W.ROI$cond.tag == 2) ,])
+    data.tydi$value <- data.tydi$value - data.tydi.2$value
+    
+    titl <- as.character(data.tydi$ROI[1])
+    tit <- c("-30,-4,50", "-6,-14,50", "-39,8,29", "21,-88,-1", "42,-10,-4", "42,-7,-4", "18,-31,-13", "0,29,-4")
+    cols <- c("tc.tag", "cond.tag", "age.tag", "ROI")
+    data.tydi[cols] <- lapply(data.tydi[cols], factor)
+    levels(data.tydi$age.tag) <- list(Young = "Young", Old = "Old")
+    
+    png(sprintf(sprintf("%s.png", titl)), width = 800, height = 600)
+    print(ggline(data.tydi, x = "tc.tag", y = "value", add = c("mean_se"),
+                 color = "age.tag", palette = "jco", size = 1) +
+            labs(title = sprintf("%s", tit[iter])) +
+            theme(plot.title = element_text(hjust = 0.5, size= 25),
+                  legend.text = element_text(size=25),
+                  legend.title = element_text(size=25),
+                  axis.text = element_text(size=25),
+                  axis.title = element_text(size=25,face="bold"),
+                  text = element_text(size=25)
+                  )+
+            labs(x = "Time(TR)", y = "BOLD Signal", 
+                 colour = "Situtaion", fill = "Group") +
+            geom_smooth(method = 'loess')+
+            stat_compare_means(aes(group = age.tag), label = "p.signif", label.y = 3)
+    )
+    dev.off()
+    iter <- iter + 1
 }
 
 ROINum <- 5
