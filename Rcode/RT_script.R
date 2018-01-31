@@ -216,7 +216,8 @@ emo.RT.split <- split(Total.emo.RT.df.cc, list(Total.emo.RT.df.cc$Group, Total.e
 RT.list <- list(md.RT.split, emo.RT.split)
 
 stringt <- c()
-
+p.pval <- c()
+it <- 1
 for(var in 1:length(RT.list)){
   iter <- 1
   RT.split <- RT.list[[var]]
@@ -235,12 +236,28 @@ for(var in 1:length(RT.list)){
           } else {
             star <- ""
           }
+          p.pval[it] <- temp$p.value
           stringt[iter] <- sprintf("t-test in %17s: %16s and %16s : %8f %3s", colnames(RT.split[[i]][j]), names(RT.split)[[i]], names(RT.split)[[i+k]], temp$p.value, star)
           iter <- iter + 1 
+          it <- it + 1 
       }
     }
   }
   print(stringt)
+}
+
+#### fdr ####
+
+fdr.stringt <- p.adjust(p.pval, method = "fdr", n = 36)
+
+for(le in 1:length(fdr.stringt)){
+  if(fdr.stringt[le] <= 0.05){
+    star <- "*"
+    print(sprintf("%8f %3s", fdr.stringt[le], star))
+  } else {
+    star <- " "
+    print(sprintf("%8f %3s", fdr.stringt[le], star))
+  }
 }
 
 ########## print plot ####
