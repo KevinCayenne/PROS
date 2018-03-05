@@ -6,11 +6,22 @@ EDcondNum = 7; %% Define ED conditions num
 GroupNum = 2; %% Define Group conditons num
 SitCount = MDcondNum + EDcondNum; %% 11 conditions
 
+xBF.dt = 1;
+xBF.name = 'hrf (with time and dispersion derivatives)';
+xBF.length = 32;
+xBF.order = 1;
+xBF = spm_get_bf(xBF);
+all = xBF.bf(2:2:24,:)';
+can = all(1,:);
+tem = all(2,:);
+dis = all(3,:);
+adj_can = [0 can(1:11)];
+
 matlabbatch{1}.spm.stats.con.spmmat = {'/bml/Data/Bank5/PROS/Pilot_image/Convert_data/first_level_matrix/seconlevel_analysis/SPM.mat'};
 
-for Contrast_Cond = 1:37 %% contrast conditions
-		switch Contrast_Cond 
-
+for Contrast_Cond = 42:42 %% contrast conditions
+    
+		switch Contrast_Cond         
 			case 1 %% All MD contrasts (ALL_MD - Baseline) 12/1 - 1
 				for TimeC = 0:timeCourseC
 				    matlabbatch{1}.spm.stats.con.consess{counter}.tcon.name = ['ALLMD_' int2str(TimeC+1) '_' int2str(TimeC)];
@@ -65,7 +76,7 @@ for Contrast_Cond = 1:37 %% contrast conditions
 				    															  zeros(1,AllTC*EDcondNum)];
 				    matlabbatch{1}.spm.stats.con.consess{counter}.tcon.sessrep = 'none';
 				    counter = counter + 1;
-				 end 
+                end 
 
 			case 5 %% All GroupMD_3 (O_MD - Baseline) 12/1 - 5
 				for TimeC = 0:timeCourseC
@@ -353,7 +364,7 @@ for Contrast_Cond = 1:37 %% contrast conditions
 					counter = counter + 1;
 				end
 
-			case 26 %% O_PUR-NEU Sit (O) 12/1 - 56
+			case 26 %% O_PUR-NEU Sit (O) 12/1 - 56  
 				for TimeC = 0:timeCourseC
 					matlabbatch{1}.spm.stats.con.consess{counter}.tcon.name = ['O_PUR_NEU_Situ' '_' int2str(TimeC)];
 					matlabbatch{1}.spm.stats.con.consess{counter}.tcon.weights = [...
@@ -573,6 +584,45 @@ for Contrast_Cond = 1:37 %% contrast conditions
 					matlabbatch{1}.spm.stats.con.consess{counter}.tcon.sessrep = 'none';
 					counter = counter + 1;
 				end
+
+			case 42 
+				matlabbatch{1}.spm.stats.con.consess{counter}.tcon.name = ['Can-weighted_PRO(Y)_PUR(Y)__PRO(O)_PUR(O)'];
+				matlabbatch{1}.spm.stats.con.consess{counter}.tcon.weights = [...
+                                                                                                          can...
+                                                                                                          -can...
+                                                                                                          zeros(1, AllTC*(SitCount-2))...
+                                                                                                          -can...
+                                                                                                          can...
+                                                                                                         ];
+				matlabbatch{1}.spm.stats.con.consess{counter}.tcon.sessrep = 'none';
+				counter = counter + 1;
+                
+            case 43
+				matlabbatch{1}.spm.stats.con.consess{counter}.tcon.name = ['Can-weighted_PRO(Y)_NEU(Y)__PRO(O)_NEU(O)'];
+				matlabbatch{1}.spm.stats.con.consess{counter}.tcon.weights = [...
+                                                                                                          can...
+                                                                                                          zeros(1, AllTC)...
+                                                                                                          -can...
+                                                                                                          zeros(1, AllTC*(SitCount-3))...
+                                                                                                          -can...
+                                                                                                          zeros(1, AllTC)...
+                                                                                                          can...
+                                                                                                         ];
+				matlabbatch{1}.spm.stats.con.consess{counter}.tcon.sessrep = 'none';
+				counter = counter + 1;
+                
+            case 44
+				matlabbatch{1}.spm.stats.con.consess{counter}.tcon.name = ['Can-weighted_ALL_Y_MD'];
+				matlabbatch{1}.spm.stats.con.consess{counter}.tcon.weights = [ can can can can ];
+				matlabbatch{1}.spm.stats.con.consess{counter}.tcon.sessrep = 'none';
+				counter = counter + 1;
+                
+            case 45
+				matlabbatch{1}.spm.stats.con.consess{counter}.tcon.name = ['Can-weighted_Y_PRO_PUR'];
+				matlabbatch{1}.spm.stats.con.consess{counter}.tcon.weights = [ can -can ];
+				matlabbatch{1}.spm.stats.con.consess{counter}.tcon.sessrep = 'none';
+				counter = counter + 1;
+                
 		end
 	
 end
