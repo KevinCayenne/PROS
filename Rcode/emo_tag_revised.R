@@ -195,7 +195,7 @@ all.emo.dataf.R <- data.frame(T.E, all.emo.group.tag.R, all.emo.sit.tag.R, all.e
 
 ggplot(data = rawdf, aes(x = EmoTag, y = rev_dist, colour = GroupN, group = GroupN)) +
   geom_point() +
-  geom_smooth(method = 'loess') +
+  geom_smooth(method = 'lm', formula = y ~ poly(x,2)) +
   facet_grid(~ SITtag)  
 
 # tapply(rawdf$rev_dist, list(rawdf$GroupN, rawdf$SITtag))
@@ -213,6 +213,6 @@ ggplot(data = rawdf, aes(x = rev_dist, y = EmoTag, colour = GroupN, group = Grou
 E.T <- tapply(rawdf$EmoTag, list(rawdf$SITtag, rawdf$SubjectN, rawdf$GroupN), mean)
 # E.T
 # length(na.omit(as.vector(E.T)))
-
+  
 tapply(all.emo.dataf$all.emo.vector, list(all.emo.dataf$all.emo.group.tag, all.emo.dataf$all.emo.sit.tag, all.emo.dataf$all.emo.tag), mean)
 tapply(all.emo.dataf$all.emo.vector, list(all.emo.dataf$all.emo.group.tag, all.emo.dataf$all.emo.sit.tag, all.emo.dataf$all.emo.tag), sd)

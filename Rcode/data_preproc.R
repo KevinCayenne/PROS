@@ -56,9 +56,37 @@ behavior.df[1, ncolbehavior.df+8] <- behavior.df[1, ncolbehavior.df+7] - behavio
 colnames(behavior.df)[(ncolbehavior.df+1):(ncolbehavior.df+10)] <- c("MoneyD_RT", "EmoD_RT", "ITI_D", "MoneyD", "ISI_D","EmoD","DTriggerOnset","TrialD","LongD","DefaultT")
 # adding tags
 
-
-
 behavior.con <- behavior.df
 behavior.con$SIT <- NULL 
 behavior.con$EmoRESP <- NULL
 write.csv(behavior.con, file = sprintf("behavior.CSV"),  row.names=FALSE)
+
+########
+
+num.sit <- 16  
+
+pros.give.y <- behavior.df[behavior.df$GroupN==1 & behavior.df$SITtag==1,]
+pros.give.o <- behavior.df[behavior.df$GroupN==2 & behavior.df$SITtag==1,]
+
+sit.count.y <- rep(1:num.sit,nrow(pros.give.y)/num.sit)
+pros.give.y <- cbind(pros.give.y, sit.count.y)
+
+sit.count.o <- rep(1:num.sit,nrow(pros.give.o)/num.sit)
+pros.give.o <- cbind(pros.give.o, sit.count.o)
+
+par(mfrow = c(1,2))
+plot(pros.give.y$sit.count.y, pros.give.y$giveM, type="l",lwd=1,col=2,lty=1, axes = FALSE,xlab="times",ylab="money(NTD)",main="Young")
+axis(1, at = pros.give.y$sit.count.y)
+axis(2)
+
+
+plot(pros.give.o$sit.count.o, pros.give.o$giveM, type="l",lwd=1,col=2,lty=1, axes = FALSE,xlab="times",ylab="money(NTD)",main="Old")
+axis(1, at = pros.give.o$sit.count.o)
+axis(2)
+
+
+for (sub in c(1:num.sit,nrow(pros.give.o)/num.sit)){
+lines(pros.give.o$sit.count.o[1:16],pros.give.o$giveM[(((sub-1)*16)+1):(((sub-1)*16)+16)],lty=1,lwd=1,col=3,type="l")
+}
+
+

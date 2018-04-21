@@ -70,7 +70,7 @@ print(ggline(tydi.ROI, x = "tc.tag", y = "value", add = "mean_se",
 
 print(ggline(tydi.ROI, x = "tc.tag", y = "value", add = "mean_se",
              color = "age.tag", palette = c("#EFC000", "#0073C2"), facet.by = c("phase.tag", "ROI")) +
-             labs(x = "Time(TR)", y = "value", 
+             labs(x = "Time(TR)", y = "value",
              colour = "Group", fill = "Group")
 )
 
