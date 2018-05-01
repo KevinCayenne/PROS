@@ -10,7 +10,7 @@ library(plyr)
 
 subject.info <- read_excel("Subjects_info.xlsx", sheet = 1)
 
-subject.info <- subject.info[-c(1,10,13,30,35,37:46),]
+subject.info <- subject.info[-c(1,10,13,30,35,37:39),]
 
 tapply(subject.info$testAge, list(subject.info$`Gender_(M:1_ F:2)`, subject.info$`Group_(Y:1_O:2)`), mean)
 tapply(subject.info$testAge, list(subject.info$`Gender_(M:1_ F:2)`, subject.info$`Group_(Y:1_O:2)`), sd)

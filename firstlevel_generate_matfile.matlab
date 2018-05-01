@@ -122,22 +122,26 @@
 
     %% Start output the design condition model .mat file 
 
-    colnum = 11;
-    subject_num = 11;
-
+    colnum = 32;
+    subject_num = 37; %% change subject number!!
+ 
     EmoOnsettime = EmoOnsettime - TriggerS;
     MDOnsettime  = MDOnsettime - TriggerS;
 
     for o = 2:subject_num
         
-     onsets = cell(1,11);
+     onsets = cell(1,32);
      durations = cell(1,colnum);
      orth = cell(1,colnum);
      temp = cell(1,1);
      
-     
          for run = 1:6
-            names = {'S_Prosocail','S_Purchase','S_Neutral','S_Scam','E_+300','E_+50','E_+20','E_Same','E_-20','E_-50','E_0'};
+            names = {'S_Prosocail','S_Purchase','S_Neutral','S_Scam',...
+                           'Pro_E_+300','Pro_E_+50','Pro_E_+20','Pro_E_Same','Pro_E_-20','Pro_E_-50','Pro_E_0',...
+                           'Pur_E_+300','Pur_E_+50','Pur_E_+20','Pur_E_Same','Pur_E_-20','Pur_E_-50','Pur_E_0',...
+                           'Neu_E_+300','Neu_E_+50','Neu_E_+20','Neu_E_Same','Neu_E_-20','Neu_E_-50','Neu_E_0',...
+                           'Unc_E_+300','Unc_E_+50','Unc_E_+20','Unc_E_Same','Unc_E_-20','Unc_E_-50','Unc_E_0',...
+                           };
             situation_condition_num = 4;
             emotion_condition_num = 7;
             k = 1;   
@@ -199,59 +203,59 @@
             
             m = situation_condition_num+1;
             
-            for j = 1:emotion_condition_num
-
+            for iter = 1:4 
+                 for j = 1:emotion_condition_num
                     switch run
                         case 1
-                            for varnum = 1:length(EmoOnsettime(SubjectN==o & SessionN==run & RegMtag==j))
-                                temp{1,1} = (EmoOnsettime(SubjectN==o & SessionN==run & RegMtag==j)/1000);
+                            for varnum = 1:length(EmoOnsettime(SubjectN==o & SITtag==iter & SessionN==run & RegMtag==j))
+                                temp{1,1} = (EmoOnsettime(SubjectN==o & SITtag==iter & SessionN==run & RegMtag==j)/1000);
                                 if cellfun('isempty', temp(1,1)) == 0
                                     onsets{1,m}(end+varnum) = temp{1,1}(varnum); 
                                 end
                             end
                         case 2
-                            for varnum = 1:length(EmoOnsettime(SubjectN==o & SessionN==run & RegMtag==j))
-                                temp{1,1} = (EmoOnsettime(SubjectN==o & SessionN==run & RegMtag==j)/1000) + 362;
+                            for varnum = 1:length(EmoOnsettime(SubjectN==o & SITtag==iter & SessionN==run & RegMtag==j))
+                                temp{1,1} = (EmoOnsettime(SubjectN==o & SITtag==iter & SessionN==run & RegMtag==j)/1000) + 362;
                                 if cellfun('isempty', temp(1,1)) == 0
                                     onsets{1,m}(end+varnum) = temp{1,1}(varnum); 
                                 end
                             end
                         case 3
-                            for varnum = 1:length(EmoOnsettime(SubjectN==o & SessionN==run & RegMtag==j))
-                                temp{1,1} = (EmoOnsettime(SubjectN==o & SessionN==run & RegMtag==j)/1000) + 362*2;
+                            for varnum = 1:length(EmoOnsettime(SubjectN==o & SITtag==iter & SessionN==run & RegMtag==j))
+                                temp{1,1} = (EmoOnsettime(SubjectN==o & SITtag==iter & SessionN==run & RegMtag==j)/1000) + 362*2;
                                 if cellfun('isempty', temp(1,1)) == 0
                                     onsets{1,m}(end+varnum) = temp{1,1}(varnum); 
                                 end
                             end
                         case 4
-                            for varnum = 1:length(EmoOnsettime(SubjectN==o & SessionN==run & RegMtag==j))
-                                temp{1,1} = (EmoOnsettime(SubjectN==o & SessionN==run & RegMtag==j)/1000) + 362*3;
+                            for varnum = 1:length(EmoOnsettime(SubjectN==o & SITtag==iter & SessionN==run & RegMtag==j))
+                                temp{1,1} = (EmoOnsettime(SubjectN==o & SITtag==iter & SessionN==run & RegMtag==j)/1000) + 362*3;
                                 if cellfun('isempty', temp(1,1)) == 0
                                     onsets{1,m}(end+varnum) = temp{1,1}(varnum); 
                                 end
                             end
                         case 5
-                            for varnum = 1:length(EmoOnsettime(SubjectN==o & SessionN==run & RegMtag==j))
-                                temp{1,1} = (EmoOnsettime(SubjectN==o & SessionN==run & RegMtag==j)/1000) + 362*4;
+                            for varnum = 1:length(EmoOnsettime(SubjectN==o & SITtag==iter & SessionN==run & RegMtag==j))
+                                temp{1,1} = (EmoOnsettime(SubjectN==o & SITtag==iter & SessionN==run & RegMtag==j)/1000) + 362*4;
                                 if cellfun('isempty', temp( 1,1)) == 0
                                     onsets{1,m}(end+varnum) = temp{1,1}(varnum); 
                                 end
                             end
                         case 6
-                            for varnum = 1:length(EmoOnsettime(SubjectN==o & SessionN==run & RegMtag==j))
-                                temp{1,1} = (EmoOnsettime(SubjectN==o & SessionN==run & RegMtag==j)/1000) + 362*5;
+                            for varnum = 1:length(EmoOnsettime(SubjectN==o & SITtag==iter & SessionN==run & RegMtag==j))
+                                temp{1,1} = (EmoOnsettime(SubjectN==o & SITtag==iter & SessionN==run & RegMtag==j)/1000) + 362*5;
                                 if cellfun('isempty', temp(1,1)) == 0
                                     onsets{1,m}(end+varnum) = temp{1,1}(varnum); 
                                 end
                             end
-                
                     end
                 durations{1,m} = 0;
                 orth{1,m} = 0;
                 m=m+1;
+                end
             end
             
-            for count = 1:11
+            for count = 1:32
                cell_len = length(onsets{1,count});
                i = 1;
                while i <= cell_len
