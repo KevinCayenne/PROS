@@ -617,3 +617,14 @@ a <- ggplot(inter.total.money, aes(x=inter.tag, y=inter.mean, fill=inter.group))
         )
 
 grid.arrange(total.ggplot.mmoney, a, ncol=2)
+
+##### gender differences
+
+gender.diff <- aggregate(behavior.df$giveM, by = list(gender = behavior.df$SexN, sit = behavior.df$SITtag, id = behavior.df$SubjectN), mean)
+
+ggline(gender.diff, x = "sit", y = "x", add = c("mean_se", "jitter"),
+       color = "gender", palette = "jco") +
+  labs(title = "Gender difference in money giving", x = "Situation", y = "Money (NTD)", colour = "Gender") +   
+  theme(plot.title = element_text(hjust = 0.5, size= 15)) +
+  stat_compare_means(aes(group = gender), label = "p.signif", 
+                     label.y = 250)

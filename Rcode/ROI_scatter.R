@@ -133,7 +133,8 @@ for(i in 1:4){
             color = "group",
             add = "reg.line", conf.int = TRUE, 
             cor.coef = TRUE, cor.method = "pearson",
-            xlab = "mean_money", ylab = "signal"
+            xlab = "mean_money", ylab = "signal",
+            facet.by = "group"
             )
         )
 }
