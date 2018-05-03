@@ -11,6 +11,8 @@ ROI_try <- read.csv("ROI_PFC.csv", header = T)
 setwd("c:/Users/acer/Desktop/PROS/Data/fMRI_PilotData/")
 behavior.df <- read.csv("behavior.CSV", header = T)
 
+behavior.df <- behavior.df[-c(1985:2368),]
+
 young.num <- 20
 old.num <- 11
 
@@ -134,6 +136,7 @@ for(i in 1:4){
             add = "reg.line", conf.int = TRUE, 
             cor.coef = TRUE, cor.method = "pearson",
             xlab = "mean_money", ylab = "signal",
+            title = "-9,44,23",
             facet.by = "group"
             )
         )

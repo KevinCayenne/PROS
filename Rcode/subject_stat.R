@@ -22,3 +22,22 @@ tapply(subject.info$`Group_(Y:1_O:2)`, subject.info$`Gender_(M:1_ F:2)`, sum)
 
 table(subject.info$`Gender_(M:1_ F:2)`)
 table(subject.info$`Gender_(M:1_ F:2)`, subject.info$`Group_(Y:1_O:2)`)
+
+nona.subinfo <- subject.info[is.na(subject.info$mean_gain) == FALSE,]
+
+sub.give <- aggregate(behavior.df$giveM, list(ID =behavior.df$SubjectN, sit = behavior.df$SITtag), mean)
+
+sub.give.id.pro <- c()
+for(i in 1:length(nona.subinfo$ID)){
+  sub.give.id.pro <- rbind(sub.give.id.pro, sub.give[sub.give$ID==nona.subinfo$ID[i],][1,])
+}
+
+total.sub.give <- cbind(sub.give.id.pro, spend = nona.subinfo$mean_spend, gain = nona.subinfo$mean_gain, group = as.factor(nona.subinfo$`Group_(Y:1_O:2)`))
+
+ggscatter(total.sub.give, x = "gain", y = "x", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "gain", ylab = "give",
+          title = "Correlation of give and gain",
+          group = "group"
+)

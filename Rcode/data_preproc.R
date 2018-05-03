@@ -79,11 +79,9 @@ plot(pros.give.y$sit.count.y, pros.give.y$giveM, type="l",lwd=1,col=2,lty=1, axe
 axis(1, at = pros.give.y$sit.count.y)
 axis(2)
 
-
 plot(pros.give.o$sit.count.o, pros.give.o$giveM, type="l",lwd=1,col=2,lty=1, axes = FALSE,xlab="times",ylab="money(NTD)",main="Old")
 axis(1, at = pros.give.o$sit.count.o)
 axis(2)
-
 
 for (sub in c(1:num.sit,nrow(pros.give.o)/num.sit)){
 lines(pros.give.o$sit.count.o[1:16],pros.give.o$giveM[(((sub-1)*16)+1):(((sub-1)*16)+16)],lty=1,lwd=1,col=3,type="l")
