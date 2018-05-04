@@ -32,12 +32,25 @@ for(i in 1:length(nona.subinfo$ID)){
   sub.give.id.pro <- rbind(sub.give.id.pro, sub.give[sub.give$ID==nona.subinfo$ID[i],][1,])
 }
 
-total.sub.give <- cbind(sub.give.id.pro, spend = nona.subinfo$mean_spend, gain = nona.subinfo$mean_gain, group = as.factor(nona.subinfo$`Group_(Y:1_O:2)`))
+nona.subinfo$`Group_(Y:1_O:2)` <- factor(nona.subinfo$`Group_(Y:1_O:2)`)
+levels(nona.subinfo$`Group_(Y:1_O:2)`) <- list(Young = "1", Old = "2")
+
+total.sub.give <- cbind(sub.give.id.pro, spend = nona.subinfo$mean_spend, gain = nona.subinfo$mean_gain, group = nona.subinfo$`Group_(Y:1_O:2)`)
 
 ggscatter(total.sub.give, x = "gain", y = "x", 
           add = "reg.line", conf.int = TRUE, 
           cor.coef = TRUE, cor.method = "pearson",
-          xlab = "gain", ylab = "give",
-          title = "Correlation of give and gain",
+          xlab = "Gains", ylab = "Gives",
+          title = "Correlation of gives and gains",
           group = "group"
+)
+
+ggscatter(total.sub.give, x = "gain", y = "x", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "Gains", ylab = "Gives",
+          title = "Correlation of give and gains",
+          group = "group",
+          color = "group",
+          facet.by = "group"
 )
