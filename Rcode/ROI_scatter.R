@@ -117,7 +117,7 @@ barplot(main="Young ED phase", norm.phase2.df$young.phase2.tb)
 barplot(main="Old ED phase", norm.phase2.df$old.phase2.tb)
 
 ######
-
+corrmergelist <- list()
 for(i in 1:4){
   sub.mean.df <- aggregate(tydi.ROI$value, list(tydi.ROI$sub.tag, tydi.ROI$cond.tag, tydi.ROI$phase.tag, tydi.ROI$age.tag), mean)
   colnames(sub.mean.df) <- c("sub.tag", "sit", "phase", "group", "signalvalue")
@@ -129,6 +129,8 @@ for(i in 1:4){
   colnames(Mgive.df) <- c("sub.id", "situation", "group.tag", "mgive")
   
   corrmerge <- cbind(sub.mean.df, Mgive.df)
+  corrmerge <- cbind(corrmerge, id = c(sub.Y.ID[-c(21,22)], sub.O.ID[-c(12:14)]))
+  corrmergelist[[i]] <- corrmerge
   
   print(ggscatter(corrmerge, x = "mgive", y = "signalvalue", 
             group = "group", 
@@ -136,8 +138,9 @@ for(i in 1:4){
             add = "reg.line", conf.int = TRUE, 
             cor.coef = TRUE, cor.method = "pearson",
             xlab = "mean_money", ylab = "signal",
-            title = "-9,44,23",
-            facet.by = "group"
+            title = "-9,44,23"
             )
         )
 }
+
+ordered.corrmerge <- corrmergelist[[1]][order(corrmergelist[[1]]$id),]

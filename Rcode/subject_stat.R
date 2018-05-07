@@ -7,6 +7,7 @@ library(ggpubr)
 library(gtools)
 library(gridExtra)
 library(plyr)
+library(MASS)
 
 subject.info <- read_excel("Subjects_info.xlsx", sheet = 1)
 
@@ -24,7 +25,61 @@ table(subject.info$`Gender_(M:1_ F:2)`)
 table(subject.info$`Gender_(M:1_ F:2)`, subject.info$`Group_(Y:1_O:2)`)
 
 nona.subinfo <- subject.info[is.na(subject.info$mean_gain) == FALSE,]
+File.list = mixedsort(list.files("behaviorD"))
+#list.files命令將behavior文件夾下所有文件名輸入File.list
 
+combined = paste("./behaviorD/", File.list, sep="")
+#用paste命令構建路徑變量combined
+
+leng = length(combined)
+#讀取combined長度，也就是文件夾下的文件個數
+
+Subject.number =leng/6
+#每個受試者有6個檔案, 除六可得幾位受試者
+
+merge.data = read.csv(file = combined[ 1], header=T, sep=",")
+#讀入第一個文件內容（可以不用先讀一個，但是為了簡單，省去定義data.frame的時間，選擇先讀入一個文件。
+
+for (i in 2:leng){
+  new.data = read.csv(file = combined[ i], header=T, sep=",")
+  merge.data = rbind(merge.data,new.data)
+}
+
+behavior.df <- data.frame(merge.data)
+
+############################## Adding columns ########################################
+
+youngnum <- round(table(behavior.df$GroupN)[1]/64)
+oldnum <- round(table(behavior.df$GroupN)[2]/64)
+#calculate the subjects number in groups 
+
+ncolbehavior.df <- ncol(behavior.df) #計算column number
+
+
+for (i in c(1:nrow(behavior.df))){
+  behavior.df[i, ncolbehavior.df+1] <- behavior.df[i, 12] - behavior.df[i, 11] # MDRT  - MDFirstP = 給錢情境的反應時間 ( 12 - 11 ) 
+  behavior.df[i, ncolbehavior.df+2] <- behavior.df[i, 15] - behavior.df[i, 14] # EmoRT - EFirstP = 情緒反應的反應時間 ( 15 - 14 )
+  behavior.df[i, ncolbehavior.df+3] <- behavior.df[i, 27] - behavior.df[i, 22] # TrialEnd - fixOnsettime  = ITI duration = ITI ( 27 - 22 )
+  behavior.df[i, ncolbehavior.df+4] <- behavior.df[i, 24] - behavior.df[i, 23] # ISIstart - MDOnsettime = 給錢情境的duraiton ( 24 - 23 )
+  behavior.df[i, ncolbehavior.df+5] <- behavior.df[i, 25] - behavior.df[i, 24] # EmoOnsettime  - ISIstart = ISI duration = ISI ( 25 - 24 )
+  behavior.df[i, ncolbehavior.df+6] <- behavior.df[i, 26] - behavior.df[i, 25] # EmoEndtime - EmoOnsettime = 情緒選擇的duration ( 26 - 25 )
+  behavior.df[i, ncolbehavior.df+7] <- behavior.df[i, 27] - behavior.df[i,  5] # TrialEnd - TriggerS = 從Trigger開始到當前Trial結束的時間 ( 27 - 5 )
+  
+  if (i >= 2){ 
+    behavior.df[i, ncolbehavior.df+8] <- behavior.df[i, ncolbehavior.df+7] - behavior.df[(i-1), ncolbehavior.df+7] #一個Trial的總時間
+  }
+}
+
+for (i in c(1:nrow(behavior.df))){
+  behavior.df[i, ncolbehavior.df+9] <- behavior.df[i, 21] - behavior.df[i, 5] #LongFixation總時間( 21 -5 )
+  behavior.df[i, ncolbehavior.df+10] <- behavior.df[i, 19] + behavior.df[i, 20] + 24000 #default duartion per trial =  behavior.df[i, ncolbehavior.df+8]
+}
+behavior.df[1, ncolbehavior.df+8] <- behavior.df[1, ncolbehavior.df+7] - behavior.df[1, ncolbehavior.df+9] #第一個Trial的總時間
+colnames(behavior.df)[(ncolbehavior.df+1):(ncolbehavior.df+10)] <- c("MoneyD_RT", "EmoD_RT", "ITI_D", "MoneyD", "ISI_D","EmoD","DTriggerOnset","TrialD","LongD","DefaultT")
+
+for (i in c(1,2,3,4,13,17,18)){
+  behavior.df[ ,i] <- as.factor(behavior.df[ ,i])
+}
 sub.give <- aggregate(behavior.df$giveM, list(ID =behavior.df$SubjectN, sit = behavior.df$SITtag), mean)
 
 sub.give.id.pro <- c()
@@ -54,3 +109,54 @@ ggscatter(total.sub.give, x = "gain", y = "x",
           color = "group",
           facet.by = "group"
 )
+
+sub.Y <- subject.info[subject.info$`Group_(Y:1_O:2)`==1,]
+sub.Y.ID <- c(na.omit(sub.Y$ID))
+sub.O <- subject.info[subject.info$`Group_(Y:1_O:2)`==2,]
+sub.O.ID <- c(na.omit(sub.O$ID))
+
+ordered.corrmerge <- corrmergelist[[1]][order(corrmergelist[[1]]$id),]
+nrow(brainsig.moneygive)
+
+
+try1 <- boxcox(total.sub.give$gain ~ total.sub.give$x)
+lambda <- try1$x[which.max(try1$y)]
+
+powerTransform <- function(y, lambda1, lambda2 = NULL, method = "boxcox") {
+  
+  boxcoxTrans <- function(x, lam1, lam2 = NULL) {
+    
+    # if we set lambda2 to zero, it becomes the one parameter transformation
+    lam2 <- ifelse(is.null(lam2), 0, lam2)
+    
+    if (lam1 == 0L) {
+      log(y + lam2)
+    } else {
+      (((y + lam2)^lam1) - 1) / lam1
+    }
+  }
+  
+  switch(method
+         , boxcox = boxcoxTrans(y, lambda1, lambda2)
+         , tukey = y^lambda1
+  )
+}
+
+# re-run with transformation
+m <- lm(total.sub.give$gain ~ total.sub.give$x)
+summary(m)
+mnew <- lm(powerTransform(total.sub.give$gain, lambda) ~ total.sub.give$x)
+summary(mnew)
+
+# QQ-plot
+op <- par(pty = "s", mfrow = c(1, 2))
+qqnorm(m$residuals); qqline(m$residuals)
+qqnorm(mnew$residuals); qqline(mnew$residuals)
+par(op)
+
+ggscatter(mnew$model, x= "powerTransform(total.sub.give$gain, lambda)", y = "total.sub.give$x",
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "Gains (power transformed)", ylab = "Gives",
+          title = "Correlation of gives and gains (boxcox transform)"
+          )
