@@ -62,7 +62,7 @@ all.subject.tag <- as.factor(rep(1:allnum, each = 28))
 levels(all.emo.sit.tag) <- list(PRO = "PRO", PUR = "PUR", NEU = "NEU", UNC = "UNC")
 levels(all.emo.group.tag) <- list(Young = "Young", Old = "Old")
 levels(all.emo.tag) <- list("0" = "0", "-50" = "-50", "-20" = "-20", same = "same", "+20" = "+20", "+50" = "+50", "300" = "300")
-
+ 
 all.emo.dataf <- data.frame(all.emo.vector, all.emo.group.tag, all.emo.sit.tag, all.emo.tag, all.subject.tag)
 is.na(all.emo.vector)
 all.emo.dataf <- all.emo.dataf[!is.na(all.emo.vector),]

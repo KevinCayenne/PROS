@@ -125,7 +125,6 @@ lambda <- try1$x[which.max(try1$y)]
 powerTransform <- function(y, lambda1, lambda2 = NULL, method = "boxcox") {
   
   boxcoxTrans <- function(x, lam1, lam2 = NULL) {
-    
     # if we set lambda2 to zero, it becomes the one parameter transformation
     lam2 <- ifelse(is.null(lam2), 0, lam2)
     
