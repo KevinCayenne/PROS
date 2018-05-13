@@ -46,6 +46,7 @@ for (i in c(1:nrow(behavior.df))){
   if (i >= 2){ 
     behavior.df[i, ncolbehavior.df+8] <- behavior.df[i, ncolbehavior.df+7] - behavior.df[(i-1), ncolbehavior.df+7] #一個Trial的總時間
   }
+  
 }
 
 for (i in c(1:nrow(behavior.df))){

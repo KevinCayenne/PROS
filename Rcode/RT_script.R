@@ -56,7 +56,7 @@ for (i in c(1:nrow(behavior.df))){
 }
 
 for (i in c(1:nrow(behavior.df))){
-  behavior.df[i, ncolbehavior.df+9] <- behavior.df[i, 21] - behavior.df[i, 5] #LongFixation總時間( 21 -5 )
+  behavior.df[i, ncolbehavior.df+9 ] <- behavior.df[i, 21] - behavior.df[i, 5] #LongFixation總時間( 21 -5 )
   behavior.df[i, ncolbehavior.df+10] <- behavior.df[i, 19] + behavior.df[i, 20] + 24000 #default duartion per trial =  behavior.df[i, ncolbehavior.df+8]
 }
 behavior.df[1, ncolbehavior.df+8] <- behavior.df[1, ncolbehavior.df+7] - behavior.df[1, ncolbehavior.df+9] #第一個Trial的總時間

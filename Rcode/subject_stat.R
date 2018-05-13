@@ -55,7 +55,6 @@ oldnum <- round(table(behavior.df$GroupN)[2]/64)
 
 ncolbehavior.df <- ncol(behavior.df) #計算column number
 
-
 for (i in c(1:nrow(behavior.df))){
   behavior.df[i, ncolbehavior.df+1] <- behavior.df[i, 12] - behavior.df[i, 11] # MDRT  - MDFirstP = 給錢情境的反應時間 ( 12 - 11 ) 
   behavior.df[i, ncolbehavior.df+2] <- behavior.df[i, 15] - behavior.df[i, 14] # EmoRT - EFirstP = 情緒反應的反應時間 ( 15 - 14 )
@@ -90,6 +89,8 @@ for(i in 1:length(nona.subinfo$ID)){
 nona.subinfo$`Group_(Y:1_O:2)` <- factor(nona.subinfo$`Group_(Y:1_O:2)`)
 levels(nona.subinfo$`Group_(Y:1_O:2)`) <- list(Young = "1", Old = "2")
 
+EQ.df <- nona.subinfo[!is.na(nona.subinfo$EQ),]
+
 total.sub.give <- cbind(sub.give.id.pro, spend = nona.subinfo$mean_spend, gain = nona.subinfo$mean_gain, group = nona.subinfo$`Group_(Y:1_O:2)`)
 
 ggscatter(total.sub.give, x = "gain", y = "x", 
@@ -118,6 +119,7 @@ sub.O.ID <- c(na.omit(sub.O$ID))
 ordered.corrmerge <- corrmergelist[[1]][order(corrmergelist[[1]]$id),]
 nrow(brainsig.moneygive)
 
+##### boxcox transform
 
 try1 <- boxcox(total.sub.give$gain ~ total.sub.give$x)
 lambda <- try1$x[which.max(try1$y)]
@@ -157,5 +159,33 @@ ggscatter(mnew$model, x= "powerTransform(total.sub.give$gain, lambda)", y = "tot
           add = "reg.line", conf.int = TRUE, 
           cor.coef = TRUE, cor.method = "pearson",
           xlab = "Gains (power transformed)", ylab = "Gives",
-          title = "Correlation of gives and gains (boxcox transform)"
+          title = "Correlation of gives and gains (boxcox transform)",
+          ylim = c(0,250)
           )
+
+#### EQ
+
+try2 <- boxcox(EQ.df$mean_gain ~ EQ.df$EQ)
+EQlambda <- try2$x[which.max(try1$y)]
+
+# re-run with transformation
+EQm <- lm(EQ.df$mean_gain ~ EQ.df$EQ)
+summary(EQm)
+EQmnew <- lm(powerTransform(EQ.df$mean_gain, EQlambda) ~ EQ.df$EQ)
+summary(EQmnew)
+
+# QQ-plot
+Eop <- par(pty = "s", mfrow = c(1, 2))
+qqnorm(EQm$residuals); qqline(EQm$residuals)
+qqnorm(EQmnew$residuals); qqline(EQmnew$residuals)
+par(op)
+
+ggscatter(EQ.df, x = "mean_gain", y = "EQ",
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson"
+          )
+
+ggscatter(EQmnew$model, x = "powerTransform(EQ.df$mean_gain, EQlambda)", y = "EQ.df$EQ",
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson"
+)
