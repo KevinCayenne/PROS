@@ -89,7 +89,7 @@ for(i in 1:length(nona.subinfo$ID)){
 nona.subinfo$`Group_(Y:1_O:2)` <- factor(nona.subinfo$`Group_(Y:1_O:2)`)
 levels(nona.subinfo$`Group_(Y:1_O:2)`) <- list(Young = "1", Old = "2")
 
-EQ.df <- nona.subinfo[!is.na(nona.subinfo$EQ),]
+EQ.df <- as.data.frame(nona.subinfo[!is.na(nona.subinfo$EQ),])
 
 total.sub.give <- cbind(sub.give.id.pro, spend = nona.subinfo$mean_spend, gain = nona.subinfo$mean_gain, group = nona.subinfo$`Group_(Y:1_O:2)`)
 
@@ -159,11 +159,11 @@ ggscatter(mnew$model, x= "powerTransform(total.sub.give$gain, lambda)", y = "tot
           add = "reg.line", conf.int = TRUE, 
           cor.coef = TRUE, cor.method = "pearson",
           xlab = "Gains (power transformed)", ylab = "Gives",
-          title = "Correlation of gives and gains (boxcox transform)",
+          title = "Correlation of gives and gains (boxcox transformed)",
           ylim = c(0,250)
           )
 
-#### EQ
+#### EQ ####
 
 try2 <- boxcox(EQ.df$mean_gain ~ EQ.df$EQ)
 EQlambda <- try2$x[which.max(try1$y)]
@@ -187,5 +187,33 @@ ggscatter(EQ.df, x = "mean_gain", y = "EQ",
 
 ggscatter(EQmnew$model, x = "powerTransform(EQ.df$mean_gain, EQlambda)", y = "EQ.df$EQ",
           add = "reg.line", conf.int = TRUE, 
-          cor.coef = TRUE, cor.method = "pearson"
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "Gains (power transformed)", ylab = "EQ score",
+          title = "Correlation of EQ and gains (boxcox transformed)"
 )
+
+#### IRI ####
+for(i in 26:29){
+  IRI.boxcox <- boxcox(EQ.df$mean_gain ~ EQ.df[,i])
+  IRI_lambda <- IRI.boxcox$x[which.max(IRI.boxcox$y)]
+  
+  # re-run with transformation
+  IRIm <- lm(EQ.df$mean_gain ~ EQ.df[,i])
+  summary(IRIm)
+  IRImnew <- lm(powerTransform(EQ.df$mean_gain, IRI_lambda) ~ EQ.df[,i])
+  summary(IRImnew)
+
+  #ggscatter
+  print(ggscatter(EQ.df, x = "mean_gain", y = names(EQ.df)[i],
+            add = "reg.line", conf.int = TRUE, 
+            cor.coef = TRUE, cor.method = "pearson"
+        )
+  )
+  print(ggscatter(IRImnew$model, x = "powerTransform(EQ.df$mean_gain, IRI_lambda)", y = "EQ.df[, i]",
+            add = "reg.line", conf.int = TRUE, 
+            cor.coef = TRUE, cor.method = "pearson",
+            xlab = "Gains (power transformed)", ylab = "IRI score",
+            title = "Correlation of IRI and gains (boxcox transformed)"
+  )
+  )
+}

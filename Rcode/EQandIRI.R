@@ -12,6 +12,8 @@ library(MASS)
 library(tidyr)
 library(dplyr)
 
+# EQ ####
+
 EQreply <- EQreply[,-c(1:4)]
 ordered.EQreply <- EQreply[order(EQreply$ID),]
 
@@ -41,3 +43,44 @@ EQdata_long <- EQdata_long[order(data_long$ID),]
 head(EQdata_long)
 
 tapply(EQdata_long$score, EQdata_long$ID, sum)
+
+# IRI #### 
+
+IRIreply <- read.csv("IRI_reply.csv", header = TRUE)
+
+FS <- c(1,5,7,12,16,23,26)
+EC <- c(2,4,9,14,18,20,22)
+PT <- c(3,8,11,15,21,25,28)
+PD <- c(6,10,13,17,19,24,27)
+Inv <- c(3,4,7,12,13,14,15,18,19)
+
+items <- c(1:28)
+items[FS] <- "FS"
+items[EC] <- "EC"
+items[PT] <- "PT"
+items[PD] <- "PD"
+items <- factor(items)
+rep(items, 25)
+
+# invert score
+for(i in Inv){
+  for(j in 1:nrow(IRIreply)){
+    print(IRIreply[,i][j])
+    if (IRIreply[,i][j] == 4) {
+      IRIreply[,i][j] <- 0
+    } else if(IRIreply[,i][j] == 3){
+      IRIreply[,i][j] <- 1
+    } else if(IRIreply[,i][j] == 1){
+      IRIreply[,i][j] <- 3
+    } else if(IRIreply[,i][j] == 0){
+      IRIreply[,i][j] <- 4
+    }
+    print(IRIreply[,i][j])
+  }
+}
+IRIreply$ID <- factor(IRIreply$ID) 
+IRIreply.long <- gather(IRIreply, item, score, X1:X28, factor_key=TRUE)
+IRIreply.long <- IRIreply.long[order(IRIreply.long$ID),]
+IRIreply.long <- cbind(IRIreply.long, factors = rep(items, 25))
+
+IRIreply.df <- as.data.frame(tapply(IRIreply.long$score, list(IRIreply.long$ID, IRIreply.long$factors), sum))
