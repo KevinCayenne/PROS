@@ -206,6 +206,13 @@ ggscatter(EQmnew$model, x = "powerTransform(EQ.df$mean_gain, EQlambda)", y = "EQ
           add = "reg.line", conf.int = TRUE, 
           cor.coef = TRUE, cor.method = "pearson",
           xlab = "Gains (power transformed)", ylab = "EQ score",
+          title = "Correlation of EQ and gains (boxcox transformed)"
+)
+
+ggscatter(EQmnew$model, x = "powerTransform(EQ.df$mean_gain, EQlambda)", y = "EQ.df$EQ",
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "Gains (power transformed)", ylab = "EQ score",
           title = "Correlation of EQ and gains (boxcox transformed)",
           facet.by = "EQ.df$`Group_(Y:1_O:2)`"
 )
@@ -255,13 +262,6 @@ ggscatter(EQ.df, x = "gives", y = "EQ",
           title = paste("Correlation of EQ and gives")
 )
 
-ggscatter(EQ.df, x = "testAge", y = "gives",
-          add = "reg.line", conf.int = TRUE, 
-          cor.coef = TRUE, cor.method = "pearson",
-          xlab = "Ages", ylab = "Gives",
-          title = paste("Correlation of ages and gives")
-)
-
 ggscatter(EQ.df, x = "testAge", y = "EQ",
           add = "reg.line", conf.int = TRUE, 
           cor.coef = TRUE, cor.method = "pearson",
@@ -275,4 +275,38 @@ ggscatter(EQ.df, x = "gives", y = "IRI_EC",
           xlab = "Gives", ylab = "IRI_EC score",
           title = paste("Correlation of gives and IRI_EC "),
           facet.by = "EQ.df$`Group_(Y:1_O:2)`"
+)
+
+##### gain and ages
+
+gain.boxcox <- boxcox(EQ.df$mean_gain ~ EQ.df$testAge)
+gain_lambda <- gain.boxcox$x[which.max(gain.boxcox$y)]
+
+# re-run with transformation
+gain.m <- lm(EQ.df$mean_gain ~ EQ.df$testAge)
+summary(gain.m)
+gain.mnew <- lm(powerTransform(EQ.df$mean_gain, gain_lambda) ~ EQ.df$testAge)
+summary(gain.mnew)
+
+ggscatter(EQ.df, x = "mean_gain", y = "testAge",
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "Gives", ylab = "IRI_EC score",
+          title = paste("Correlation of gives and IRI_EC ")
+)
+
+ggscatter(gain.mnew$model, x = "powerTransform(EQ.df$mean_gain, gain_lambda)", y = "EQ.df$testAge",
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "Gains", ylab = "ages",
+          title = paste("Correlation of gains and ages ")
+)
+
+######
+try.subject.info <- subject.info[-c(42,43),]
+ggscatter(try.subject.info, x = "testAge", y = "gives",
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "Ages", ylab = "gives",
+          title = paste("Correlation of ages and gives ")
 )
