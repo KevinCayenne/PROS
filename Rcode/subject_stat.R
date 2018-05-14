@@ -80,6 +80,7 @@ for (i in c(1,2,3,4,13,17,18)){
   behavior.df[ ,i] <- as.factor(behavior.df[ ,i])
 }
 sub.give <- aggregate(behavior.df$giveM, list(ID =behavior.df$SubjectN, sit = behavior.df$SITtag), mean)
+write.csv(sub.give[sub.give$sit==1,], file = sprintf("prosocial.CSV"))
 
 sub.give.id.pro <- c()
 for(i in 1:length(nona.subinfo$ID)){
@@ -155,12 +156,23 @@ qqnorm(m$residuals); qqline(m$residuals)
 qqnorm(mnew$residuals); qqline(mnew$residuals)
 par(op)
 
+mnew$model <- cbind(mnew$model,total.sub.give$group)
+
 ggscatter(mnew$model, x= "powerTransform(total.sub.give$gain, lambda)", y = "total.sub.give$x",
           add = "reg.line", conf.int = TRUE, 
           cor.coef = TRUE, cor.method = "pearson",
           xlab = "Gains (power transformed)", ylab = "Gives",
           title = "Correlation of gives and gains (boxcox transformed)",
           ylim = c(0,250)
+)
+
+ggscatter(mnew$model, x= "powerTransform(total.sub.give$gain, lambda)", y = "total.sub.give$x",
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "Gains (power transformed)", ylab = "Gives",
+          title = "Correlation of gives and gains (boxcox transformed)",
+          ylim = c(0,250),
+          facet.by = "total.sub.give$group"
           )
 
 #### EQ ####
@@ -182,14 +194,20 @@ par(op)
 
 ggscatter(EQ.df, x = "mean_gain", y = "EQ",
           add = "reg.line", conf.int = TRUE, 
-          cor.coef = TRUE, cor.method = "pearson"
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "Gains (original)", ylab = "EQ score",
+          title = "Correlation of EQ and gains",
+          facet.by = "EQ.df$`Group_(Y:1_O:2)`"
           )
+
+EQmnew$model <- cbind(EQmnew$model, EQ.df$`Group_(Y:1_O:2)`)
 
 ggscatter(EQmnew$model, x = "powerTransform(EQ.df$mean_gain, EQlambda)", y = "EQ.df$EQ",
           add = "reg.line", conf.int = TRUE, 
           cor.coef = TRUE, cor.method = "pearson",
           xlab = "Gains (power transformed)", ylab = "EQ score",
-          title = "Correlation of EQ and gains (boxcox transformed)"
+          title = "Correlation of EQ and gains (boxcox transformed)",
+          facet.by = "EQ.df$`Group_(Y:1_O:2)`"
 )
 
 #### IRI ####
@@ -206,14 +224,55 @@ for(i in 26:29){
   #ggscatter
   print(ggscatter(EQ.df, x = "mean_gain", y = names(EQ.df)[i],
             add = "reg.line", conf.int = TRUE, 
-            cor.coef = TRUE, cor.method = "pearson"
+            cor.coef = TRUE, cor.method = "pearson",
+            xlab = "Gains (original)", ylab = "IRI score",
+            title = paste("Correlation of IRI and gains",names(EQ.df)[i])
         )
   )
+  
+  print(ggscatter(EQ.df, x = "gives", y = names(EQ.df)[i],
+                  add = "reg.line", conf.int = TRUE, 
+                  cor.coef = TRUE, cor.method = "pearson",
+                  xlab = "Gives", ylab = "IRI score",
+                  title = paste("Correlation of IRI and gives",names(EQ.df)[i])
+  )
+  )
+  
   print(ggscatter(IRImnew$model, x = "powerTransform(EQ.df$mean_gain, IRI_lambda)", y = "EQ.df[, i]",
             add = "reg.line", conf.int = TRUE, 
             cor.coef = TRUE, cor.method = "pearson",
             xlab = "Gains (power transformed)", ylab = "IRI score",
-            title = "Correlation of IRI and gains (boxcox transformed)"
+            title = paste("Correlation of IRI and gains (boxcox transformed)",names(EQ.df)[i])
   )
   )
 }
+
+#### EQ and Gives
+ggscatter(EQ.df, x = "gives", y = "EQ",
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "Gives", ylab = "EQ score",
+          title = paste("Correlation of EQ and gives")
+)
+
+ggscatter(EQ.df, x = "testAge", y = "gives",
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "Ages", ylab = "Gives",
+          title = paste("Correlation of ages and gives")
+)
+
+ggscatter(EQ.df, x = "testAge", y = "EQ",
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "Ages", ylab = "EQ score",
+          title = paste("Correlation of ages and EQ")
+)
+
+ggscatter(EQ.df, x = "gives", y = "IRI_EC",
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "Gives", ylab = "IRI_EC score",
+          title = paste("Correlation of gives and IRI_EC "),
+          facet.by = "EQ.df$`Group_(Y:1_O:2)`"
+)

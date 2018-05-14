@@ -60,7 +60,7 @@ items[EC] <- "EC"
 items[PT] <- "PT"
 items[PD] <- "PD"
 items <- factor(items)
-rep(items, 25)
+rep(items, nrow(IRIreply))
 
 # invert score
 for(i in Inv){
@@ -81,6 +81,6 @@ for(i in Inv){
 IRIreply$ID <- factor(IRIreply$ID) 
 IRIreply.long <- gather(IRIreply, item, score, X1:X28, factor_key=TRUE)
 IRIreply.long <- IRIreply.long[order(IRIreply.long$ID),]
-IRIreply.long <- cbind(IRIreply.long, factors = rep(items, 25))
+IRIreply.long <- cbind(IRIreply.long, factors = rep(items, nrow(IRIreply)))
 
 IRIreply.df <- as.data.frame(tapply(IRIreply.long$score, list(IRIreply.long$ID, IRIreply.long$factors), sum))
