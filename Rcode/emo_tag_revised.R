@@ -76,7 +76,7 @@ str(all.emo.dataf.p)
 
 png(sprintf("RT_boxplot_ALL.png"), width = 1800, height = 1000)  
   ggline(all.emo.dataf, x = "all.emo.tag", y = "all.emo.vector", add = c("mean_se", "jitter"), size = 1,
-         color = "all.emo.group.tag", palette = "jco", facet.by = "all.emo.sit.tag") +
+         color = "all.emo.group.tag", palette = "jco", position = position_dodge(1.8), facet.by = "all.emo.sit.tag") +
     labs(title = "Group difference in emotion rating",
          x = "Money regulation type", y = "Emotional rate", colour = "Group") +
     stat_compare_means(aes(group = all.emo.group.tag), label = "p.signif",
@@ -86,10 +86,25 @@ png(sprintf("RT_boxplot_ALL.png"), width = 1800, height = 1000)
           title = element_text(size=25),
           legend.text = element_text(size=20),
           legend.title = element_text(size=20),
-          axis.text = element_text(size=12),
+          axis.text = element_text(size=15),
           axis.title = element_text(size=15,face="bold")
     )
 dev.off()
+
+ggbarplot(all.emo.dataf, x = "all.emo.tag", y = "all.emo.vector", add = c("mean_se", "jitter"), size = 1,
+       color = "all.emo.group.tag", palette = "jco", position = position_dodge(0.8), facet.by = "all.emo.sit.tag") +
+  labs(title = "Group difference in emotion rating",
+       x = "Money regulation type", y = "Emotional rate", colour = "Group") +
+  stat_compare_means(aes(group = all.emo.group.tag), label = "p.signif",
+                     label.y = 4.5) +
+  geom_hline(yintercept = 0) +
+  theme(plot.title = element_text(hjust = 0.5),
+        title = element_text(size=25),
+        legend.text = element_text(size=20),
+        legend.title = element_text(size=20),
+        axis.text = element_text(size=15),
+        axis.title = element_text(size=15,face="bold")
+  )
 
 all.emo.se <- rep(NA,56)
 all.emo.sd <- ldply(tapply(all.emo.dataf$all.emo.vector, list(all.emo.dataf$all.emo.group.tag, all.emo.dataf$all.emo.tag, all.emo.dataf$all.emo.sit.tag), sd))

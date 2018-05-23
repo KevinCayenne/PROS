@@ -123,7 +123,7 @@
     %% Start output the design condition model .mat file 
 
     colnum = 32;
-    subject_num = 37; %% change subject number!!
+    subject_num = 50; %% change subject number!!
  
     EmoOnsettime = EmoOnsettime - TriggerS;
     MDOnsettime  = MDOnsettime - TriggerS;

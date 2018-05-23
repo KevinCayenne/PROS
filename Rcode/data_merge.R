@@ -606,7 +606,7 @@ a <- ggplot(inter.total.money, aes(x=inter.tag, y=inter.mean, fill=inter.group))
   geom_signif(y_position=c(140, 100), xmin=c(0.8, 1.8), xmax=c(1.2, 2.2),
               annotation=c("**", "**"), tip_length=0) +
   labs(title = "Group X Situation interaction in money giving", 
-       x = "Situation group", y = "Money (NT dollars)", 
+       x = "Situations", y = "Money (NT dollars)", 
        colour = "Groups", fill = "Group") +
   theme(plot.title = element_text(hjust = 0.5),
         title = element_text(size=15, face="bold"),
@@ -614,13 +614,16 @@ a <- ggplot(inter.total.money, aes(x=inter.tag, y=inter.mean, fill=inter.group))
         legend.title = element_text(size=18),
         axis.text = element_text(size=18),
         axis.title = element_text(size=18,face="bold")
-        )
+  ) + 
+  scale_fill_manual("Groups", values = c("Old" = "#E5BF21", "Young" = "#0075C9"))
 
 grid.arrange(total.ggplot.mmoney, a, ncol=2)
 
 ##### gender differences
 
 gender.diff <- aggregate(behavior.df$giveM, by = list(gender = behavior.df$SexN, sit = behavior.df$SITtag, id = behavior.df$SubjectN), mean)
+levels(gender.diff$gender) <- list(male = "1", female = "2")
+levels(gender.diff$sit) <- list(PRO = "1", PUR = "2", NEU = "3", UNC ="4")
 
 ggline(gender.diff, x = "sit", y = "x", add = c("mean_se", "jitter"),
        color = "gender", palette = "jco") +
@@ -628,3 +631,4 @@ ggline(gender.diff, x = "sit", y = "x", add = c("mean_se", "jitter"),
   theme(plot.title = element_text(hjust = 0.5, size= 15)) +
   stat_compare_means(aes(group = gender), label = "p.signif", 
                      label.y = 250)
+

@@ -236,8 +236,7 @@ ggscatter(EQ.df, x = "mean_gain", y = "EQ",
           add = "reg.line", conf.int = TRUE, 
           cor.coef = TRUE, cor.method = "pearson",
           xlab = "Gains (original)", ylab = "EQ score",
-          title = "Correlation of EQ and gains",
-          facet.by = "EQ.df$`Group_(Y:1_O:2)`"
+          title = "Correlation of EQ and gains"
           )
 
 EQmnew$model <- cbind(EQmnew$model, group = EQ.df$`Group_(Y:1_O:2)`)
@@ -336,7 +335,35 @@ ggscatter(EQ.df, x = "gives", y = "IRI_EC",
           facet.by = "EQ.df$`Group_(Y:1_O:2)`"
 )
 
-##### gain and ages
+ggscatter(EQ.df, x = "testAge", y = "IRI_EC",
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "age", ylab = "IRI_EC score",
+          title = paste("Correlation of ages and IRI_EC ")
+)
+
+#### gglines ####
+
+colnames(EQ.df)[3] <- "Group"
+
+ggline(EQ.df, x = "Group", y = "IRI_EC",
+       add = c("mean_se", "jitter"),
+       color = "Group", palette = "jco") +
+      stat_compare_means(aes(group = Group), label = "p.signif")
+
+ggline(EQ.df, x = "Group", y = "EQ",
+       add = c("mean_se", "jitter"),
+       color = "Group", palette = "jco") +
+  stat_compare_means(aes(group = Group), label = "p.signif")
+
+names(EQmnew$model)[1] <- "ptg"
+ggline(EQmnew$model, x = "group", y = "ptg",
+       add = c("mean_se", "jitter"),
+       color = "group", palette = "jco") +
+  stat_compare_means(aes(group = group), label = "p.signif")
+
+
+#### gain and ages ####
 
 gain.boxcox <- boxcox(EQ.df$mean_gain ~ EQ.df$testAge)
 gain_lambda <- gain.boxcox$x[which.max(gain.boxcox$y)]

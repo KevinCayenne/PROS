@@ -1,12 +1,13 @@
+SubjectS = 41; % Start
+SubjectE = 45; % End
+temp1 = [2, 3, 5, 6, 7, 8, 11, 14, 18, 19, 20, 21, 22, 23, 24, 28, 29, 31, 32, 33, 4, 9, 12, 15, 16, 17, 25, 26, 27, 34, 36, 40, 41, 42, 43 , 44, 45, 46, 47, 48, 50];
+%% 
 
-SubjectS = 2; % Start
-SubjectE = 11; % End
-
-for SubjN = SubjectS:SubjectE
+for SubjN = temp1
 
     final_dir = '/bml/Data/Bank5/PROS/Pilot_image/Convert_data/first_level_matrix/tryFIR';
     final_dirin = dir(final_dir);
-    final_dirin(1:2) = [];
+    final_dirin(1:3) = [];
     final_dirin(end) = [];
     target_output_dir = {}; 
     target_output_dir = [final_dir filesep final_dirin(SubjN).name];
@@ -16,35 +17,6 @@ for SubjN = SubjectS:SubjectE
     
     R = SPM.xX.X;
     names = cell(1:1);
-     
-    for con = 1:11
-        for num = 1:12
-                switch con 
-                    case 1
-                        names{1,(12*(con-1))+num} = sprintf('PROS-FIR-%d', num);
-                    case 2
-                        names{1,(12*(con-1))+num} = sprintf('PUR-FIR-%d', num);
-                    case 3
-                        names{1,(12*(con-1))+num} = sprintf('NEUT-FIR-%d', num);
-                    case 4
-                        names{1,(12*(con-1))+num} = sprintf('UNCO-FIR-%d', num);
-                    case 5
-                        names{1,(12*(con-1))+num} = sprintf('A300-FIR-%d', num);
-                    case 6
-                        names{1,(12*(con-1))+num} = sprintf('A50-FIR-%d', num);
-                    case 7
-                        names{1,(12*(con-1))+num} = sprintf('A20-FIR-%d', num);
-                    case 8
-                        names{1,(12*(con-1))+num} = sprintf('SAME-FIR-%d', num);
-                    case 9
-                        names{1,(12*(con-1))+num} = sprintf('M20-FIR-%d', num);
-                    case 10
-                        names{1,(12*(con-1))+num} = sprintf('M50-FIR-%d', num);
-                    case 11
-                        names{1,(12*(con-1))+num} = sprintf('ZERO-FIR-%d', num);
-                end
-        end
-    end
      
     filename = [target_output_dir filesep 'covari.mat'];
     save(filename, 'R');

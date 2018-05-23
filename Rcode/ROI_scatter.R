@@ -117,6 +117,7 @@ barplot(main="Young ED phase", norm.phase2.df$young.phase2.tb)
 barplot(main="Old ED phase", norm.phase2.df$old.phase2.tb)
 
 ######
+
 corrmergelist <- list()
 for(i in 1:4){
   sub.mean.df <- aggregate(tydi.ROI$value, list(tydi.ROI$sub.tag, tydi.ROI$cond.tag, tydi.ROI$phase.tag, tydi.ROI$age.tag), mean)
@@ -127,9 +128,10 @@ for(i in 1:4){
   Mgive.df <- aggregate(behavior.df$giveM, list(behavior.df$SubjectN, behavior.df$SITtag, behavior.df$GroupN), mean)
   Mgive.df <- Mgive.df[Mgive.df$Group.2==i,]
   colnames(Mgive.df) <- c("sub.id", "situation", "group.tag", "mgive")
+  tmp.Mgive <- Mgive.df[-c(21:25,37:41),]
   
-  corrmerge <- cbind(sub.mean.df, Mgive.df)
-  corrmerge <- cbind(corrmerge, id = c(sub.Y.ID[-c(21,22)], sub.O.ID[-c(12:14)]))
+  corrmerge <- cbind(sub.mean.df, tmp.Mgive)
+  corrmerge <- cbind(corrmerge, id = c(sub.Y.ID[-c(21:25)], sub.O.ID[-c(12:16)]))
   corrmergelist[[i]] <- corrmerge
   
   print(ggscatter(corrmerge, x = "mgive", y = "signalvalue", 
@@ -137,7 +139,7 @@ for(i in 1:4){
             color = "group",
             add = "reg.line", conf.int = TRUE, 
             cor.coef = TRUE, cor.method = "pearson",
-            xlab = "mean_money", ylab = "signal",
+            xlab = "mean money giving(NTD)", ylab = "signal",
             title = "-9,44,23"
             )
         )

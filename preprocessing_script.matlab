@@ -1,10 +1,10 @@
 
-SubjectS = 11; % Start
-SubjectE = 11; % End
+SubjectS = 46; % Start
+SubjectE = 48; % End
     
 %% 
 
-for SubjN = SubjectS:SubjectE
+for SubjN = 40
 
     dirname = '/bml/Data/Bank5/PROS/Pilot_image/Convert_data';
     dirinfo = dir(dirname); % define file list
@@ -142,7 +142,7 @@ for SubjN = SubjectS:SubjectE
     matlabbatch{6}.spm.spatial.normalise.write.woptions.prefix = 'w';
 
     %% 
-
+    
     matlabbatch{7}.spm.spatial.smooth.data(1) = cfg_dep('Normalise: Write: Normalised Images (Subj 1)', substruct('.','val', '{}',{6}, '.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('()',{1}, '.','files'));
     matlabbatch{7}.spm.spatial.smooth.fwhm = [8 8 8];
     matlabbatch{7}.spm.spatial.smooth.dtype = 0;
@@ -150,7 +150,6 @@ for SubjN = SubjectS:SubjectE
     matlabbatch{7}.spm.spatial.smooth.prefix = 's';
     
     %%
-    
     spm_jobman('run', matlabbatch)
     
 end

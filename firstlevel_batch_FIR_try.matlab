@@ -1,17 +1,17 @@
 %% First level batch
-
-SubjectS = 10; % Start
-SubjectE = 11; % End
+SubjectS = 41; % Start
+SubjectE = 45; % End
 
 %% start for loop to get the data path 
-
-for SubjN = SubjectS:SubjectE
+temp1 = [2, 3, 5, 6, 7, 8, 11, 14, 18, 19, 20, 21, 22, 23, 24, 28, 29, 31, 32, 33, 4, 9, 12, 15, 16, 17, 25, 26, 27, 34, 36, 40, 46, 47, 48, 50];
+temp = 40;
+for SubjN = temp1
 
     final_dir = '/bml/Data/Bank5/PROS/Pilot_image/Convert_data/first_level_matrix/tryFIR';
     final_dirin = dir(final_dir);
-    final_dirin(1:2) = [];
+    final_dirin(1:3) = [];
     final_dirin(end-2:end) = [];
-    target_output_dir = {}; 
+    target_output_dir = {};  %#ok<NASGU>
     target_output_dir = [final_dir filesep final_dirin(SubjN).name];
     target_output_spm = [target_output_dir filesep 'SPM.mat'];
     scans = [181 181 181 181 181 151];
@@ -65,7 +65,7 @@ for SubjN = SubjectS:SubjectE
        target_com_TXT = strcat(target_firstlevel_dir, com_txt.name);
        swae_targetEPI_all = {[swae_targetEPI{1};swae_targetEPI{2};swae_targetEPI{3};swae_targetEPI{4};swae_targetEPI{5};swae_targetEPI{6}]};
        
-       for numr = SubjectS:SubjectE
+       for numr = SubjN
           mat_path = firstlevel_dirin(numr-1).name;
           target_mat_path{numr} = strcat(firstlevel_matfile_dir, mat_path);
        end

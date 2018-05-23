@@ -12,7 +12,7 @@ library(MASS)
 library(tidyr)
 library(dplyr)
 
-# EQ ####
+# EQ #### 
 
 EQreply <- EQreply[,-c(1:4)]
 ordered.EQreply <- EQreply[order(EQreply$ID),]
@@ -23,6 +23,7 @@ neg <- c(4, 8, 10, 11, 12, 14, 15,18, 21, 27, 28, 29, 32, 34, 39, 46, 48, 49, 50
 res <- all[-c(sort(c(pos, neg)))]
   
 for (i in pos){
+  
   ordered.EQreply[i][ordered.EQreply[i] == -1] <- 0
   ordered.EQreply[i][ordered.EQreply[i] == -2] <- 0
 }
@@ -60,12 +61,10 @@ items[EC] <- "EC"
 items[PT] <- "PT"
 items[PD] <- "PD"
 items <- factor(items)
-rep(items, nrow(IRIreply))
 
 # invert score
 for(i in Inv){
   for(j in 1:nrow(IRIreply)){
-    print(IRIreply[,i][j])
     if (IRIreply[,i][j] == 4) {
       IRIreply[,i][j] <- 0
     } else if(IRIreply[,i][j] == 3){
@@ -75,7 +74,6 @@ for(i in Inv){
     } else if(IRIreply[,i][j] == 0){
       IRIreply[,i][j] <- 4
     }
-    print(IRIreply[,i][j])
   }
 }
 IRIreply$ID <- factor(IRIreply$ID) 
@@ -84,3 +82,4 @@ IRIreply.long <- IRIreply.long[order(IRIreply.long$ID),]
 IRIreply.long <- cbind(IRIreply.long, factors = rep(items, nrow(IRIreply)))
 
 IRIreply.df <- as.data.frame(tapply(IRIreply.long$score, list(IRIreply.long$ID, IRIreply.long$factors), sum))
+IRIreply.df

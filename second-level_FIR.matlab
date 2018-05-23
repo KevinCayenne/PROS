@@ -1,21 +1,25 @@
 
-clear all; %#ok<CLALL>
+SubjectS = 41; % Start
+SubjectE = 45; % End
 
-SubjectS = 4; % Start
-SubjectE = 11; % End
-
+temp1 = [3, 5, 6, 7, 8, 11, 14, 18, 19, 20, 21, 22, 23, 24, 28, 29, 31, 32, 33, 4, 9, 12, 15, 16, 17, 25, 26, 27, 34, 36, 40, 41, 42, 43 , 44, 45, 46, 47, 48, 50];
 %% 
 
-for SubjN = SubjectS:SubjectE
+for SubjN = temp1
 
     final_dir = '/bml/Data/Bank5/PROS/Pilot_image/Convert_data/first_level_matrix/tryFIR';
     final_dirin = dir(final_dir);
-    final_dirin(1:2) = [];
+    final_dirin(1:3) = [];
     final_dirin(end) = [];
+    target_input_dir = [final_dir filesep final_dirin(SubjN).name];
     target_output_dir = {};  %#ok<NASGU>
-    target_output_dir = [final_dir filesep final_dirin(SubjN).name]; % define target file directory
-    target_spmfile = [target_output_dir filesep 'SPM.mat']; % define target SPM.mat file
-    target_covari = [target_output_dir filesep 'covari.mat']; % define target covari variable .mat file
+    target_output_dir = '/bml/Data/Bank5/PROS/Pilot_image/Convert_data/first_level_matrix/tryFIR/first_level_fir'; % define target file directory
+    target_output_dir_n = dir(target_output_dir);
+    target_output_dir_n(1:2) = [];
+    target_output_dir_n = target_output_dir_n(SubjN).name;
+    target_output_dir_d = [target_output_dir filesep target_output_dir_n];
+    target_spmfile = [target_output_dir filesep target_output_dir_n filesep 'SPM.mat']; % define target SPM.mat file
+    target_covari = [target_input_dir filesep 'covari.mat']; % define target covari variable .mat file
     
     dirname = '/bml/Data/Bank5/PROS/Pilot_image/Convert_data';
     dirinfo = dir(dirname); % define file list
@@ -52,7 +56,7 @@ for SubjN = SubjectS:SubjectE
         end
     end
     
-    matlabbatch{1}.spm.stats.factorial_design.dir = {target_output_dir};
+    matlabbatch{1}.spm.stats.factorial_design.dir = {target_output_dir_d};
     matlabbatch{1}.spm.stats.factorial_design.des.t1.scans = swae_EPIpath;
     matlabbatch{1}.spm.stats.factorial_design.cov = struct('c', {}, 'cname', {}, 'iCFI', {}, 'iCC', {});
     matlabbatch{1}.spm.stats.factorial_design.multi_cov.files = {target_covari};
@@ -77,7 +81,7 @@ for SubjN = SubjectS:SubjectE
     SPM.xX.X(SPM.xX.X(:,:)==19) = 1;
 
     % save SPM.mat file
-    filename = [target_output_dir filesep 'SPM.mat'];
+    filename = [target_output_dir_d filesep 'SPM.mat'];
     save(filename, 'SPM'); 
 
     %%
