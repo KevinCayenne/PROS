@@ -1,13 +1,14 @@
 
-    SubjectS = 2; % Start
-    SubjectE = 11; % End
+    SubjectS = 36; % Start
+    SubjectE = 36; % End
+    colnum = 384;
+     temp1 = [3, 5, 6, 7, 8, 11, 14, 18, 19, 20, 21, 22, 23, 24, 28, 29, 31, 32, 33, 4, 9, 12, 15, 16, 17, 25, 26, 27, 34, 36, 40, 41, 42, 43, 44, 45, 46, 47, 48, 50];
+     
+    for SubjN = temp1
 
-    for SubjN = SubjectS:SubjectE
-
-        final_dir = '/bml/Data/Bank5/PROS/Pilot_image/Convert_data/first_level_matrix/tryFIR';
+        final_dir = '/bml/Data/Bank5/PROS/Pilot_image/Convert_data/first_level_matrix/tryFIR/first_level_fir';
         final_dirin = dir(final_dir);
         final_dirin(1:2) = [];
-        final_dirin(end-2:end) = [];
         target_output_dir = {}; 
         target_output_dir = [final_dir filesep final_dirin(SubjN).name];
         target_output_spm = [target_output_dir filesep 'SPM.mat'];
@@ -27,10 +28,10 @@
         matlabbatch{1}.spm.stats.con.consess{4}.fcon.weights = [zeros(12,36), eye(12,12)];
         matlabbatch{1}.spm.stats.con.consess{4}.fcon.sessrep = 'none';
         
-        for columnNum = 1:132
+        for columnNum = 1:colnum
             ConName = ['T_test_' int2str(columnNum)];
             matlabbatch{1}.spm.stats.con.consess{(columnNum+4)}.tcon.name = ConName;
-            matlabbatch{1}.spm.stats.con.consess{(columnNum+4)}.tcon.weights =[zeros(1,(columnNum-1)), ones(1,1), zeros(1,(132-columnNum))];
+            matlabbatch{1}.spm.stats.con.consess{(columnNum+4)}.tcon.weights =[zeros(1,(columnNum-1)), ones(1,1), zeros(1,(colnum-columnNum))];
             matlabbatch{1}.spm.stats.con.consess{(columnNum+4)}.fcon.sessrep = 'none';
         end
 
