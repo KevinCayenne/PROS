@@ -121,27 +121,28 @@
     clearvars filename delimiter startRow formatSpec fileID dataArray ans raw col numericData rawData row regexstr result numbers invalidThousandsSeparator thousandsRegExp me;
 
     %% Start output the design condition model .mat file 
-
-    colnum = 32;
-    subject_num = 50; %% change subject number!!
- 
+    colnum = 11;
+    subject_num = 51;
     EmoOnsettime = EmoOnsettime - TriggerS;
     MDOnsettime  = MDOnsettime - TriggerS;
-
-    for o = 2:subject_num
+    
+    for o = 2
         
-     onsets = cell(1,32);
+     field1 = 'name'; value1 = {{'MD'}, {'MD'}, {'MD'}, {'MD'}, {'ED'}, {'ED'}, {'ED'}, {'ED'}, {'ED'}, {'ED'}, {'ED'}};
+     field2 = 'param'; value2 = {{[]}};
+     field3 = 'poly'; value3 = {{1},{1},{1},{1},{2},{2},{2},{2},{2},{2},{2}};
+     
+     pmod = struct(field1, value1, field2, value2, field3, value3);
+     
+     tonsets = cell(1,11);
+     onsets = cell(1,11);
      durations = cell(1,colnum);
      orth = cell(1,colnum);
      temp = cell(1,1);
+     temppara = cell(1,1);
      
          for run = 1:6
-            names = {'S_Prosocail','S_Purchase','S_Neutral','S_Scam',...
-                           'Pro_E_+300','Pro_E_+50','Pro_E_+20','Pro_E_Same','Pro_E_-20','Pro_E_-50','Pro_E_0',...
-                           'Pur_E_+300','Pur_E_+50','Pur_E_+20','Pur_E_Same','Pur_E_-20','Pur_E_-50','Pur_E_0',...
-                           'Neu_E_+300','Neu_E_+50','Neu_E_+20','Neu_E_Same','Neu_E_-20','Neu_E_-50','Neu_E_0',...
-                           'Unc_E_+300','Unc_E_+50','Unc_E_+20','Unc_E_Same','Unc_E_-20','Unc_E_-50','Unc_E_0',...
-                           };
+            names = {'S_Prosocail','S_Purchase','S_Neutral','S_Scam','E_+300','E_+50','E_+20','E_Same','E_-20','E_-50','E_0'};
             situation_condition_num = 4;
             emotion_condition_num = 7;
             k = 1;   
@@ -150,13 +151,17 @@
 
                     switch run
                         case 1
+                            temppara{1,1} = giveM(SubjectN==o & SessionN==run & SITtag==n);
+                            pmod(n).param{1} =  [pmod(n).param{1} temppara{1,1}'];
                             for varnum = 1:length(MDOnsettime(SubjectN==o & SessionN==run & SITtag==n))
                                 temp{1,1} = (MDOnsettime(SubjectN==o & SessionN==run & SITtag==n)/1000);
                                 if cellfun('isempty', temp(1,1)) == 0
-                                    onsets{1,k}(end+varnum) = temp{1,1}(varnum); 
+                                    onsets{1,k}(end+varnum) = temp{1,1}(varnum);   
                                 end
                             end
                         case 2
+                            temppara{1,1} = giveM(SubjectN==o & SessionN==run & SITtag==n);
+                            pmod(n).param{1} =  [pmod(n).param{1} temppara{1,1}'];
                             for varnum = 1:length(MDOnsettime(SubjectN==o & SessionN==run & SITtag==n)) 
                                 temp{1,1} = (MDOnsettime(SubjectN==o & SessionN==run & SITtag==n)/1000) + 362;
                                 if cellfun('isempty', temp(1,1)) == 0
@@ -164,6 +169,8 @@
                                 end 
                             end
                         case 3
+                            temppara{1,1} = giveM(SubjectN==o & SessionN==run & SITtag==n);
+                            pmod(n).param{1} =  [pmod(n).param{1} temppara{1,1}'];
                             for varnum = 1:length(MDOnsettime(SubjectN==o & SessionN==run & SITtag==n)) 
                                  temp{1,1} = (MDOnsettime(SubjectN==o & SessionN==run & SITtag==n)/1000) + 362*2;
                                 if cellfun('isempty', temp(1,1)) == 0
@@ -171,6 +178,8 @@
                                 end
                             end
                         case 4
+                            temppara{1,1} = giveM(SubjectN==o & SessionN==run & SITtag==n);
+                            pmod(n).param{1} =  [pmod(n).param{1} temppara{1,1}'];
                             for varnum = 1:length(MDOnsettime(SubjectN==o & SessionN==run & SITtag==n)) 
                                  temp{1,1} = (MDOnsettime(SubjectN==o & SessionN==run & SITtag==n)/1000) + 362*3;
                                 if cellfun('isempty', temp(1,1)) == 0
@@ -178,6 +187,8 @@
                                 end 
                             end
                         case 5
+                            temppara{1,1} = giveM(SubjectN==o & SessionN==run & SITtag==n);
+                            pmod(n).param{1} =  [pmod(n).param{1} temppara{1,1}'];
                             for varnum = 1:length(MDOnsettime(SubjectN==o & SessionN==run & SITtag==n)) 
                                 temp{1,1} = (MDOnsettime(SubjectN==o & SessionN==run & SITtag==n)/1000) + 362*4;
                                 if cellfun('isempty', temp(1,1)) == 0
@@ -185,6 +196,8 @@
                                 end 
                             end
                         case 6
+                            temppara{1,1} = giveM(SubjectN==o & SessionN==run & SITtag==n);
+                            pmod(n).param{1} =  [pmod(n).param{1} temppara{1,1}'];
                             for varnum = 1:length(MDOnsettime(SubjectN==o & SessionN==run & SITtag==n)) 
                                 temp{1,1} = (MDOnsettime(SubjectN==o & SessionN==run & SITtag==n)/1000) + 362*5;
                                 if cellfun('isempty', temp(1,1)) == 0
@@ -203,59 +216,72 @@
             
             m = situation_condition_num+1;
             
-            for iter = 1:4 
-                 for j = 1:emotion_condition_num
+            for j = 1:emotion_condition_num
+
                     switch run
                         case 1
-                            for varnum = 1:length(EmoOnsettime(SubjectN==o & SITtag==iter & SessionN==run & RegMtag==j))
-                                temp{1,1} = (EmoOnsettime(SubjectN==o & SITtag==iter & SessionN==run & RegMtag==j)/1000);
+                            temppara{1,1} = EmoTag(SubjectN==o & SessionN==run & RegMtag==j);
+                            pmod(m).param{1} =  [pmod(m).param{1} temppara{1,1}'];
+                            for varnum = 1:length(EmoOnsettime(SubjectN==o & SessionN==run & RegMtag==j))
+                                temp{1,1} = (EmoOnsettime(SubjectN==o & SessionN==run & RegMtag==j)/1000);
                                 if cellfun('isempty', temp(1,1)) == 0
                                     onsets{1,m}(end+varnum) = temp{1,1}(varnum); 
                                 end
                             end
                         case 2
-                            for varnum = 1:length(EmoOnsettime(SubjectN==o & SITtag==iter & SessionN==run & RegMtag==j))
-                                temp{1,1} = (EmoOnsettime(SubjectN==o & SITtag==iter & SessionN==run & RegMtag==j)/1000) + 362;
+                            temppara{1,1} = EmoTag(SubjectN==o & SessionN==run & RegMtag==j);
+                            pmod(m).param{1} =  [pmod(m).param{1} temppara{1,1}'];
+                            for varnum = 1:length(EmoOnsettime(SubjectN==o & SessionN==run & RegMtag==j))
+                                temp{1,1} = (EmoOnsettime(SubjectN==o & SessionN==run & RegMtag==j)/1000) + 362;
                                 if cellfun('isempty', temp(1,1)) == 0
                                     onsets{1,m}(end+varnum) = temp{1,1}(varnum); 
                                 end
                             end
                         case 3
-                            for varnum = 1:length(EmoOnsettime(SubjectN==o & SITtag==iter & SessionN==run & RegMtag==j))
-                                temp{1,1} = (EmoOnsettime(SubjectN==o & SITtag==iter & SessionN==run & RegMtag==j)/1000) + 362*2;
+                            temppara{1,1} = EmoTag(SubjectN==o & SessionN==run & RegMtag==j);
+                            pmod(m).param{1} =  [pmod(m).param{1} temppara{1,1}'];
+                            for varnum = 1:length(EmoOnsettime(SubjectN==o & SessionN==run & RegMtag==j))
+                                temp{1,1} = (EmoOnsettime(SubjectN==o & SessionN==run & RegMtag==j)/1000) + 362*2;
                                 if cellfun('isempty', temp(1,1)) == 0
                                     onsets{1,m}(end+varnum) = temp{1,1}(varnum); 
                                 end
                             end
                         case 4
-                            for varnum = 1:length(EmoOnsettime(SubjectN==o & SITtag==iter & SessionN==run & RegMtag==j))
-                                temp{1,1} = (EmoOnsettime(SubjectN==o & SITtag==iter & SessionN==run & RegMtag==j)/1000) + 362*3;
+                            temppara{1,1} = EmoTag(SubjectN==o & SessionN==run & RegMtag==j);
+                            pmod(m).param{1} =  [pmod(m).param{1} temppara{1,1}'];
+                            for varnum = 1:length(EmoOnsettime(SubjectN==o & SessionN==run & RegMtag==j))
+                                temp{1,1} = (EmoOnsettime(SubjectN==o & SessionN==run & RegMtag==j)/1000) + 362*3;
                                 if cellfun('isempty', temp(1,1)) == 0
                                     onsets{1,m}(end+varnum) = temp{1,1}(varnum); 
                                 end
                             end
                         case 5
-                            for varnum = 1:length(EmoOnsettime(SubjectN==o & SITtag==iter & SessionN==run & RegMtag==j))
-                                temp{1,1} = (EmoOnsettime(SubjectN==o & SITtag==iter & SessionN==run & RegMtag==j)/1000) + 362*4;
+                            temppara{1,1} = EmoTag(SubjectN==o & SessionN==run & RegMtag==j);
+                            pmod(m).param{1} =  [pmod(m).param{1} temppara{1,1}'];
+
+                            for varnum = 1:length(EmoOnsettime(SubjectN==o & SessionN==run & RegMtag==j))
+                                temp{1,1} = (EmoOnsettime(SubjectN==o & SessionN==run & RegMtag==j)/1000) + 362*4;
                                 if cellfun('isempty', temp( 1,1)) == 0
                                     onsets{1,m}(end+varnum) = temp{1,1}(varnum); 
                                 end
                             end
                         case 6
-                            for varnum = 1:length(EmoOnsettime(SubjectN==o & SITtag==iter & SessionN==run & RegMtag==j))
-                                temp{1,1} = (EmoOnsettime(SubjectN==o & SITtag==iter & SessionN==run & RegMtag==j)/1000) + 362*5;
+                            temppara{1,1} = EmoTag(SubjectN==o & SessionN==run & RegMtag==j);
+                            pmod(m).param{1} =  [pmod(m).param{1} temppara{1,1}'];
+                            for varnum = 1:length(EmoOnsettime(SubjectN==o & SessionN==run & RegMtag==j))
+                                temp{1,1} = (EmoOnsettime(SubjectN==o & SessionN==run & RegMtag==j)/1000) + 362*5;
                                 if cellfun('isempty', temp(1,1)) == 0
                                     onsets{1,m}(end+varnum) = temp{1,1}(varnum); 
                                 end
                             end
+                
                     end
                 durations{1,m} = 0;
                 orth{1,m} = 0;
                 m=m+1;
-                end
             end
             
-            for count = 1:32
+            for count = 1:11
                cell_len = length(onsets{1,count});
                i = 1;
                while i <= cell_len
@@ -277,7 +303,6 @@
             onsets = onsets(:,keep);
             durations = durations(:,keep);
             orth = orth(:,keep);
-            
          end
          
     %      if cellfun('isempty', onsets(1,k)) == 1 % if the cell is empty then delete the column
@@ -301,8 +326,9 @@
             filename = sprintf('pilot_%d_firstlevel_parameters.mat', o);
          end
          
-         save(filename, 'names', 'onsets', 'durations', 'orth');
+         save(filename, 'names', 'onsets', 'durations', 'orth', 'pmod');
          
     end
 
     
+%% import data from text file. % script for importing data from the following text file: %

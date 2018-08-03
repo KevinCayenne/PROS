@@ -11,10 +11,9 @@ ROI_try <- read.csv("ROI_PFC.csv", header = T)
 setwd("c:/Users/acer/Desktop/PROS/Data/fMRI_PilotData/")
 behavior.df <- read.csv("behavior.CSV", header = T)
 
-behavior.df <- behavior.df[-c(1985:2368),]
-
-young.num <- 20
-old.num <- 11
+behavior.df <- behavior.df[-c(2753:2816),]
+young.num <- 26
+old.num <- 17
 
 total.num <- young.num + old.num
 cond.num <- 11
@@ -46,37 +45,37 @@ levels(tydi.ROI$age.tag) <- list(Young = "Young", Old = "Old")
 print(ggline(tydi.ROI, x = "tc.tag", y = "value", add = "mean_se",
              color = "age.tag", palette = c("#EFC000", "#0073C2"))+
         labs(x = "Time(TR)", y = "value", 
-             colour = "Group", fill = "Group") 
+             colour = "age.tag", fill = "age.tag") 
 )
 
 print(ggline(tydi.ROI, x = "tc.tag", y = "value", add = "mean_se",
              color = "age.tag", palette = c("#EFC000", "#0073C2"), facet.by = "cond.tag") +
         labs(x = "Time(TR)", y = "value", 
-             colour = "Group", fill = "Group")
+             colour = "age.tag", fill = "age.tag")
 )
 
 print(ggline(tydi.ROI, x = "tc.tag", y = "value", add = "mean_se",
              color = "age.tag", palette = c("#EFC000", "#0073C2"), facet.by = "phase.tag") +
         labs(x = "Time(TR)", y = "value", 
-             colour = "Group", fill = "Group")
+             colour = "age.tag", fill = "age.tag")
 )
 
 print(ggline(tydi.ROI, x = "tc.tag", y = "value", add = "mean_se",
              color = "age.tag", palette = c("#EFC000", "#0073C2"), facet.by = "ROI") +
         labs(x = "Time(TR)", y = "value", 
-             colour = "Group", fill = "Group")
+             colour = "age.tag", fill = "age.tag")
 )
 
 print(ggline(tydi.ROI, x = "tc.tag", y = "value", add = "mean_se",
              color = "age.tag", palette = c("#EFC000", "#0073C2"), facet.by = c("ROI","phase.tag")) +
         labs(x = "Time(TR)", y = "value", 
-             colour = "Group", fill = "Group")
+             colour = "age.tag", fill = "age.tag")
 )
 
 print(ggline(tydi.ROI, x = "tc.tag", y = "value", add = "mean_se",
              color = "age.tag", palette = c("#EFC000", "#0073C2"), facet.by = c("phase.tag", "ROI")) +
         labs(x = "Time(TR)", y = "value",
-             colour = "Group", fill = "Group")
+             colour = "age.tag", fill = "age.tag")
 )
 
 old.phase1.tb <- c()
@@ -119,6 +118,7 @@ barplot(main="Old ED phase", norm.phase2.df$old.phase2.tb)
 ######
 
 corrmergelist <- list()
+corrmerge.total <- data.frame()
 for(i in 1:4){
   sub.mean.df <- aggregate(tydi.ROI$value, list(tydi.ROI$sub.tag, tydi.ROI$cond.tag, tydi.ROI$phase.tag, tydi.ROI$age.tag), mean)
   colnames(sub.mean.df) <- c("sub.tag", "sit", "phase", "group", "signalvalue")
@@ -128,21 +128,75 @@ for(i in 1:4){
   Mgive.df <- aggregate(behavior.df$giveM, list(behavior.df$SubjectN, behavior.df$SITtag, behavior.df$GroupN), mean)
   Mgive.df <- Mgive.df[Mgive.df$Group.2==i,]
   colnames(Mgive.df) <- c("sub.id", "situation", "group.tag", "mgive")
-  tmp.Mgive <- Mgive.df[-c(21:25,37:41),]
+  tmp.Mgive <- Mgive.df
   
   corrmerge <- cbind(sub.mean.df, tmp.Mgive)
-  corrmerge <- cbind(corrmerge, id = c(sub.Y.ID[-c(21:25)], sub.O.ID[-c(12:16)]))
+  # corrmerge <- cbind(corrmerge, id = c(sub.Y.ID[-c(21:25)], sub.O.ID[-c(12:16)]))
   corrmergelist[[i]] <- corrmerge
+  corrmerge.total <- rbind(corrmerge.total, corrmerge)
   
   print(ggscatter(corrmerge, x = "mgive", y = "signalvalue", 
-            group = "group", 
-            color = "group",
-            add = "reg.line", conf.int = TRUE, 
-            cor.coef = TRUE, cor.method = "pearson",
-            xlab = "mean money giving(NTD)", ylab = "signal",
-            title = "-9,44,23"
-            )
+            color = "group", conf.int = TRUE, 
+            cor.method = "pearson",
+            xlab = "Mean Money Given (NTD)", ylab = "Parameter Estimate",
+            size = 5
+            ) + 
+          theme(plot.title = element_text(hjust = 0.5),
+                title = element_text(size=30, face="bold"),
+                legend.text = element_text(size=30),
+                legend.title = element_text(size=30),
+                axis.text = element_text(size=20),
+                axis.title = element_text(size=30,face="bold"),
+                text = element_text(size=30)) +
+          labs(colour = "Group") +
+          scale_color_manual(values = c("#0075C9","#E5BF21")) + 
+          geom_smooth(method = "lm", color = "black")
         )
 }
 
-ordered.corrmerge <- corrmergelist[[1]][order(corrmergelist[[1]]$id),]
+ordered.corrmerge <- corrmergelist[[1]][order(corrmergelist[[1]]$sub.id),]
+
+head(corrmerge.total)
+str(corrmerge.total)
+corrmerge.total$sit <- as.factor(corrmerge.total$sit)
+levels(corrmerge.total$sit) <- list(PROS = "1", PUR = "2", NEU = "3", UNC = "4")
+
+ggscatter(corrmerge.total, x = "mgive", y = "signalvalue",
+          color = "group", 
+          cor.coef = TRUE,
+          conf.int = TRUE, cor.method = "pearson",
+          xlab = "mean money giving (NTD)", ylab = "Parameter Estimate",
+          title = "12,47,-10",
+          #facet.by = "group",
+          size = 4
+) + geom_hline(yintercept = 0) + 
+  theme(plot.title = element_text(hjust = 0.5),
+        title = element_text(size=30, face="bold"),
+        legend.text = element_text(size=30),
+        legend.title = element_text(size=30),
+        axis.text = element_text(size=20),
+        axis.title = element_text(size=30,face="bold"),
+        text = element_text(size=30)) +
+  labs(colour = "Group") +
+  scale_color_manual(values = c("#0075C9","#E5BF21")) + 
+  geom_smooth(method = "lm", color = "black")
+
+ggbarplot(corrmerge.total, x = "sit", y = "signalvalue",add = "mean_se",
+          color = "group",
+          fill = "group",
+          xlab = "Group", ylab = "Parameter Estimate",
+          palette = "jco",
+          position = position_dodge(0.8)
+          
+) + theme(plot.title = element_text(hjust = 0.5),
+        title = element_text(size=30, face="bold"),
+        legend.text = element_text(size=30),
+        legend.title = element_text(size=30),
+        axis.text = element_text(size=20),
+        axis.title = element_text(size=30,face="bold"),
+        text = element_text(size=30)) +
+  labs(color = "Group", fill = "Group", x = "Situations") +
+  stat_compare_means(aes(group = group), label = "p.signif", label.y = 3.5, size=10)
+
+summary(lm(mgive ~ signalvalue, data =corrmerge.total))
+

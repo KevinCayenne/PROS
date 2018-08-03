@@ -109,7 +109,7 @@ for (i in c(1:Subject.number)){
   ########################## start plotting ##########################################
   
   if (behavior.df$GroupN[(1+((i-1)*64))] == 1) { sub.group <- "Young" } else { sub.group <- "Old" }
-  if (behavior.df$SexN[(1+((i-1)*64))] == 1) { sub.gender <- "Male" } else { sub.gender <- "Female" }
+  if (behavior.df$SexN[(1+((i-1)*64))] == 1) { sub.gender <- "Male" } else  { sub.gender <- "Female" }
   sub.number <- as.character(behavior.df$SubjectN[(1+((i-1)*64))])
   
   money.sd <- as.vector(tapply(behavior.df$giveM[(1+((i-1)*64)):(i*64)], behavior.df$SITtag[(1+((i-1)*64)):(i*64)], sd)/8)
@@ -490,20 +490,21 @@ boxplot(c(behavior.df$MDFirstP, behavior.df$EFirstP))
 
 dev.off()
 
+compare_means(total.boxplot.mean_money.vector ~ total.boxplot.group.vector, group.by = "total.boxplot.sit.vector", data = total.boxplot, method = "t.test")
 #### ggline ####
-png(sprintf("Mean money giving ggline by situations.png"), width = 600, height = 600)  
+png(sprintf("Mean money giving ggline by situations.png"), width = 800, height = 800)  
 print(total.ggplot.mmoney <- ggline(total.boxplot, x = "total.boxplot.sit.vector", y = "total.boxplot.mean_money.vector", add= c("mean_se","jitter"),
-      color = "total.boxplot.group.vector", palette = "jco", size=1) +
-      labs(title = "Group difference in money giving for each situation", x = "Situations", y = "Money (NT dollars)", colour = "Groups") +   
-      stat_compare_means(aes(group = total.boxplot.group.vector), label = "p.signif", 
-                         label.y = 230) +
-      theme(plot.title = element_text(hjust = 0.5, size= 18, face="bold")) +
+      color = "total.boxplot.group.vector", palette = "jco", size=2) +
+      labs(x = "Situations", y = "Money (NT dollars)", colour = "Groups") +   
+      stat_compare_means(aes(group = total.boxplot.group.vector), 
+                         label.y = 230, size = 20, label = "p.signif") +
+      theme(plot.title = element_text(hjust = 0.5, face="bold")) +
       theme(plot.title = element_text(hjust = 0.5),
-              title = element_text(size=15),
-              legend.text = element_text(size=18),
-              legend.title = element_text(size=18),
-              axis.text = element_text(size=18),
-              axis.title = element_text(size=18,face="bold")
+              title = element_text(size=30),
+              legend.text = element_text(size=45),
+              legend.title = element_text(size=45),
+              axis.text = element_text(size=45),
+              axis.title = element_text(size=45,face="bold")
               )
       )
 dev.off()
@@ -537,16 +538,28 @@ all.subject.tag <- as.factor(rep(1:allnum, each = 28))
 
 levels(all.emo.sit.tag) <- list(PRO = "PRO", PUR = "PUR", NEU = "NEU", UNC = "UNC")
 levels(all.emo.group.tag) <- list(Young = "Young", Old = "Old")
-levels(all.emo.tag) <- list(none_give = "0", fifty_less = "-50", twenty_less = "-20", same = "same", twenty_more = "+20", fifty_more = "+50", all_give = "300")
+levels(all.emo.tag) <- list("0" = "0", "-50" = "-50", "-20" = "-20", same = "same", "+20" = "+20", "+50" = "+50", "300" = "300")
 
 all.emo.dataf.o <- data.frame(all.emo.vector, all.emo.group.tag, all.emo.sit.tag, all.emo.tag, all.subject.tag)
-
+fs <- 40
+png(sprintf("Emo_ggline_by_situations.png"), width = 3000, height =1550)
 ggline(all.emo.dataf.o, x = "all.emo.tag", y = "all.emo.vector", add = c("mean_se", "jitter"),
-          color = "all.emo.group.tag", palette = "jco", facet.by = "all.emo.sit.tag") +
-          labs(title = "Group difference in emotion choices by groups", x = "Money regulation type", y = "Emotional rate", colour = "Group") +   
-          theme(plot.title = element_text(hjust = 0.5, size= 15)) +
+          color = "all.emo.group.tag", palette = "jco", facet.by = "all.emo.sit.tag", size=3, point.size =3) +
+          labs(x = "Money Regulation Type", y = "Emotion Reaction", colour = "Group") +   
+          theme(plot.title = element_text(hjust = 0.5, size= fs)) +
           stat_compare_means(aes(group = all.emo.group.tag), label = "p.signif", 
-                             label.y = 4.5)
+                             label.y = 4.5, size = 15) +
+          geom_hline(yintercept = 0) +
+          facet_wrap( ~ all.emo.sit.tag, nrow=1, ncol=4) +
+          theme(plot.title = element_text(hjust = 0.5),
+          title = element_text(size=fs, face="bold"),
+          legend.text = element_text(size=fs),
+          legend.title = element_text(size=fs),
+          axis.text = element_text(size=fs),
+          axis.title = element_text(size=fs,face="bold"),
+          text = element_text(size=fs)
+          )
+dev.off()
 
 anova(lmer(all.emo.vector ~ all.emo.tag*all.emo.sit.tag + (1|all.subject.tag) + (1|all.emo.tag:all.subject.tag) + (1|all.emo.sit.tag:all.subject.tag), data = all.emo.dataf.o))
 
@@ -600,30 +613,33 @@ a <- ggplot(inter.total.money, aes(x=inter.tag, y=inter.mean, fill=inter.group))
            colour="black", # Use black outlines,
            size=.3) +      # Thinner lines
   geom_errorbar(aes(ymin=inter.mean, ymax=inter.mean+inter.se),
-                size=.3,    # Thinner lines
-                width=.2,
+                size=.5,    # Thinner lines
+                width=.5,
                 position=position_dodge(.9)) +
-  geom_signif(y_position=c(140, 100), xmin=c(0.8, 1.8), xmax=c(1.2, 2.2),
-              annotation=c("**", "**"), tip_length=0) +
-  labs(title = "Group X Situation interaction in money giving", 
-       x = "Situations", y = "Money (NT dollars)", 
+  geom_signif(y_position=c(125, 100), xmin=c(0.8, 1.8), xmax=c(1.2, 2.2),
+              annotation=c("**", "**"), textsize=20, tip_length=0) +
+  labs(y = "Money (NT dollars)", 
        colour = "Groups", fill = "Group") +
   theme(plot.title = element_text(hjust = 0.5),
-        title = element_text(size=15, face="bold"),
-        legend.text = element_text(size=18),
-        legend.title = element_text(size=18),
-        axis.text = element_text(size=18),
-        axis.title = element_text(size=18,face="bold")
+        title = element_text(size=30, face="bold"),
+        legend.text = element_text(size=45),
+        legend.title = element_text(size=45),
+        axis.text = element_text(size=45),
+        axis.title = element_text(size=45,face="bold")
   ) + 
-  scale_fill_manual("Groups", values = c("Old" = "#E5BF21", "Young" = "#0075C9"))
+  scale_fill_manual("Groups",  values = c("Old" = "#E5BF21", "Young" = "#0075C9")) +
+  ylim(c(0,150))
 
-grid.arrange(total.ggplot.mmoney, a, ncol=2)
+png(sprintf("Mean_money_giving_ggline_by_situations.png"), width = 1800, height = 800)
+  grid.arrange(total.ggplot.mmoney, a, ncol=2)
+dev.off()
 
 ##### gender differences
 
-gender.diff <- aggregate(behavior.df$giveM, by = list(gender = behavior.df$SexN, sit = behavior.df$SITtag, id = behavior.df$SubjectN), mean)
+gender.diff <- aggregate(behavior.df$giveM, by = list(gender = behavior.df$SexN, sit = behavior.df$SITtag, id = behavior.df$SubjectN, group = behavior.df$GroupN), mean)
 levels(gender.diff$gender) <- list(male = "1", female = "2")
 levels(gender.diff$sit) <- list(PRO = "1", PUR = "2", NEU = "3", UNC ="4")
+levels(gender.diff$group) <- list(Young = "1", Old = "2")
 
 ggline(gender.diff, x = "sit", y = "x", add = c("mean_se", "jitter"),
        color = "gender", palette = "jco") +
@@ -631,4 +647,13 @@ ggline(gender.diff, x = "sit", y = "x", add = c("mean_se", "jitter"),
   theme(plot.title = element_text(hjust = 0.5, size= 15)) +
   stat_compare_means(aes(group = gender), label = "p.signif", 
                      label.y = 250)
+ggline(gender.diff, x = "sit", y = "x", add = c("mean_se", "jitter"),
+       color = "gender", palette = "jco", facet.by = "group") +
+  labs(title = "Gender difference in money giving by group", x = "Situation", y = "Money (NTD)", colour = "Gender") +   
+  theme(plot.title = element_text(hjust = 0.5, size= 15)) +
+  stat_compare_means(aes(group = gender), label = "p.signif", 
+                     label.y = 250)
+####
+
+tapply(behavior.df$giveM, list(behavior.df$SubjectN, behavior.df$SITtag), mean)
 

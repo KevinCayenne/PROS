@@ -130,6 +130,7 @@ sub.O.ID <- c(na.omit(sub.O$ID))
 ordered.corrmerge <- corrmergelist[[1]][order(corrmergelist[[1]]$id),]
 nrow(brainsig.moneygive)
 
+
 ##### boxcox transform
 
 try1 <- boxcox(total.sub.give$gain ~ total.sub.give$x)
@@ -170,13 +171,22 @@ mnew$model <- cbind(mnew$model, tgroup = total.sub.give$group)
 mnew$model <- cbind(mnew$model, age = total.sub.give$tage)
 
 ggscatter(mnew$model, x= "powerTransform(total.sub.give$gain, lambda)", y = "total.sub.give$x",
-          add = "reg.line", conf.int = TRUE, 
+          conf.int = TRUE, 
           cor.coef = TRUE, cor.method = "pearson",
           xlab = "Gains (power transformed)", ylab = "Gives",
-          title = "Correlation of gives and gains (boxcox transformed)",
-          ylim = c(0,250)
-)
-
+          title = "Correlation of gives and gains",
+          ylim = c(0,300), color = "tgroup", size = 5
+          ) + geom_smooth(method = "lm", color = "black") +
+          theme(plot.title = element_text(hjust = 0.5),
+                title = element_text(size=30, face="bold"),
+                legend.text = element_text(size=30),
+                legend.title = element_text(size=30),
+                axis.text = element_text(size=20),
+                axis.title = element_text(size=30,face="bold"),
+                text = element_text(size=30)
+          ) + labs(colour = "Groups") +
+          scale_color_manual(values = c("#0075C9","#E5BF21"))
+            
 ggscatter(mnew$model, x= "powerTransform(total.sub.give$gain, lambda)", y = "total.sub.give$x",
           add = "reg.line", conf.int = TRUE, 
           cor.coef = TRUE, cor.method = "pearson",
@@ -239,8 +249,9 @@ ggscatter(EQ.df, x = "mean_gain", y = "EQ",
           title = "Correlation of EQ and gains"
           )
 
-EQmnew$model <- cbind(EQmnew$model, group = EQ.df$`Group_(Y:1_O:2)`)
-
+EQmnew$model <- cbind(EQmnew$model, group = EQ.df$`Group_(Y:1_O:2)`, neugive = EQ.df$NEUgives)
+EQmnew$model <- cbind(EQmnew$model, neugive = EQ.df$NEUgives)
+  
 ggscatter(EQmnew$model, x = "powerTransform(EQ.df$mean_gain, EQlambda)", y = "EQ.df$EQ",
           add = "reg.line", conf.int = TRUE, 
           cor.coef = TRUE, cor.method = "pearson",
@@ -248,6 +259,16 @@ ggscatter(EQmnew$model, x = "powerTransform(EQ.df$mean_gain, EQlambda)", y = "EQ
           title = "Correlation of EQ and gains (boxcox transformed)",
           group = "group",
           color = "group"
+)
+
+ggscatter(EQmnew$model, x = "pt_gain", y = "neugive",
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "Gains (power transformed)", ylab = "Neu given",
+          title = "Correlation of neu given and gains (boxcox transformed)",
+          group = "group",
+          color = "group",
+          facet.by = "group"
 )
 
 YEQmnew <- EQmnew$model[EQmnew$model$group=="Young",]
@@ -258,6 +279,7 @@ ggscatter(YEQmnew, x = "pt", y = "EQ",
           xlab = "Gains (power transformed)", ylab = "EQ score",
           title = "Correlation of EQ and gains (boxcox transformed)"
 )
+
 OEQmnew <- EQmnew$model[EQmnew$model$group=="Old",]
 names(OEQmnew) <- c("pt", "EQ", "group")
 ggscatter(OEQmnew, x = "pt", y = "EQ",
@@ -313,12 +335,22 @@ for(i in 26:29){
 }
 
 #### EQ and Gives
-ggscatter(EQ.df, x = "gives", y = "EQ",
-          add = "reg.line", conf.int = TRUE, 
-          cor.coef = TRUE, cor.method = "pearson",
-          xlab = "Gives", ylab = "EQ score",
+ggscatter(EQ.df, x = "EQ", y = "gives",
+          conf.int = TRUE, cor.method = "pearson",
+          cor.coef = TRUE,
+          xlab = "EQ score", ylab = "Gives", color = "Group",
+          size = 5,
           title = paste("Correlation of EQ and gives")
-)
+) + theme(plot.title = element_text(hjust = 0.5),
+          title = element_text(size=30, face="bold"),
+          legend.text = element_text(size=30),
+          legend.title = element_text(size=30),
+          axis.text = element_text(size=20),
+          axis.title = element_text(size=30,face="bold"),
+          text = element_text(size=30)) +
+  labs(colour = "Group") +
+  scale_color_manual(values = c("#0075C9","#E5BF21")) + 
+  geom_smooth(method = "lm", color = "black")
 
 ggscatter(EQ.df, x = "testAge", y = "EQ",
           add = "reg.line", conf.int = TRUE, 
@@ -356,8 +388,8 @@ ggline(EQ.df, x = "Group", y = "EQ",
        color = "Group", palette = "jco") +
   stat_compare_means(aes(group = Group), label = "p.signif")
 
-names(EQmnew$model)[1] <- "ptg"
-ggline(EQmnew$model, x = "group", y = "ptg",
+names(EQmnew$model)[1] <- "pt_gain"
+ggline(EQmnew$model, x = "group", y = "pt_gain",
        add = c("mean_se", "jitter"),
        color = "group", palette = "jco") +
   stat_compare_means(aes(group = group), label = "p.signif")
@@ -403,3 +435,23 @@ ggscatter(try.subject.info, x = "testAge", y = "mean_gain",
           xlab = "Ages", ylab = "gives",
           title = paste("Correlation of ages and gives ")
 )
+
+ggscatter(EQ.df, x = "IRI_EC", y = "gives", conf.int = TRUE, 
+          cor.method = "pearson",
+          cor.coef = TRUE,
+          color = "Group",
+          xlab = "IRI EC", ylab = "gives", size = 5,
+          title = paste("Correlation of gives and IRI_EC")
+)+ theme(plot.title = element_text(hjust = 0.5),
+        title = element_text(size=30, face="bold"),
+        legend.text = element_text(size=30),
+        legend.title = element_text(size=30),
+        axis.text = element_text(size=20),
+        axis.title = element_text(size=30,face="bold"),
+        text = element_text(size=30)) +
+  labs(colour = "Group") +
+  scale_color_manual(values = c("#0075C9","#E5BF21")) + 
+  geom_smooth(method = "lm", color = "black")
+
+
+

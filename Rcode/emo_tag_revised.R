@@ -196,6 +196,8 @@ length(all.emo.group.tag.R)
 
 all.emo.dataf.R <- data.frame(T.E, all.emo.group.tag.R, all.emo.sit.tag.R, all.emo.tag.R)
 
+levels(rawdf$GroupN) <- list("Young" = "1", "Old" = "2")
+levels(rawdf$SITtag) <- list("PRO" = "1", "PUR" = "2", "NEU" = "3", "UNC" = "4")
 # all.emo.dataf.R[!is.na(T.E),]
 
 # ggline(all.emo.dataf.R, x = "all.emo.tag.R", y = "T.E", add = c("mean_se", "jitter"),
@@ -215,10 +217,24 @@ ggplot(data = rawdf, aes(x = EmoTag, y = rev_dist, colour = GroupN, group = Grou
 
 # tapply(rawdf$rev_dist, list(rawdf$GroupN, rawdf$SITtag))
 
-ggplot(data = rawdf, aes(x = rev_dist, y = EmoTag, colour = GroupN, group = GroupN)) +
-  geom_point() +
-  geom_smooth(method = 'lm', formula = y ~ poly(x,2)) +
-  facet_grid(~ SITtag)
+ggplot(data = rawdf, aes(x = rev_dist, y = EmoTag, group = GroupN)) +
+  geom_point(aes(colour = GroupN), size = 2) +
+  geom_smooth(method = 'lm', formula = y ~ poly(x,2), aes(colour = GroupN), size=2) +
+  facet_grid(~ SITtag) +
+  theme_bw() +
+  labs(x = "Distance from origin money decision (normalised)", y = "Emotion Reaction", 
+       colour = "Group", fill = "Group") +
+  theme(plot.title = element_text(hjust = 0.5),
+        title = element_text(size=30, face="bold"),
+        legend.text = element_text(size=35),
+        legend.title = element_text(size=35),
+        axis.text = element_text(size=35),
+        axis.title = element_text(size=35,face="bold"),
+        text = element_text(size=35),
+        legend.position = "none"
+  ) +
+  scale_colour_manual(values = c("#0075C9","#E5BF21")) +
+  ylim(c(-3,4))
 
 ggplot(data = rawdf, aes(x = rev_dist, y = EmoTag, colour = GroupN, group = GroupN)) +
   geom_point() +
@@ -231,3 +247,27 @@ E.T <- tapply(rawdf$EmoTag, list(rawdf$SITtag, rawdf$SubjectN, rawdf$GroupN), me
   
 tapply(all.emo.dataf$all.emo.vector, list(all.emo.dataf$all.emo.group.tag, all.emo.dataf$all.emo.sit.tag, all.emo.dataf$all.emo.tag), mean)
 tapply(all.emo.dataf$all.emo.vector, list(all.emo.dataf$all.emo.group.tag, all.emo.dataf$all.emo.sit.tag, all.emo.dataf$all.emo.tag), sd)
+
+##
+
+multicom <- compare_means(all.emo.vector ~ all.emo.sit.tag, data = all.emo.dataf.o, group.by = c("all.emo.tag", "all.emo.group.tag"), method = "t.test")
+multicom.label <- list(c("PRO", "PUR"))
+
+ggbarplot(all.emo.dataf.o, x = "all.emo.sit.tag", y = "all.emo.vector", add = c("mean_se", "jitter"),
+       color = "all.emo.tag", palette = "jco", facet.by = "all.emo.group.tag", size=2, position = position_dodge(0.8)) +
+  labs(title = "Group difference in emotion choices by groups", x = "Money regulation type", y = "Emotion Reaction", colour = "Group") +   
+  theme(plot.title = element_text(hjust = 0.5, size= 30)) +
+  stat_compare_means(comparisons = multicom.label , label = "p.signif", 
+                     label.y = 4.5, size = 1) +
+  geom_hline(yintercept = 0) +
+  
+  theme(plot.title = element_text(hjust = 0.5),
+        title = element_text(size=30, face="bold"),
+        legend.text = element_text(size=30),
+        legend.title = element_text(size=30),
+        axis.text = element_text(size=20),
+        axis.title = element_text(size=30,face="bold"),
+        text = element_text(size=30)
+  )
+
+
