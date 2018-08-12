@@ -452,6 +452,3 @@ ggscatter(EQ.df, x = "IRI_EC", y = "gives", conf.int = TRUE,
   labs(colour = "Group") +
   scale_color_manual(values = c("#0075C9","#E5BF21")) + 
   geom_smooth(method = "lm", color = "black")
-
-
-
