@@ -132,10 +132,8 @@ ggplot(data = bar.emo.mean.df, aes(x = M_reg, y = mean_emo)) +
         axis.title = element_text(size=15,face="bold")
         )
         
-bb <- lmer(all.emo.vector ~ all.emo.tag*all.emo.sit.tag*all.emo.group.tag + 
-             (1|all.subject.tag) + 
-             (1|all.emo.tag:all.subject.tag) + 
-             (1|all.emo.sit.tag:all.subject.tag),
+bb <- lmer(all.emo.vector ~ all.emo.tag*all.emo.sit.tag*all.emo.group.tag + I(all.emo.tag^2) + 
+             (1+|all.subject.tag) 
              data = all.emo.dataf.p)
 
 anova(bb)
@@ -216,6 +214,39 @@ ggplot(data = rawdf, aes(x = EmoTag, y = rev_dist, colour = GroupN, group = Grou
   facet_grid(~ SITtag)  
 
 # tapply(rawdf$rev_dist, list(rawdf$GroupN, rawdf$SITtag))
+levels(rawdf$GroupN) <- list(Young = "Young", Old = "Old")
+levels(rawdf$SITtag) <- list(PUR = "PUR", NEU = "NEU", PRO= "PRO", UNC = "UCN")
+  
+emo.lmer <- lmer(EmoTag ~ GroupN*SITtag*poly(rev_dist, 2, raw = TRUE) + 
+             (1+GroupN+SITtag|SubjectN),
+           data = rawdf)
+summary(emo.lmer)
+anova(emo.lmer)
+
+positive.emo <- rawdf[rawdf$rev_dist >= 0,]
+negative.emo <- rawdf[rawdf$rev_dist < 0,]
+
+rawdf.Y <- rawdf[rawdf$GroupN == "Young",]
+rawdf.O <- rawdf[rawdf$GroupN == "Old",]
+
+emolmer.pos <- lmer(EmoTag ~ GroupN*SITtag*poly(rev_dist, 2, raw = TRUE) + 
+                      (1+GroupN+SITtag|SubjectN), data = positive.emo)
+summary(emolmer.pos)
+anova(emolmer.pos)
+
+emolmer.neg <- lmer(EmoTag ~ GroupN*SITtag*poly(rev_dist, 2, raw = TRUE) + 
+                      (1+GroupN+SITtag|SubjectN), data = negative.emo)
+summary(emolmer.neg)
+anova(emolmer.neg)
+
+emolmer.Y <- lmer(EmoTag ~ SITtag*poly(rev_dist, 2, raw = TRUE) + 
+       (1|SubjectN), data = rawdf.Y)
+
+sumemo.Y <- summary(lmer(EmoTag ~ SITtag*poly(rev_dist, 2, raw = TRUE) + 
+                    (1|SubjectN), data = rawdf.Y))
+
+sumemo.O <- summary(lmer(EmoTag ~ SITtag*poly(rev_dist, 2, raw = TRUE) + 
+                    (1|SubjectN), data = rawdf.O))
 
 ggplot(data = rawdf, aes(x = rev_dist, y = EmoTag, group = GroupN)) +
   geom_point(aes(colour = GroupN), size = 2) +
@@ -235,6 +266,46 @@ ggplot(data = rawdf, aes(x = rev_dist, y = EmoTag, group = GroupN)) +
   ) +
   scale_colour_manual(values = c("#0075C9","#E5BF21")) +
   ylim(c(-3,4))
+
+####
+ggplot(data = positive.emo, aes(x = rev_dist, y = EmoTag, group = GroupN)) +
+  geom_point(aes(colour = GroupN), size = 2) +
+  geom_smooth(method = 'lm', formula = y ~ poly(x,1), aes(colour = GroupN), size=2) +
+  facet_grid(~ SITtag) +
+  theme_bw() +
+  labs(x = "Distance from origin money decision (normalised)", y = "Emotion Reaction", 
+       colour = "Group", fill = "Group") +
+  theme(plot.title = element_text(hjust = 0.5),
+        title = element_text(size=30, face="bold"),
+        legend.text = element_text(size=35),
+        legend.title = element_text(size=35),
+        axis.text = element_text(size=35),
+        axis.title = element_text(size=35,face="bold"),
+        text = element_text(size=35),
+        legend.position = "none"
+  ) +
+  scale_colour_manual(values = c("#0075C9","#E5BF21")) +
+  ylim(c(-3,4))
+
+ggplot(data = negative.emo, aes(x = rev_dist, y = EmoTag, group = GroupN)) +
+  geom_point(aes(colour = GroupN), size = 2) +
+  geom_smooth(method = 'lm', formula = y ~ poly(x,1), aes(colour = GroupN), size=2) +
+  facet_grid(~ SITtag) +
+  theme_bw() +
+  labs(x = "Distance from origin money decision (normalised)", y = "Emotion Reaction", 
+       colour = "Group", fill = "Group") +
+  theme(plot.title = element_text(hjust = 0.5),
+        title = element_text(size=30, face="bold"),
+        legend.text = element_text(size=35),
+        legend.title = element_text(size=35),
+        axis.text = element_text(size=35),
+        axis.title = element_text(size=35,face="bold"),
+        text = element_text(size=35),
+        legend.position = "none"
+  ) +
+  scale_colour_manual(values = c("#0075C9","#E5BF21")) +
+  ylim(c(-3,4))
+
 
 ggplot(data = rawdf, aes(x = rev_dist, y = EmoTag, colour = GroupN, group = GroupN)) +
   geom_point() +

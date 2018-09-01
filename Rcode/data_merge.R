@@ -525,9 +525,11 @@ png(sprintf("Mean money giving ggline by situations_violin.png"), width = 600, h
   ggadd(v, add = c("mean_se", "dotplot"), fill = "total.boxplot.group.vector", position = position_dodge(0.8), binwidth = 6)
 dev.off()
   
-TT <- lm(total.boxplot.mean_money.vector ~ total.boxplot.sit.vector * total.boxplot.group.vector, data = total.boxplot)
-summary(TT)
-
+levels(total.boxplot$total.boxplot.group.vector) <- list(Young = "Young", Old = "Old")
+levels(total.boxplot$total.boxplot.sit.vector) <- list(NEU = "NEU",PUR = "PUR",PROS = "PROS",UNC = "UNC")
+TT <- lm(total.boxplot.mean_money.vector ~ total.boxplot.group.vector *total.boxplot.sit.vector , data = total.boxplot)
+summary.TT <- summary(TT)
+summary.TT
 #### All ggline emotional section ####
 
 all.emo.vector <- as.vector(na.omit(as.vector(tapply(behavior.df$EmoTag, list(behavior.df$SITtag, behavior.df$RegMtag, behavior.df$SubjectN, behavior.df$GroupN), mean))))
@@ -587,8 +589,8 @@ inter.Y.PRO.NEU <- Y.PRO.vec$total.boxplot.mean_money.vector - Y.NEU.vec$total.b
 inter.O.PRO.PUR <- O.PRO.vec$total.boxplot.mean_money.vector - O.PUR.vec$total.boxplot.mean_money.vector
 inter.O.PRO.NEU <- O.PRO.vec$total.boxplot.mean_money.vector - O.NEU.vec$total.boxplot.mean_money.vector
 
-t.test(inter.Y.PRO.PUR, inter.O.PRO.PUR)
-t.test(inter.Y.PRO.NEU, inter.O.PRO.NEU)
+t.test(inter.O.PRO.PUR, inter.Y.PRO.PUR)
+t.test(inter.O.PRO.NEU, inter.Y.PRO.NEU)
 
 inter.Y.PRO.PUR.mean <- mean(inter.Y.PRO.PUR)
 inter.Y.PRO.PUR.se <- sd(inter.Y.PRO.PUR)/sqrt(length(inter.Y.PRO.PUR))
