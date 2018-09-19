@@ -2,17 +2,23 @@ setwd("C:/Users/acer/Desktop/PROS/Data/fMRI_PilotData")
 
 ## money regulation normalise
 
+library(stats)
 library(Matrix)
 library(ggplot2)
 library(ggpubr)
 library(gtools)
 library(gridExtra)
 library(lme4)
+library(lmerTest)
 library(tidyr)
 library(dplyr)
 library(data.table)
 library(reshape2)
 library(plyr)
+library(sjPlot)
+library(sjmisc)
+
+require(dplyr)
 
 rawdf <- read.csv("behavior.CSV")
 T.num <- length(rawdf$SubjectN)/64
@@ -215,38 +221,71 @@ ggplot(data = rawdf, aes(x = EmoTag, y = rev_dist, colour = GroupN, group = Grou
 
 # tapply(rawdf$rev_dist, list(rawdf$GroupN, rawdf$SITtag))
 levels(rawdf$GroupN) <- list(Young = "Young", Old = "Old")
-levels(rawdf$SITtag) <- list(PUR = "PUR", NEU = "NEU", PRO= "PRO", UNC = "UCN")
+levels(rawdf$SITtag) <- list(PRO = "PROS", PUR = "PUR", NEU = "NEU", UNC = "UCN")
   
-emo.lmer <- lmer(EmoTag ~ GroupN*SITtag*poly(rev_dist, 2, raw = TRUE) + 
-             (1+GroupN+SITtag|SubjectN),
-           data = rawdf)
-summary(emo.lmer)
-anova(emo.lmer)
+emo.lmer.qua <- lmer(EmoTag ~ GroupN*SITtag*poly(rev_dist, 2, raw = TRUE) +
+                       (1+SITtag+rev_dist+poly(rev_dist, 2, raw = TRUE)|SubjectN), data = rawdf)
 
-positive.emo <- rawdf[rawdf$rev_dist >= 0,]
-negative.emo <- rawdf[rawdf$rev_dist < 0,]
+emo.lmer.qua.slope <- lmer(EmoTag ~ GroupN*SITtag*poly(rev_dist, 2, raw = TRUE) +
+                       (1+SITtag+rev_dist|SubjectN), data = rawdf)
+options(contrasts=c("contr.sum", "contr.poly"))
+anova(emo.lmer.qua, emo.lmer.qua.slope)
+
+emo.lmer <- lmer(EmoTag ~ GroupN*SITtag*rev_dist +
+                   (1+SITtag|SubjectN),
+                 data = rawdf)
+
+summary(emo.lmer.qua.slope)
+anova(emo.lmer.qua.slope)
+Anova(emo.lmer.qua.slope, type = c("III"))
+
+positive.emo <- rawdf[rawdf$rev_dist >= 0 ,]
+negative.emo <- rawdf[rawdf$rev_dist < 0 & rawdf$rev_dist >= -150,]
 
 rawdf.Y <- rawdf[rawdf$GroupN == "Young",]
 rawdf.O <- rawdf[rawdf$GroupN == "Old",]
 
-emolmer.pos <- lmer(EmoTag ~ GroupN*SITtag*poly(rev_dist, 2, raw = TRUE) + 
+emolmer.pos <- lmer(log(EmoTag+5) ~ GroupN*SITtag*poly(rev_dist, 2, raw = TRUE) + 
                       (1+GroupN+SITtag|SubjectN), data = positive.emo)
 summary(emolmer.pos)
 anova(emolmer.pos)
+str(positive.emo)
 
-emolmer.neg <- lmer(EmoTag ~ GroupN*SITtag*poly(rev_dist, 2, raw = TRUE) + 
+emolmer.neg <- lmer(log(EmoTag+5) ~ GroupN*SITtag*poly(rev_dist, 2, raw = TRUE) + 
                       (1+GroupN+SITtag|SubjectN), data = negative.emo)
 summary(emolmer.neg)
 anova(emolmer.neg)
+
+par(mfrow = c(2,2))
+plot(emo.lmer.qua.slope, EmoTag ~ fitted(.)| SITtag*GroupN, type = c("p", "smooth") , id = 0.05)
+plot(emo.lmer.qua.slope, resid(., scaled=TRUE) ~ fitted(.)| SITtag*GroupN, type = c("p", "smooth") )
+plot(emo.lmer.qua.slope, EmoTag ~ fitted(.)| SITtag*GroupN, type = c("p", "smooth") , id = 0.05)
+plot(emo.lmer.qua.slope, resid(., scaled=TRUE) ~ fitted(.)| SITtag*GroupN)
+
+require("lattice")
+plot(emo.lmer.qua.slope, type = c("p", "smooth") , id = 0.05)
+plot(emo.lmer.qua.slope, sqrt(abs(resid(.))) ~ fitted(.) | GroupN*SITtag, abline=c(h = 0),type = c("p", "smooth"), id = 0.05)
+lattice::dotplot(ranef(emo.lmer.qua.slope, condVar=TRUE))
+plot(emolmer.neg, type = c("p", "smooth") , id = 0.05)
+plot(emolmer.neg, sqrt(abs(resid(.))) ~ fitted(.) | GroupN*SITtag, abline=c(h = 0),type = c("p", "smooth"), id = 0.05)
+lattice::dotplot(ranef(emolmer.neg, condVar=TRUE))
+
+qqmath(emo.lmer.qua.slope, id=0.05)
 
 emolmer.Y <- lmer(EmoTag ~ SITtag*poly(rev_dist, 2, raw = TRUE) + 
        (1|SubjectN), data = rawdf.Y)
 
 sumemo.Y <- summary(lmer(EmoTag ~ SITtag*poly(rev_dist, 2, raw = TRUE) + 
-                    (1|SubjectN), data = rawdf.Y))
+                    (1+SITtag+rev_dist|SubjectN), data = rawdf.Y))
 
 sumemo.O <- summary(lmer(EmoTag ~ SITtag*poly(rev_dist, 2, raw = TRUE) + 
-                    (1|SubjectN), data = rawdf.O))
+                    (1+SITtag+rev_dist|SubjectN), data = rawdf.O))
+
+anova(lmer(EmoTag ~ SITtag*poly(rev_dist, 2, raw = TRUE) + 
+             (1+SITtag+rev_dist|SubjectN), data = rawdf.Y))
+
+anova(lmer(EmoTag ~ SITtag*poly(rev_dist, 2, raw = TRUE) + 
+             (1+SITtag+rev_dist|SubjectN), data = rawdf.O))
 
 ggplot(data = rawdf, aes(x = rev_dist, y = EmoTag, group = GroupN)) +
   geom_point(aes(colour = GroupN), size = 2) +
@@ -254,7 +293,7 @@ ggplot(data = rawdf, aes(x = rev_dist, y = EmoTag, group = GroupN)) +
   facet_grid(~ SITtag) +
   theme_bw() +
   labs(x = "Distance from origin money decision (normalised)", y = "Emotion Reaction", 
-       colour = "Group", fill = "Group") +
+       colour = "Groups", fill = "Group") +
   theme(plot.title = element_text(hjust = 0.5),
         title = element_text(size=30, face="bold"),
         legend.text = element_text(size=35),

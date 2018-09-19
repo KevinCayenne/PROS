@@ -1,13 +1,13 @@
-setwd("c:/Users/acer/Desktop/PROS/Data/fMRI_PilotData/ROI/")
+
 library(ggplot2)
 library(ggpubr)
 library(tidyr)
 library(dplyr)
 library(gtools)
 library(gridExtra)
-
+setwd("c:/Users/acer/Desktop/PROS/Data/fMRI_PilotData/ROI/")
 ROI_try <- read.csv("ROI_PFC.csv", header = T)
-ROI_try <- ROI_try[,-c(11)]
+ROI_try <- as.data.frame(ROI_try$MPFC, header = T)
 
 setwd("c:/Users/acer/Desktop/PROS/Data/fMRI_PilotData/")
 behavior.df <- read.csv("behavior.CSV", header = T)
@@ -34,7 +34,7 @@ tc.tag <- c(rep(rep(0:11, each = young.num), cond.num), rep(rep(0:11, each = old
 sub.tag <- c(rep(1:young.num, timec*cond.num), rep(1:old.num, timec*cond.num))
 
 ROI_try <- cbind(ROI_try, age.tag, cond.tag, tc.tag, phase.tag, sub.tag)
-tydi.ROI <- gather(ROI_try, ROI, value, -age.tag, -cond.tag, -tc.tag, -phase.tag, -sub.tag)
+tydi.ROI <- gather(ROI_try, ROI_try, value, -age.tag, -cond.tag, -tc.tag, -phase.tag, -sub.tag)
 
 levels(tydi.ROI$phase.tag) <- list(Money_Decision = "Money_Decision", Emotion_Decision = "Emotion_Decision")
 levels(tydi.ROI$age.tag) <- list(Young = "Young", Old = "Old")
@@ -140,6 +140,7 @@ for(i in 1:4){
   print(ggscatter(corrmerge, x = "mgive", y = "signalvalue", 
             color = "group", conf.int = TRUE, 
             cor.method = "pearson",
+            cor.coef = TRUE,
             xlab = "Mean Money Given (NTD)", ylab = "Parameter Estimate",
             size = 5
             ) + 
@@ -183,8 +184,32 @@ ggscatter(corrmerge.total, x = "mgive", y = "signalvalue",
   scale_color_manual(values = c("#0075C9","#E5BF21")) + 
   geom_smooth(method = "lm", color = "black")
 
+
+t.test(corrmerge.total[corrmerge.total$group == "Old" & corrmerge.total$sit == "NEU",]$signalvalue)
+t.test(tydi.ROI[tydi.ROI$age.tag == "Old" & cond.tag == 2,]$value)
+
+ggbarplot(tydi.ROI, x = "cond.tag", y = "value",add = "mean_se",
+          color = "age.tag",
+          add.params = list(group = "age.tag"),
+          fill = "age.tag",
+          xlab = "Group", ylab = "Parameter Estimate",
+          palette = "jco",
+          position = position_dodge(0.8)
+          
+) + theme(plot.title = element_text(hjust = 0.5),
+          title = element_text(size=30, face="bold"),
+          legend.text = element_text(size=30),
+          legend.title = element_text(size=30),
+          axis.text = element_text(size=20),
+          axis.title = element_text(size=30,face="bold"),
+          text = element_text(size=30)) +
+  labs(color = "Group", fill = "Group", x = "Situations") +
+  stat_compare_means(aes(group = age.tag), label = "p.signif", label.y = 3.5, size=10)
+
+
 ggbarplot(corrmerge.total, x = "sit", y = "signalvalue",add = "mean_se",
           color = "group",
+          add.params = list(group = "group"),
           fill = "group",
           xlab = "Group", ylab = "Parameter Estimate",
           palette = "jco",
@@ -200,5 +225,5 @@ ggbarplot(corrmerge.total, x = "sit", y = "signalvalue",add = "mean_se",
   labs(color = "Group", fill = "Group", x = "Situations") +
   stat_compare_means(aes(group = group), label = "p.signif", label.y = 3.5, size=10)
 
-summary(lm(mgive ~ signalvalue, data =corrmerge.total))
-
+summary(lm(mgive ~ signalvalue*group*sit, data =corrmerge.total))
+anova(lm(mgive ~ signalvalue*group, data =corrmerge.total))

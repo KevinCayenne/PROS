@@ -191,6 +191,10 @@ Duration.plot <- ggline(all.RT.dataF, x = "RT.sit.tag", y = "all.mean.Dur", add 
         axis.title = element_text(size=ss,face="bold")
   )
 
+anova(lm(all.mean.RT ~ RT.group.tag*RT.sit.tag, all.RT.dataF))
+anova(lm(all.firstP ~ RT.group.tag*RT.sit.tag, all.RT.dataF))
+anova(lm(all.mean.Dur ~ RT.group.tag*RT.sit.tag, all.RT.dataF))
+
 emo.Duration.plot <- ggline(Total.emo.RT.df, x = "Situation", y = "mean.duration", add = c("mean_se", "jitter"), size = 1,
                         color = "Group", palette = "jco") +
   labs(title = "Group difference of duration time by situations in emotion rating",

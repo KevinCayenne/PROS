@@ -49,17 +49,17 @@ tapply(EQdata_long$score, EQdata_long$ID, sum)
 
 IRIreply <- read.csv("IRI_reply.csv", header = TRUE)
 
-FS <- c(1,5,7,12,16,23,26)
-EC <- c(2,4,9,14,18,20,22)
-PT <- c(3,8,11,15,21,25,28)
-PD <- c(6,10,13,17,19,24,27)
-Inv <- c(3,4,7,12,13,14,15,18,19)
+FS <- c(5,12,16,26)
+EC <- c(2,4,8,9,11,14,15,18,20,21,22,25,28)
+PD <- c(6,10,13,17,20,24,27)
+OT <- c(1,3,7,19,23)
+Inv <- c(12,13,14,15,18)
 
 items <- c(1:28)
 items[FS] <- "FS"
 items[EC] <- "EC"
-items[PT] <- "PT"
 items[PD] <- "PD"
+items[OT] <- "OT"
 items <- factor(items)
 
 # invert score

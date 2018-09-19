@@ -198,7 +198,7 @@
                         case 6
                             temppara{1,1} = giveM(SubjectN==o & SessionN==run & SITtag==n);
                             pmod(n).param{1} =  [pmod(n).param{1} temppara{1,1}'];
-                            for varnum = 1:length(MDOnsettime(SubjectN==o & SessionN==run & SITtag==n)) 
+                                for varnum = 1:length(MDOnsettime(SubjectN==o & SessionN==run & SITtag==n)) 
                                 temp{1,1} = (MDOnsettime(SubjectN==o & SessionN==run & SITtag==n)/1000) + 362*5;
                                 if cellfun('isempty', temp(1,1)) == 0
                                     onsets{1,k}(end+varnum) = temp{1,1}(varnum); 

@@ -1,14 +1,16 @@
 setwd("C:/Users/acer/Desktop/PROS/Data/fMRI_PilotData")
 
+library(stringi)
+library(tidyverse)
 library(ggplot2)
 library(ggpubr)
 library(gtools)
-library(gridExtra)
 library(magrittr)
 library(tidyr)
 library(dplyr)
 library(gridExtra)
 library(ggsignif)
+library(lme4)
 library(lmerTest)
 
 File.list = mixedsort(list.files("behaviorD"))
@@ -412,7 +414,7 @@ rbind(ALL_Young_T, ALL_Old_T)
 
 total.boxplot.mean_money.vector <- c(Y.PRO.mean, O.PRO.mean, Y.PUR.mean, O.PUR.mean, Y.NEU.mean, O.NEU.mean, Y.UNC.mean, O.UNC.mean)
 total.boxplot.sit.vector <- as.factor(c(rep("PROS", Subject.number), rep("PUR", Subject.number), rep("NEU", Subject.number), rep("UNC", Subject.number)))
-levels(total.boxplot.sit.vector) <- list(PROS = "PROS", PUR = "PUR", NEU = "NEU", UNC = "UNC")
+levels(total.boxplot.sit.vector) <- list(PRO = "PROS", PUR = "PUR", NEU = "NEU", UNC = "UNC")
 total.boxplot.group.vector <- as.factor(c(rep(c(rep("Young", youngnum),rep("Old", oldnum)),4)))
 
 total.boxplot <- data.frame(total.boxplot.mean_money.vector, total.boxplot.sit.vector, total.boxplot.group.vector)
@@ -493,9 +495,11 @@ dev.off()
 compare_means(total.boxplot.mean_money.vector ~ total.boxplot.group.vector, group.by = "total.boxplot.sit.vector", data = total.boxplot, method = "t.test")
 #### ggline ####
 png(sprintf("Mean money giving ggline by situations.png"), width = 800, height = 800)  
-print(total.ggplot.mmoney <- ggline(total.boxplot, x = "total.boxplot.sit.vector", y = "total.boxplot.mean_money.vector", add= c("mean_se","jitter"),
-      color = "total.boxplot.group.vector", palette = "jco", size=2) +
-      labs(x = "Situations", y = "Money (NT dollars)", colour = "Groups") +   
+print(total.ggplot.mmoney <- ggline(total.boxplot, x = "total.boxplot.sit.vector", y = "total.boxplot.mean_money.vector", add= c("mean_se"),
+      color = "total.boxplot.group.vector", fill = "total.boxplot.group.vector",
+      palette = "jco", size=3, add.params = list(group = "total.boxplot.group.vector"),
+      position = position_dodge(0.8), order = c("PRO", "PUR", "NEU", "UNC")) +
+      labs(x = "Situations", y = "Mean Money Given (NTD)", colour = "Groups") +   
       stat_compare_means(aes(group = total.boxplot.group.vector), 
                          label.y = 230, size = 20, label = "p.signif") +
       theme(plot.title = element_text(hjust = 0.5, face="bold")) +
@@ -620,7 +624,8 @@ a <- ggplot(inter.total.money, aes(x=inter.tag, y=inter.mean, fill=inter.group))
                 position=position_dodge(.9)) +
   geom_signif(y_position=c(125, 100), xmin=c(0.8, 1.8), xmax=c(1.2, 2.2),
               annotation=c("**", "**"), textsize=20, tip_length=0) +
-  labs(y = "Money (NT dollars)", 
+  labs(y = "Mean Money Given (NTD)",
+       x = "Interaction",
        colour = "Groups", fill = "Group") +
   theme(plot.title = element_text(hjust = 0.5),
         title = element_text(size=30, face="bold"),
@@ -644,18 +649,24 @@ levels(gender.diff$sit) <- list(PRO = "1", PUR = "2", NEU = "3", UNC ="4")
 levels(gender.diff$group) <- list(Young = "1", Old = "2")
 
 ggline(gender.diff, x = "sit", y = "x", add = c("mean_se", "jitter"),
-       color = "gender", palette = "jco") +
+       color = "gender", palette = "jco", position = position_dodge(0.3)) +
   labs(title = "Gender difference in money giving", x = "Situation", y = "Money (NTD)", colour = "Gender") +   
   theme(plot.title = element_text(hjust = 0.5, size= 15)) +
   stat_compare_means(aes(group = gender), label = "p.signif", 
                      label.y = 250)
-ggline(gender.diff, x = "sit", y = "x", add = c("mean_se", "jitter"),
-       color = "gender", palette = "jco", facet.by = "group") +
+ggline(gender.diff, x = "sit", y = "x", add = c("mean_se", "point"),
+       color = "gender", palette = "jco", facet.by = "group",add.params = list(color = "gender"), position = position_dodge()) +
   labs(title = "Gender difference in money giving by group", x = "Situation", y = "Money (NTD)", colour = "Gender") +   
   theme(plot.title = element_text(hjust = 0.5, size= 15)) +
   stat_compare_means(aes(group = gender), label = "p.signif", 
                      label.y = 250)
-####
+
+ggline(gender.diff, x = "sit", y = "x", 
+            add = "mean_se", color = "gender", palette = "jco", add.params = list(group = "gender"),
+            position = position_dodge(10)     # Adjust the space between bars
+)
+  ####
+anova(lm(x ~ gender*group*sit, gender.diff))
 
 tapply(behavior.df$giveM, list(behavior.df$SubjectN, behavior.df$SITtag), mean)
 
