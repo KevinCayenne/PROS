@@ -39,9 +39,6 @@ tydi.ROI <- gather(ROI_try, ROI_try, value, -age.tag, -cond.tag, -tc.tag, -phase
 levels(tydi.ROI$phase.tag) <- list(Money_Decision = "Money_Decision", Emotion_Decision = "Emotion_Decision")
 levels(tydi.ROI$age.tag) <- list(Young = "Young", Old = "Old")
 
-View(ROI_try)
-View(tydi.ROI)
-
 print(ggline(tydi.ROI, x = "tc.tag", y = "value", add = "mean_se",
              color = "age.tag", palette = c("#EFC000", "#0073C2"))+
         labs(x = "Time(TR)", y = "value", 
@@ -151,7 +148,7 @@ for(i in 1:4){
                 axis.text = element_text(size=20),
                 axis.title = element_text(size=30,face="bold"),
                 text = element_text(size=30)) +
-          labs(colour = "Group") +
+          labs(colour = "Groups") +
           scale_color_manual(values = c("#0075C9","#E5BF21")) + 
           geom_smooth(method = "lm", color = "black") 
         ) 
@@ -162,7 +159,7 @@ ordered.corrmerge <- corrmergelist[[1]][order(corrmergelist[[1]]$sub.id),]
 head(corrmerge.total)
 str(corrmerge.total)
 corrmerge.total$sit <- as.factor(corrmerge.total$sit)
-levels(corrmerge.total$sit) <- list(PROS = "1", PUR = "2", NEU = "3", UNC = "4")
+levels(corrmerge.total$sit) <- list(PRO = "1", PUR = "2", NEU = "3", UNC = "4")
 
 ggscatter(corrmerge.total, x = "mgive", y = "signalvalue",
           color = "group", 
@@ -180,7 +177,7 @@ ggscatter(corrmerge.total, x = "mgive", y = "signalvalue",
         axis.text = element_text(size=20),
         axis.title = element_text(size=30,face="bold"),
         text = element_text(size=30)) +
-  labs(colour = "Group") +
+  labs(colour = "Groups") +
   scale_color_manual(values = c("#0075C9","#E5BF21")) + 
   geom_smooth(method = "lm", color = "black")
 
@@ -222,7 +219,7 @@ ggbarplot(corrmerge.total, x = "sit", y = "signalvalue",add = "mean_se",
         axis.text = element_text(size=20),
         axis.title = element_text(size=30,face="bold"),
         text = element_text(size=30)) +
-  labs(color = "Group", fill = "Group", x = "Situations") +
+  labs(color = "Groups", fill = "Groups", x = "Situations") +
   stat_compare_means(aes(group = group), label = "p.signif", label.y = 3.5, size=10)
 
 summary(lm(mgive ~ signalvalue*group*sit, data =corrmerge.total))

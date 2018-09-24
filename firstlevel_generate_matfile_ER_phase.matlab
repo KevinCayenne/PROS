@@ -54,7 +54,7 @@
                 result = regexp(rawData{row}, regexstr, 'names');
                 numbers = result.numbers;
                 
-                % Detected commas in non-thousand locations.
+                % Detected commas in non-thousand locations.    
                 invalidThousandsSeparator = false;
                 if any(numbers==',');
                     thousandsRegExp = '^\d+?(\,\d{3})*\.{0,1}\d*$';
@@ -156,7 +156,7 @@
                 end
             end
             
-            for count = 1:21
+            for count = 1:21 
                cell_len = length(onsets{1,count});
                i = 1;
                while i <= cell_len

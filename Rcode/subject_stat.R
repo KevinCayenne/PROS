@@ -170,11 +170,13 @@ par(op)
 mnew$model <- cbind(mnew$model, tgroup = total.sub.give$group)
 mnew$model <- cbind(mnew$model, age = total.sub.give$tage)
 
+anova(lm(total.sub.give$x ~ tgroup*powerTransform(total.sub.give$gain, lambda), mnew$model))
+
 ggscatter(mnew$model, x= "powerTransform(total.sub.give$gain, lambda)", y = "total.sub.give$x",
           conf.int = TRUE, 
           cor.coef = TRUE, cor.method = "pearson",
-          xlab = "Gains (power transformed)", ylab = "Gives",
-          title = "Correlation of gives and gains",
+          xlab = "Mean Money Gained (power transformed)", ylab = "Mean Money Given (NTD)",
+          title = "Correlation of given and gains",
           ylim = c(0,300), color = "tgroup", size = 5
           ) + geom_smooth(method = "lm", color = "black") +
           theme(plot.title = element_text(hjust = 0.5),
@@ -338,9 +340,9 @@ for(i in 26:29){
 ggscatter(EQ.df, x = "EQ", y = "gives",
           conf.int = TRUE, cor.method = "pearson",
           cor.coef = TRUE,
-          xlab = "EQ score", ylab = "Gives", color = "Group",
+          xlab = "EQ score", ylab = "Mean Money Given (NTD)", color = "Group",
           size = 5,
-          title = paste("Correlation of EQ and gives")
+          title = paste("Correlation of given and EQ score")
 ) + theme(plot.title = element_text(hjust = 0.5),
           title = element_text(size=30, face="bold"),
           legend.text = element_text(size=30),
@@ -348,7 +350,7 @@ ggscatter(EQ.df, x = "EQ", y = "gives",
           axis.text = element_text(size=20),
           axis.title = element_text(size=30,face="bold"),
           text = element_text(size=30)) +
-  labs(colour = "Group") +
+  labs(colour = "Groups") +
   scale_color_manual(values = c("#0075C9","#E5BF21")) + 
   geom_smooth(method = "lm", color = "black")
 
@@ -438,10 +440,11 @@ ggscatter(try.subject.info, x = "testAge", y = "mean_gain",
 
 ggscatter(EQ.df, x = "IRI_EC", y = "gives", conf.int = TRUE, 
           cor.method = "pearson",
+          add.params = list(group = "Group"),
           cor.coef = TRUE,
           color = "Group",
-          xlab = "IRI EC", ylab = "gives", size = 5,
-          title = paste("Correlation of gives and IRI_EC")
+          xlab = "IRI Empathy Concern Score", ylab = "Mean Money Given (NTD)",size = 5,
+          title = paste("Correlation of given and IRI-EC")
 )+ theme(plot.title = element_text(hjust = 0.5),
         title = element_text(size=30, face="bold"),
         legend.text = element_text(size=30),
@@ -449,6 +452,6 @@ ggscatter(EQ.df, x = "IRI_EC", y = "gives", conf.int = TRUE,
         axis.text = element_text(size=20),
         axis.title = element_text(size=30,face="bold"),
         text = element_text(size=30)) +
-  labs(colour = "Group") +
+  labs(colour = "Groups") +
   scale_color_manual(values = c("#0075C9","#E5BF21")) + 
   geom_smooth(method = "lm", color = "black")
