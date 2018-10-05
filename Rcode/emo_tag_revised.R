@@ -380,4 +380,43 @@ ggbarplot(all.emo.dataf.o, x = "all.emo.sit.tag", y = "all.emo.vector", add = c(
         text = element_text(size=30)
   )
 
+######
 
+ter.Y <- aggregate(list(rawdf.Y$rev_dist, rawdf.Y$EmoTag), list(rawdf.Y$SubjectN, rawdf.Y$RegMtag, rawdf.Y$SITtag), mean, drop=FALSE)
+colnames(ter.Y) <- c("sub.tag", "reg.tag", "sit.tag", "dist", "value")
+ter.Y$dist[is.na(ter.Y$dist)] <- 0
+ter.Y$value[is.na(ter.Y$value)] <- 0
+
+ter.O <- aggregate(list(rawdf.O$rev_dist, rawdf.O$EmoTag), list(rawdf.O$SubjectN, rawdf.O$RegMtag, rawdf.O$SITtag), mean, drop=FALSE)
+colnames(ter.O) <- c("sub.tag", "reg.tag", "sit.tag", "dist", "value")
+ter.O$dist[is.na(ter.O$dist)] <- 0
+ter.O$value[is.na(ter.O$value)] <- 0
+
+ter.Y <- ter.Y[ter.Y$sit.tag == "PRO" | ter.Y$sit.tag == "PUR",]
+ter.O <- ter.O[ter.O$sit.tag == "PRO" | ter.O$sit.tag == "PUR",]
+
+ter.Y <- cbind(ter.Y, group.tag = rep("Young", nrow(ter.Y)))
+ter.O <- cbind(ter.O, group.tag = rep("Old", nrow(ter.O)))
+
+ter <- rbind(ter.Y, ter.O)
+ter <- cbind(ter, signalval = sig.er.ter$x)
+
+ggscatter(ter, x = "value", y = "signalval", 
+          conf.int = TRUE, 
+          cor.method = "pearson",
+          cor.coef = TRUE, color = "group.tag", facet.by = c("sit.tag","group.tag"), palette = "jco",
+          size=1, add.params = list(group = "group.tag")) +
+  geom_smooth(method = 'lm', formula = y ~ poly(x,1), aes(colour = group.tag), size=2) 
+
+# ggscatter(ter, x = "dist", y = "value", 
+#           conf.int = TRUE, 
+#           cor.method = "pearson",
+#           cor.coef = TRUE, color = "group.tag", facet.by = c("sit.tag","group.tag"), palette = "jco",
+#           size=1, add.params = list(group = "group.tag")) +
+#   geom_smooth(method = 'lm', formula = y ~ poly(x,1), aes(colour = group.tag), size=2) 
+
+ggline(ter, x = "reg.tag", y = "signalval", 
+          add = c("mean_se"), color = "group.tag", facet.by = c("sit.tag"), palette = "jco",
+          size=1, add.params = list(group = "group.tag")) + 
+      stat_compare_means(aes(group = group.tag), label = "p.signif", 
+                         label.y = 3)
