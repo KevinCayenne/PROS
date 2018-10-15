@@ -171,8 +171,9 @@ mnew$model <- cbind(mnew$model, tgroup = total.sub.give$group)
 mnew$model <- cbind(mnew$model, age = total.sub.give$tage)
 
 anova(lm(total.sub.give$x ~ tgroup*powerTransform(total.sub.give$gain, lambda), mnew$model))
+m.model <- mnew$model
 
-ggscatter(mnew$model, x= "powerTransform(total.sub.give$gain, lambda)", y = "total.sub.give$x",
+ggscatter(m.model, x= "powerTransform(total.sub.give$gain, lambda)", y = "total.sub.give$x",
           conf.int = TRUE, 
           cor.coef = TRUE, cor.method = "pearson",
           xlab = "Mean Money Gained (power transformed)", ylab = "Mean Money Given (NTD)",
@@ -251,8 +252,7 @@ ggscatter(EQ.df, x = "mean_gain", y = "EQ",
           title = "Correlation of EQ and gains"
           )
 
-EQmnew$model <- cbind(EQmnew$model, group = EQ.df$`Group_(Y:1_O:2)`, neugive = EQ.df$NEUgives)
-EQmnew$model <- cbind(EQmnew$model, neugive = EQ.df$NEUgives)
+EQmnew$model <- cbind(EQmnew$model, group = EQ.df$`Group`, neugive = EQ.df$NEUgives)
   
 ggscatter(EQmnew$model, x = "powerTransform(EQ.df$mean_gain, EQlambda)", y = "EQ.df$EQ",
           add = "reg.line", conf.int = TRUE, 
@@ -438,7 +438,9 @@ ggscatter(try.subject.info, x = "testAge", y = "mean_gain",
           title = paste("Correlation of ages and gives ")
 )
 
-ggscatter(EQ.df, x = "IRI_EC", y = "gives", conf.int = TRUE, 
+EQ.df$pro_neu.give <- EQ.df$gives - EQ.df$NEUgives
+
+ggscatter(EQ.df, x = "IRI_EC", y = "pro_neu.give", conf.int = TRUE, 
           cor.method = "pearson",
           add.params = list(group = "Group"),
           cor.coef = TRUE,
@@ -455,3 +457,5 @@ ggscatter(EQ.df, x = "IRI_EC", y = "gives", conf.int = TRUE,
   labs(colour = "Groups") +
   scale_color_manual(values = c("#0075C9","#E5BF21")) + 
   geom_smooth(method = "lm", color = "black")
+
+

@@ -581,10 +581,10 @@ summary(emlm)
 em.lmer <- lmer(all.emo.vector ~ all.emo.group.tag * all.emo.sit.tag * (1|all.emo.tag) , data = all.emo.dataf)
 summary(em.lmer)
 
-Y.PRO.vec <- total.boxplot[total.boxplot$total.boxplot.group.vector=="Young" & total.boxplot$total.boxplot.sit.vector=="PROS",] 
+Y.PRO.vec <- total.boxplot[total.boxplot$total.boxplot.group.vector=="Young" & total.boxplot$total.boxplot.sit.vector=="PRO",] 
 Y.PUR.vec <- total.boxplot[total.boxplot$total.boxplot.group.vector=="Young" & total.boxplot$total.boxplot.sit.vector=="PUR",] 
 Y.NEU.vec <- total.boxplot[total.boxplot$total.boxplot.group.vector=="Young" & total.boxplot$total.boxplot.sit.vector=="NEU",] 
-O.PRO.vec <- total.boxplot[total.boxplot$total.boxplot.group.vector=="Old" & total.boxplot$total.boxplot.sit.vector=="PROS",] 
+O.PRO.vec <- total.boxplot[total.boxplot$total.boxplot.group.vector=="Old" & total.boxplot$total.boxplot.sit.vector=="PRO",] 
 O.PUR.vec <- total.boxplot[total.boxplot$total.boxplot.group.vector=="Old" & total.boxplot$total.boxplot.sit.vector=="PUR",] 
 O.NEU.vec <- total.boxplot[total.boxplot$total.boxplot.group.vector=="Old" & total.boxplot$total.boxplot.sit.vector=="NEU",] 
 

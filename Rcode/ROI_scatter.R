@@ -1,13 +1,15 @@
-
 library(ggplot2)
 library(ggpubr)
 library(tidyr)
 library(dplyr)
 library(gtools)
 library(gridExtra)
+library(ggforce)
+library(ggpmisc)
+
 setwd("c:/Users/acer/Desktop/PROS/Data/fMRI_PilotData/ROI/")
 ROI_try <- read.csv("ROI_PFC.csv", header = T)
-ROI_try <- as.data.frame(ROI_try$MPFC, header = T)
+ROI_try <- as.data.frame(ROI_try, header = T)
 
 setwd("c:/Users/acer/Desktop/PROS/Data/fMRI_PilotData/")
 behavior.df <- read.csv("behavior.CSV", header = T)
@@ -38,95 +40,111 @@ tydi.ROI <- gather(ROI_try, ROI_try, value, -age.tag, -cond.tag, -tc.tag, -phase
 
 levels(tydi.ROI$phase.tag) <- list(Money_Decision = "Money_Decision", Emotion_Decision = "Emotion_Decision")
 levels(tydi.ROI$age.tag) <- list(Young = "Young", Old = "Old")
-
-print(ggline(tydi.ROI, x = "tc.tag", y = "value", add = "mean_se",
-             color = "age.tag", palette = c("#EFC000", "#0073C2"))+
-        labs(x = "Time(TR)", y = "value", 
-             colour = "age.tag", fill = "age.tag") 
-)
-
-print(ggline(tydi.ROI, x = "tc.tag", y = "value", add = "mean_se",
-             color = "age.tag", palette = c("#EFC000", "#0073C2"), facet.by = "cond.tag") +
-        labs(x = "Time(TR)", y = "value", 
-             colour = "age.tag", fill = "age.tag")
-)
-
-print(ggline(tydi.ROI, x = "tc.tag", y = "value", add = "mean_se",
-             color = "age.tag", palette = c("#EFC000", "#0073C2"), facet.by = "phase.tag") +
-        labs(x = "Time(TR)", y = "value", 
-             colour = "age.tag", fill = "age.tag")
-)
-
-print(ggline(tydi.ROI, x = "tc.tag", y = "value", add = "mean_se",
-             color = "age.tag", palette = c("#EFC000", "#0073C2"), facet.by = "ROI") +
-        labs(x = "Time(TR)", y = "value", 
-             colour = "age.tag", fill = "age.tag")
-)
-
-print(ggline(tydi.ROI, x = "tc.tag", y = "value", add = "mean_se",
-             color = "age.tag", palette = c("#EFC000", "#0073C2"), facet.by = c("ROI","phase.tag")) +
-        labs(x = "Time(TR)", y = "value", 
-             colour = "age.tag", fill = "age.tag")
-)
-
-print(ggline(tydi.ROI, x = "tc.tag", y = "value", add = "mean_se",
-             color = "age.tag", palette = c("#EFC000", "#0073C2"), facet.by = c("phase.tag", "ROI")) +
-        labs(x = "Time(TR)", y = "value",
-             colour = "age.tag", fill = "age.tag")
-)
-
-old.phase1.tb <- c()
-old.phase2.tb <- c()
-young.phase1.tb <- c()
-young.phase2.tb <- c()
-T.mean <- tapply(tydi.ROI$value, list(tydi.ROI$tc.tag, tydi.ROI$phase.tag, tydi.ROI$age.tag), mean)
-
-for (i in 1:12){
-  young.phase1.tb[i] <- T.mean[,,1][,1][i]/sum(T.mean[,,1][,1])
-  young.phase2.tb[i] <- T.mean[,,1][,2][i]/sum(T.mean[,,1][,2])
-  old.phase1.tb[i] <- T.mean[,,2][,1][i]/sum(T.mean[,,2][,1])
-  old.phase2.tb[i] <- T.mean[,,2][,2][i]/sum(T.mean[,,2][,2])
-}
-
-tc <- c(0:11)
-norm.phase1.df <- data.frame(old.phase1.tb, young.phase1.tb, tc)
-norm.phase2.df <- data.frame(old.phase2.tb, young.phase2.tb, tc)
-
-g1 <- ggplot(norm.phase1.df, aes(x=tc))
-g1 <- g1 + geom_line(aes(y=old.phase1.tb), colour="#EFC000")
-g1 <- g1 + geom_line(aes(y=young.phase1.tb), colour="#0073C2")
-g1 <- g1 + labs(title = "MD phase", x = "time(TR)", y = "value(ratio)", colour = "Group")
-g1
-
-g2 <- ggplot(norm.phase2.df, aes(x=tc))
-g2 <- g2 + geom_line(aes(y=old.phase2.tb), colour="#EFC000")
-g2 <- g2 + geom_line(aes(y=young.phase2.tb), colour="#0073C2")
-g2 <- g2 + labs(title = "ED phase" , x = "time(TR)", y = "value(ratio)", colour = "Group")
-g2
-
-# par(mfrow=c(1,1))
-# barplot(main="Original one bin contrast setting", c(1,rep(-1/11,11)))
-
-par(mfrow=c(2,2))
-barplot(main="Young MD phase", norm.phase1.df$young.phase1.tb)
-barplot(main="Old MD phase", norm.phase1.df$old.phase1.tb)
-barplot(main="Young ED phase", norm.phase2.df$young.phase2.tb)
-barplot(main="Old ED phase", norm.phase2.df$old.phase2.tb)
-
-######
+# 
+# print(ggline(tydi.ROI, x = "tc.tag", y = "value", add = "mean_se",
+#              color = "age.tag", palette = c("#EFC000", "#0073C2"))+
+#         labs(x = "Time(TR)", y = "value", 
+#              colour = "age.tag", fill = "age.tag") 
+# )
+# 
+# print(ggline(tydi.ROI, x = "tc.tag", y = "value", add = "mean_se",
+#              color = "age.tag", palette = c("#EFC000", "#0073C2"), facet.by = "cond.tag") +
+#         labs(x = "Time(TR)", y = "value", 
+#              colour = "age.tag", fill = "age.tag")
+# )
+# 
+# print(ggline(tydi.ROI, x = "tc.tag", y = "value", add = "mean_se",
+#              color = "age.tag", palette = c("#EFC000", "#0073C2"), facet.by = "phase.tag") +
+#         labs(x = "Time(TR)", y = "value", 
+#              colour = "age.tag", fill = "age.tag")
+# )
+# 
+# print(ggline(tydi.ROI, x = "tc.tag", y = "value", add = "mean_se",
+#              color = "age.tag", palette = c("#EFC000", "#0073C2"), facet.by = "ROI") +
+#         labs(x = "Time(TR)", y = "value", 
+#              colour = "age.tag", fill = "age.tag")
+# )
+# 
+# print(ggline(tydi.ROI, x = "tc.tag", y = "value", add = "mean_se",
+#              color = "age.tag", palette = c("#EFC000", "#0073C2"), facet.by = c("ROI","phase.tag")) +
+#         labs(x = "Time(TR)", y = "value", 
+#              colour = "age.tag", fill = "age.tag")
+# )
+# 
+# print(ggline(tydi.ROI, x = "tc.tag", y = "value", add = "mean_se",
+#              color = "age.tag", palette = c("#EFC000", "#0073C2"), facet.by = c("phase.tag", "ROI")) +
+#         labs(x = "Time(TR)", y = "value",
+#              colour = "age.tag", fill = "age.tag")
+# )
+# 
+# old.phase1.tb <- c()
+# old.phase2.tb <- c()
+# young.phase1.tb <- c()
+# young.phase2.tb <- c()
+# T.mean <- tapply(tydi.ROI$value, list(tydi.ROI$tc.tag, tydi.ROI$phase.tag, tydi.ROI$age.tag), mean)
+# 
+# for (i in 1:12){
+#   young.phase1.tb[i] <- T.mean[,,1][,1][i]/sum(T.mean[,,1][,1])
+#   young.phase2.tb[i] <- T.mean[,,1][,2][i]/sum(T.mean[,,1][,2])
+#   old.phase1.tb[i] <- T.mean[,,2][,1][i]/sum(T.mean[,,2][,1])
+#   old.phase2.tb[i] <- T.mean[,,2][,2][i]/sum(T.mean[,,2][,2])
+# }
+# 
+# tc <- c(0:11)
+# norm.phase1.df <- data.frame(old.phase1.tb, young.phase1.tb, tc)
+# norm.phase2.df <- data.frame(old.phase2.tb, young.phase2.tb, tc)
+# 
+# g1 <- ggplot(norm.phase1.df, aes(x=tc))
+# g1 <- g1 + geom_line(aes(y=old.phase1.tb), colour="#EFC000")
+# g1 <- g1 + geom_line(aes(y=young.phase1.tb), colour="#0073C2")
+# g1 <- g1 + labs(title = "MD phase", x = "time(TR)", y = "value(ratio)", colour = "Group")
+# g1
+# 
+# g2 <- ggplot(norm.phase2.df, aes(x=tc))
+# g2 <- g2 + geom_line(aes(y=old.phase2.tb), colour="#EFC000")
+# g2 <- g2 + geom_line(aes(y=young.phase2.tb), colour="#0073C2")
+# g2 <- g2 + labs(title = "ED phase" , x = "time(TR)", y = "value(ratio)", colour = "Group")
+# g2
+# 
+# # par(mfrow=c(1,1))
+# # barplot(main="Original one bin contrast setting", c(1,rep(-1/11,11)))
+# 
+# par(mfrow=c(2,2))
+# barplot(main="Young MD phase", norm.phase1.df$young.phase1.tb)
+# barplot(main="Old MD phase", norm.phase1.df$old.phase1.tb)
+# barplot(main="Young ED phase", norm.phase2.df$young.phase2.tb)
+# barplot(main="Old ED phase", norm.phase2.df$old.phase2.tb)
+# 
+# ######
 
 corrmergelist <- list()
 corrmerge.total <- data.frame()
+size.pro <- 6
+hjustvalue <- 300
 
-for(i in 1:4){
+addstar <- function(num){
+  tempstar <- c()
+  if (num <= 0.05 & num > 0.01){
+    tempstar <- "*  "
+  } else if (num <= 0.01 & num > 0.005) {
+    tempstar <- "** "
+  } else if (num <= 0.005 ) {
+    tempstar <- "***"
+  } else {
+    tempstar <- "   "
+  }
+  return(tempstar)
+}
+
+for(i in 1){
   sub.mean.df <- aggregate(tydi.ROI$value, list(tydi.ROI$sub.tag, tydi.ROI$cond.tag, tydi.ROI$phase.tag, tydi.ROI$age.tag), mean)
-  colnames(sub.mean.df) <- c("sub.tag", "sit", "phase", "group", "signalvalue")
+  colnames(sub.mean.df) <- c("sub.tag", "sit", "phase", "Groups", "signalvalue")
   
   sub.mean.df <- sub.mean.df[sub.mean.df$sit==i & sub.mean.df$phase=="Money_Decision",]
   
   Mgive.df <- aggregate(behavior.df$giveM, list(behavior.df$SubjectN, behavior.df$SITtag, behavior.df$GroupN), mean)
   Mgive.df <- Mgive.df[Mgive.df$Group.2==i,]
-  colnames(Mgive.df) <- c("sub.id", "situation", "group.tag", "mgive")
+  colnames(Mgive.df) <- c("sub.id", "situation", "age.tag", "mgive")
   tmp.Mgive <- Mgive.df
   
   corrmerge <- cbind(sub.mean.df, tmp.Mgive)
@@ -134,13 +152,18 @@ for(i in 1:4){
   corrmergelist[[i]] <- corrmerge
   corrmerge.total <- rbind(corrmerge.total, corrmerge)
   
-  print(ggscatter(corrmerge, x = "mgive", y = "signalvalue", 
-            color = "group", conf.int = TRUE, 
-            cor.method = "pearson",
-            cor.coef = TRUE,
+  cor.test.pro <- cor.test(corrmerge$mgive, corrmerge$signalvalue)
+  cor.test.pro.Y <- cor.test(corrmerge[corrmerge$age.tag == 1,]$mgive, corrmerge[corrmerge$age.tag == 1,]$signalvalue)
+  cor.test.pro.O <- cor.test(corrmerge[corrmerge$age.tag == 2,]$mgive, corrmerge[corrmerge$age.tag == 2,]$signalvalue)
+  
+  print(scatter.pro <- ggscatter(corrmerge, x = "mgive", y = "signalvalue", 
+            color = "Groups",
+            palette = c("#C6922C","#3A5BA0"),
             xlab = "Mean Money Given (NTD)", ylab = "Parameter Estimate",
             size = 5
             ) + 
+          geom_smooth(aes(color = Groups),method = lm, se = FALSE, size = 2) +
+          geom_hline(yintercept=0, linetype="dashed", color = "black", size=1) +
           theme(plot.title = element_text(hjust = 0.5),
                 title = element_text(size=30, face="bold"),
                 legend.text = element_text(size=30),
@@ -148,10 +171,16 @@ for(i in 1:4){
                 axis.text = element_text(size=20),
                 axis.title = element_text(size=30,face="bold"),
                 text = element_text(size=30)) +
-          labs(colour = "Groups") +
-          scale_color_manual(values = c("#0075C9","#E5BF21")) + 
-          geom_smooth(method = "lm", color = "black") 
-        ) 
+          annotate(geom="text", x=hjustvalue, y=4.5, col=c("#C6922C"), 
+                   label=paste("Young: r =", round(cor.test.pro.Y$estimate, digit = 3), addstar(round(cor.test.pro.Y$p.value, digit = 3))), 
+                   size = size.pro, hjust = 1) +
+          annotate(geom="text", x=hjustvalue, y=4, col=c("#3A5BA0"), 
+                   label=paste("  Old: r =", round(cor.test.pro.O$estimate, digit = 3), addstar(round(cor.test.pro.O$p.value, digit = 3))), 
+                   size = size.pro, hjust = 1) +
+          annotate(geom="text", x=hjustvalue, y=3.5, col="black", 
+                   label=paste("  All: r =", round(cor.test.pro$estimate, digit = 3), addstar(round(cor.test.pro$p.value, digit = 3))), 
+                   size = size.pro, hjust = 1)
+  )
 }
 
 ordered.corrmerge <- corrmergelist[[1]][order(corrmergelist[[1]]$sub.id),]
@@ -189,7 +218,7 @@ ggbarplot(tydi.ROI, x = "cond.tag", y = "value",add = "mean_se",
           color = "age.tag",
           add.params = list(group = "age.tag"),
           fill = "age.tag",
-          xlab = "Group", ylab = "Parameter Estimate",
+          xlab = "Groups", ylab = "Parameter Estimate",
           palette = "jco",
           position = position_dodge(0.8)
           
@@ -200,14 +229,14 @@ ggbarplot(tydi.ROI, x = "cond.tag", y = "value",add = "mean_se",
           axis.text = element_text(size=20),
           axis.title = element_text(size=30,face="bold"),
           text = element_text(size=30)) +
-  labs(color = "Group", fill = "Group", x = "Situations") +
+  labs(color = "Groups", fill = "Groups", x = "Situations") +
   stat_compare_means(aes(group = age.tag), label = "p.signif", label.y = 3.5, size=10)
 
 
 ggbarplot(corrmerge.total, x = "sit", y = "signalvalue",add = "mean_se",
-          color = "group",
+          color = "Groups",
           add.params = list(group = "group"),
-          fill = "group",
+          fill = "Groups",
           xlab = "Group", ylab = "Parameter Estimate",
           palette = "jco",
           position = position_dodge(0.8)
@@ -217,10 +246,10 @@ ggbarplot(corrmerge.total, x = "sit", y = "signalvalue",add = "mean_se",
         legend.text = element_text(size=30),
         legend.title = element_text(size=30),
         axis.text = element_text(size=20),
-        axis.title = element_text(size=30,face="bold"),
+        axis.title = element_text(size= 30,face="bold"),
         text = element_text(size=30)) +
   labs(color = "Groups", fill = "Groups", x = "Situations") +
-  stat_compare_means(aes(group = group), label = "p.signif", label.y = 3.5, size=10)
+  stat_compare_means(aes(group = Groups), label = "p.signif", label.y = 3.5, size=10)
 
-summary(lm(mgive ~ signalvalue*group*sit, data =corrmerge.total))
-anova(lm(mgive ~ signalvalue*group, data =corrmerge.total))
+summary(lm(mgive ~ signalvalue*Groups, data =corrmerge.total))
+anova(lm(mgive ~ signalvalue*Groups, data =corrmerge.total))

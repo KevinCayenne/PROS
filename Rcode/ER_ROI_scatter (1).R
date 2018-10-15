@@ -352,3 +352,8 @@ ER.ROI.final$ori.sub.tag <- as.factor(ER.ROI.final$ori.sub.tag)
 #        (1+sit.tag|ori.sub.tag), data = ER.ROI.final)
 # summary(lmer.ee)
 # anova(lmer.ee)
+
+sd.ER <- aggregate(list(ER.ROI.final$emo.rate, ER.ROI.final$dist) , list(ER.ROI.final$sit.tag, ER.ROI.final$age.tag) , mean)
+colnames(sd.ER)
+mean.ER <- aggregate(list(ER.ROI.final$emo.rate, ER.ROI.final$dist) , list(ER.ROI.final$sit.tag, ER.ROI.final$age.tag) , sd)
+
