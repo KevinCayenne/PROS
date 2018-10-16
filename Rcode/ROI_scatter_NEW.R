@@ -1,15 +1,20 @@
 library(ggplot2)
 library(ggpubr)
 library(tidyr)
+library(plyr)
 library(dplyr)
 library(gtools)
 library(gridExtra)
 library(ggforce)
 library(ggpmisc)
+library(data.table)
+library(devtools)
 
 setwd("c:/Users/acer/Desktop/PROS/Data/fMRI_PilotData/ROI/")
 ROI_try <- read.csv("ROI_PFC.csv", header = T)
 ROI_try <- as.data.frame(ROI_try, header = T)
+
+ROI_try <- ROI_try[,1:11]
 
 setwd("c:/Users/acer/Desktop/PROS/Data/fMRI_PilotData/")
 behavior.df <- read.csv("behavior.CSV", header = T)
@@ -41,9 +46,11 @@ ROI_try <- cbind(ROI_try, age.tag, cond.tag, tc.tag, phase.tag, sub.tag)
 tydi.ROI.pre <- gather(ROI_try, ROI_try, value, -age.tag, -cond.tag, -tc.tag, -phase.tag, -sub.tag)
 
 tydi.ROI.pre$ROI_try <- as.factor(tydi.ROI.pre$ROI_try)
+tydi.ROI.pre$cond.tag <- as.factor(tydi.ROI.pre$cond.tag)
 levels(tydi.ROI.pre$phase.tag) <- list(Money_Decision = "Money_Decision", Emotion_Decision = "Emotion_Decision")
 levels(tydi.ROI.pre$age.tag) <- list(Young = "Young", Old = "Old")
 
+## start scatter plots
 for (j in analysis.col){
   
     tydi.ROI <- tydi.ROI.pre[tydi.ROI.pre$ROI_try==levels(tydi.ROI.pre$ROI_try)[j],]
@@ -52,7 +59,9 @@ for (j in analysis.col){
     corrmerge.total <- data.frame()
     
     ## set variables
-    P.title <- c("(12, 47, -10)", "(12, 41, 8)", "(-9, 50, 26)", "(-9, 38, 47)", "(-12, 47, 53)", "(-12, -4, 56)", "(-9, 8, 62)", "(-15, -25, 71)")
+    P.title <- c("(12, 47, -10)", "(-15, 29, -7)", "(-3, 32, -1)", "(12, 41, 8)",
+                 "(18, 47, 17)", "(-15, 41, 20)", "(-6, 56, 20)", "(-9, 50, 26)",
+                 "(12, 53, 29)", "(-21, -7, 41)","(-12, 17, 53)")
     size.pro <- 6
     hjustvalue <- 300
     y.color <- "#C6922C"
@@ -171,56 +180,207 @@ for (j in analysis.col){
                                     face = "bold", 
                                     size = 50))
 
-jpeg(file = paste(P.title[j], ".jpg"), width = 2500, height = 1500)
-print(temp.P)
-dev.off()
+    jpeg(file = paste(P.title[j], ".jpg"), width = 2500, height = 1500)
+    print(temp.P)
+    dev.off()
 
 }
 
-tydi.ROI.pre.pros <- tydi.ROI.pre[tydi.ROI.pre$cond.tag == 1,]
+## start barplot 
 
-aggre.ROI.pros <- ddply(tydi.ROI.pre.pros, 
-                        c("age.tag", "ROI_try"),
-                        summarise,
-                        N = length(value),
-                        mean = mean(value),
-                        sd = sd(value),
-                        se = sd / sqrt(N)
-                        )
+tydi.ROI.pre.MD <- tydi.ROI.pre[tydi.ROI.pre$cond.tag %in% c(1:4),]
 
-ggbarplot(aggre.ROI.pros, 
-          x = "ROI", 
-          y = "x", 
-          color = "Groups",
-          fill = "Groups",
-          palette = c("#C6922C","#3A5BA0"),
-          xlab = "ROI", ylab = "Parameter Estimate",
-          size = 1,
-          facet.by = "Groups"
-          )
+gg.MD.title <- c("PRO", "PUR", "NEU", "UNC")
+gg.MD.signal <- list()
 
-ggplot(aggre.ROI.pros, aes(x = ROI_try, 
-                           y = mean, 
-                           fill = age.tag)) + 
-  geom_bar(stat="identity", position = position_dodge2(preserve = "single")) +
-  theme(panel.background = element_rect(fill = "white", colour = "black")) +
-  geom_errorbar(aes(ymin = mean - se, ymax = mean + se, color = age.tag), 
-                width = 0.5, 
-                position= position_dodge(width=0.9)) +
+for (MDnum in 1:4){
+    
+  tydi.ROI.pre.pros <- tydi.ROI.pre[tydi.ROI.pre$cond.tag == MDnum,]
+  
+  aggre.ROI.pros <- ddply(tydi.ROI.pre.pros, 
+                          c("age.tag", "ROI_try"),
+                          summarise,
+                          N = length(value),
+                          mean = mean(value),
+                          sd = sd(value),
+                          se = sd / sqrt(N)
+                          )
+  
+  aggre.ROI.MD <- ddply(tydi.ROI.pre.MD, 
+                          c("age.tag", "ROI_try", "cond.tag"),
+                          summarise,
+                          N = length(value),
+                          mean = mean(value),
+                          sd = sd(value),
+                          se = sd / sqrt(N)
+  )
+
+ gg.MD.signal[[MDnum]] <- ggplot(aggre.ROI.pros, aes(x = ROI_try, 
+                             y = mean, 
+                             fill = age.tag)) + 
+    geom_bar(stat="identity", position = position_dodge2(preserve = "single")) +
+    theme(panel.background = element_rect(fill = "white", colour = "black")) +
+    geom_errorbar(aes(ymin = mean - se, ymax = mean + se, color = age.tag), 
+                  width = 0.5, 
+                  position= position_dodge(width=0.9)) +
+    scale_color_manual("Groups", values = c("Young" = y.color, "Old" = o.color)) +
+    scale_fill_manual("Groups", values = c("Young" = y.color, "Old" = o.color)) +
+    
+    labs(title = gg.MD.title[MDnum], x = "", y = "",colour = "Groups") +   
+    theme(plot.title = element_text(hjust = 0.5, face="bold"),
+          title = element_text(size=20),
+          legend.text = element_text(size=20),
+          legend.title = element_text(size=20),
+          axis.text = element_text(size=10),
+          axis.title = element_text(size=20,face="bold"),
+          strip.text.x = element_text(size=20, face="bold"),
+          strip.background = element_rect(colour="black", fill="white")
+    ) +
+    facet_wrap(~ age.tag) +
+    ylim(c(-0.9, 1.2)) +
+    geom_hline(yintercept = 0, color = "black", size = 1) +     
+    geom_smooth(data = aggre.ROI.pros, aes(x = as.numeric(ROI_try), y=mean), color = "black", size = 1.3, se = FALSE, method = "lm") +
+    geom_smooth(data = aggre.ROI.pros, aes(x = as.numeric(ROI_try), y=mean), color = "black", size = 1.3, se = FALSE, linetype="dashed", method = "lm", formula = y ~ poly(x,2))
+
+}
+
+temp.signal.MD <- ggarrange(gg.MD.signal[[1]],
+                            gg.MD.signal[[2]],
+                            gg.MD.signal[[3]],
+                            gg.MD.signal[[4]],
+                            nrow = 1, ncol = 4,
+                            common.legend = TRUE, legend = "bottom", 
+                            font.label = list(size= 40))
+
+temp.signal.MD.F <- annotate_figure(temp.signal.MD,
+                                    top = text_grob("", 
+                                                    color = "black", 
+                                                    face = "bold", 
+                                                    size = 30),
+                                    bottom = text_grob("ROIs", 
+                                                       color = "black", size = 30),
+                                    left = text_grob("Parameter Estimate", color = "black", size = 30, rot = 90)
+                                    )
+
+jpeg(file = paste("PE_ROI.jpg"), width = 1500, height = 800)
+print(temp.signal.MD.F)
+dev.off()
+
+## 
+# ggbarplot(tydi.ROI.pre.MD,
+#           x = "age.tag",
+#           y = "value",
+#           color = "age.tag",
+#           palette = c("#C6922C","#3A5BA0"),
+#           xlab = "Situation", ylab = "Parameter Estimate",
+#           size = 1,
+#           facet.by = c("ROI_try"),
+#           position = position_dodge(0.9),
+#           add = c("mean_se"),
+#           add.params = list(group = "cond.tag")
+#           )
+
+levels(aggre.ROI.MD$cond.tag) <- list("PRO" = 1, "PUR" = 2, "NEU" = 3, "UNC" = 4,
+                                      "+300" = 5, "+50" = 6, "+20" = 7, "Same" = 8, 
+                                      "-20" = 9, "-50" = 10, "0" = 11)
+
+aggre.ROI.MD$ROI_try <- as.factor(aggre.ROI.MD$ROI_try)
+
+# 
+# ggplot(aggre.ROI.MD, aes(x = age.tag, 
+#                          y = mean,
+#                          fill = age.tag)) + 
+#   geom_bar(stat="identity", position = position_dodge2(.9)) +
+#   facet_grid(~ cond.tag) +
+#   geom_smooth(aes(x = age.tag, y = mean, group = cond.tag),
+#               position = position_dodge2(.9), stat = "smooth",
+#               color = "black", size = 1.3, se = FALSE, method = "lm") +
+#   
+#   scale_color_manual("Groups", values = c("Young" = y.color, "Old" = o.color)) +
+#   scale_fill_manual("Groups", values = c("Young" = y.color, "Old" = o.color)) +
+#   theme(panel.background = element_rect(fill = "white", colour = "black")) +
+#   geom_errorbar(aes(ymin = mean - se, ymax = mean + se, color = age.tag), 
+#                 width = 0.9, 
+#                 position = position_dodge2(0.9, padding = 0.8)) +
+#   
+#   labs(x = "Situations", y = "Parameter Estimate", colour = "Groups") +   
+#   theme(plot.title = element_text(hjust = 0.5, face="bold"),
+#         title = element_text(size=30),
+#         legend.text = element_text(size=30),
+#         legend.title = element_text(size=30),
+#         axis.text = element_text(size=30),
+#         axis.title = element_text(size=30,face="bold"),
+#         strip.text.x = element_text(size=20, face="bold"),
+#         strip.background = element_rect(colour="black", fill="white")
+#   ) +
+#   geom_hline(yintercept = 0, color = "black", size = 1) 
+# 
+#               position = position_dodge2(1.9), color = "black", 
+#               size = 1.3, se = FALSE, linetype="dashed", method = "lm", 
+#               formula = y ~ poly(x,2))
+
+gg.PE.ROI <- ggplot(aggre.ROI.MD, aes(x = ROI_try, 
+                         y = mean,
+                         fill = age.tag)) + 
+              geom_bar(stat="identity", position = position_dodge2(.9)) +
+              facet_grid(~ cond.tag) +
+              
+              geom_smooth(aes(x = ROI_try, y = mean, group = age.tag, color = age.tag),
+                          position = position_dodge2(.9), stat = "smooth",
+                          size = 1.3, se = FALSE, method = "lm") +
+              geom_smooth(aes(x = ROI_try, y = mean, group = age.tag, color = age.tag),
+                          position = position_dodge2(.9), stat = "smooth",
+                          size = 1.3, se = FALSE, linetype="dashed", 
+                          method = "lm", formula = y ~ poly(x,2)) +
+              
+              scale_color_manual("Groups", values = c("Young" = y.color, "Old" = o.color)) +
+              scale_fill_manual("Groups", values = c("Young" = y.color, "Old" = o.color)) +
+              theme(panel.background = element_rect(fill = "white", colour = "black")) +
+              geom_errorbar(aes(ymin = mean - se, ymax = mean + se, color = age.tag), 
+                            width = 0.9, 
+                            position = position_dodge2(0.9, padding = 0.8)) +
+              
+              labs(x = "ROIs", y = "Parameter Estimate", colour = "Groups") +   
+              theme(plot.title = element_text(hjust = 0.5, face="bold"),
+                    title = element_text(size=30),
+                    legend.text = element_text(size=30),
+                    legend.title = element_text(size=30),
+                    axis.text = element_text(size=30),
+                    axis.title = element_text(size=30,face="bold"),
+                    strip.text.x = element_text(size=20, face="bold"),
+                    strip.background = element_rect(colour="black", fill="white")
+              ) +
+              geom_hline(yintercept = 0, color = "black", size = 1) 
+
+jpeg(file = paste("gg_PE_ROI.jpg"), width = 1500, height = 800)
+print(gg.PE.ROI)
+dev.off()
+
+gg.PE.ROI.cond <- ggplot(aggre.ROI.MD, aes(x = cond.tag, 
+                         y = mean,
+                         fill = age.tag)) + 
+  geom_bar(stat="identity", position = position_dodge2(.9)) +
+  facet_grid(~ ROI_try) +
+  
   scale_color_manual("Groups", values = c("Young" = y.color, "Old" = o.color)) +
   scale_fill_manual("Groups", values = c("Young" = y.color, "Old" = o.color)) +
+  theme(panel.background = element_rect(fill = "white", colour = "black")) +
+  geom_errorbar(aes(ymin = mean - se, ymax = mean + se, color = age.tag), 
+                width = 0.9, 
+                position = position_dodge2(0.9, padding = 0.8)) +
   
   labs(x = "ROIs", y = "Parameter Estimate", colour = "Groups") +   
   theme(plot.title = element_text(hjust = 0.5, face="bold"),
-        title = element_text(size=20),
-        legend.text = element_text(size=20),
-        legend.title = element_text(size=20),
-        axis.text = element_text(size=20),
-        axis.title = element_text(size=20,face="bold"),
+        title = element_text(size=30),
+        legend.text = element_text(size=30),
+        legend.title = element_text(size=30),
+        axis.text = element_text(size=10),
+        axis.title = element_text(size=30,face="bold"),
         strip.text.x = element_text(size=20, face="bold"),
         strip.background = element_rect(colour="black", fill="white")
   ) +
-  facet_wrap(~ age.tag) +
-  geom_hline(yintercept = 0, color = "black", size = 1) +     
-  geom_smooth(data = aggre.ROI.pros, aes(x = as.numeric(ROI_try), y=mean), color = "black", size = 1.3, se = FALSE, method = "lm") +
-  geom_smooth(data = aggre.ROI.pros, aes(x = as.numeric(ROI_try), y=mean),color = "black", size = 1.3, se = FALSE, linetype="dashed", method = "lm", formula = y ~ poly(x,2))
+  geom_hline(yintercept = 0, color = "black", size = 1) 
+
+jpeg(file = paste("gg_PE_ROI_cond.jpg"), width = 1500, height = 800)
+print(gg.PE.ROI.cond)
+dev.off()

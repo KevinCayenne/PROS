@@ -7,7 +7,8 @@ o.color <- "#3A5BA0"
 setwd("c:/Users/acer/Desktop")
 
 levels(total.boxplot$total.boxplot.sit.vector) <- list(PRO = "PRO", PUR = "PUR", NEU = "NEU", UNC = "UNC")
-levels(total.boxplot$total.boxplot.group.vector) <- list(Old = "Old", Young = "Young")
+levels(total.boxplot$total.boxplot.group.vector) <- list(Young = "Young", Old = "Old")
+levels(inter.total.money$inter.group) <- list(Young = "Young", Old = "Old")
 
 dd.pros <- ddply(total.boxplot, 
                  c("total.boxplot$total.boxplot.sit.vector", "total.boxplot$total.boxplot.group.vector"),
