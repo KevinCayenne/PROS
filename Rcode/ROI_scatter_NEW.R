@@ -89,14 +89,14 @@ for (j in analysis.col){
     sub.mean.df <- aggregate(tydi.ROI$value, list(tydi.ROI$sub.tag, tydi.ROI$cond.tag, tydi.ROI$phase.tag, tydi.ROI$age.tag), mean)
     colnames(sub.mean.df) <- c("sub.tag", "sit", "phase", "Groups", "signalvalue")
     
-    sub.mean.df <- sub.mean.df[sub.mean.df$sit==1 & sub.mean.df$phase=="Money_Decision",]
+    sub.mean.pro.df <- sub.mean.df[sub.mean.df$sit==1 & sub.mean.df$phase=="Money_Decision",]
     
     Mgive.df <- aggregate(behavior.df$giveM, list(behavior.df$SubjectN, behavior.df$SITtag, behavior.df$GroupN), mean)
     Mgive.df <- Mgive.df[Mgive.df$Group.2==1,]
     colnames(Mgive.df) <- c("sub.id", "situation", "age.tag", "mgive")
     tmp.Mgive <- Mgive.df
     
-    corrmerge <- cbind(sub.mean.df, tmp.Mgive)
+    corrmerge <- cbind(sub.mean.pro.df, tmp.Mgive)
     
     new.corrmerge <- corrmerge[corrmerge$sub.id %in% EQ.df$ID,]
     new.corrmerge <- new.corrmerge[order(new.corrmerge$sub.id),]
@@ -237,7 +237,7 @@ for (MDnum in 1:4){
           strip.background = element_rect(colour="black", fill="white")
     ) +
     facet_wrap(~ age.tag) +
-    ylim(c(-0.9, 1.2)) +
+    ylim(c(-0.8, 1)) +
     geom_hline(yintercept = 0, color = "black", size = 1) +     
     geom_smooth(data = aggre.ROI.pros, aes(x = as.numeric(ROI_try), y=mean), color = "black", size = 1.3, se = FALSE, method = "lm") +
     geom_smooth(data = aggre.ROI.pros, aes(x = as.numeric(ROI_try), y=mean), color = "black", size = 1.3, se = FALSE, linetype="dashed", method = "lm", formula = y ~ poly(x,2))
