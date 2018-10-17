@@ -222,11 +222,11 @@ for (ii in 1:length(temp.factor.list)){
                               common.legend = TRUE, legend = "bottom", 
                               font.label = list(size= 40))
   
-  temp.factor.P <- annotate_figure(temp.factor.K,
+  temp.factor.K <- annotate_figure(temp.factor.K,
                                   top = text_grob(title.factor.names[ii], 
                                                   color = "black", 
                                                   face = "bold", 
-                                                  size = 50))
+                                                  size = 100))
   
   jpeg(file = paste(title.factor[ii], ".jpg"), width = 6000, height = 2500)
   print(temp.factor.K)
