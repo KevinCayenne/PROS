@@ -61,7 +61,7 @@ temp.factor.logInc <- list()
 
 for (j in analysis.col){
   tydi.ROI <- tydi.ROI.pre[tydi.ROI.pre$ROI_try==levels(tydi.ROI.pre$ROI_try)[j],]
-  intercation.ROI.pro.pur <- cbind(tydi.ROI[tydi.ROI$cond.tag == 1,c(1:6)], value = tydi.ROI[tydi.ROI$cond.tag == 1,]$value - tydi.ROI[tydi.ROI$cond.tag == 2,]$value) 
+  intercation.ROI.pro.pur <- cbind(tydi.ROI[tydi.ROI$cond.tag == 1,c(1:6)], value = tydi.ROI[tydi.ROI$cond.tag == 1,]$value - tydi.ROI[tydi.ROI$cond.tag == 3,]$value) 
   
   sub.mean.df.inter <- aggregate(intercation.ROI.pro.pur$value, list(intercation.ROI.pro.pur$sub.tag, intercation.ROI.pro.pur$cond.tag, intercation.ROI.pro.pur$phase.tag, intercation.ROI.pro.pur$age.tag), mean)
   colnames(sub.mean.df.inter) <- c("sub.tag", "sit", "phase", "Groups", "signalvalue")
@@ -356,31 +356,4 @@ jpeg(file = paste("gg_PE_ROI.jpg"), width = 1500, height = 800)
 print(gg.PE.ROI)
 dev.off()
 
-gg.PE.ROI.cond <- ggplot(aggre.ROI.MD, aes(x = cond.tag, 
-                                           y = mean,
-                                           fill = age.tag)) + 
-  geom_bar(stat="identity", position = position_dodge2(.9)) +
-  facet_grid(~ ROI_try) +
-  
-  scale_color_manual("Groups", values = c("Young" = y.color, "Old" = o.color)) +
-  scale_fill_manual("Groups", values = c("Young" = y.color, "Old" = o.color)) +
-  theme(panel.background = element_rect(fill = "white", colour = "black")) +
-  geom_errorbar(aes(ymin = mean - se, ymax = mean + se, color = age.tag), 
-                width = 0.9, 
-                position = position_dodge2(0.9, padding = 0.8)) +
-  
-  labs(x = "ROIs", y = "Parameter Estimate", colour = "Groups") +   
-  theme(plot.title = element_text(hjust = 0.5, face="bold"),
-        title = element_text(size=30),
-        legend.text = element_text(size=30),
-        legend.title = element_text(size=30),
-        axis.text = element_text(size=10),
-        axis.title = element_text(size=30,face="bold"),
-        strip.text.x = element_text(size=20, face="bold"),
-        strip.background = element_rect(colour="black", fill="white")
-  ) +
-  geom_hline(yintercept = 0, color = "black", size = 1) 
 
-jpeg(file = paste("gg_PE_ROI_cond.jpg"), width = 1500, height = 800)
-print(gg.PE.ROI.cond)
-dev.off()
