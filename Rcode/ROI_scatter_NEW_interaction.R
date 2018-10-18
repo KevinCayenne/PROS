@@ -15,7 +15,7 @@ setwd("c:/Users/acer/Desktop/PROS/Data/fMRI_PilotData/ROI/")
 ROI_try <- read.csv("ROI_PFC.csv", header = T)
 ROI_try <- as.data.frame(ROI_try, header = T)
 
-ROI_try <- ROI_try[,1:11]
+ROI_try <- ROI_try[,1:9]
 
 setwd("c:/Users/acer/Desktop/PROS/Data/fMRI_PilotData/")
 behavior.df <- read.csv("behavior.CSV", header = T)
@@ -52,44 +52,56 @@ levels(tydi.ROI.pre$phase.tag) <- list(Money_Decision = "Money_Decision", Emotio
 levels(tydi.ROI.pre$age.tag) <- list(Young = "Young", Old = "Old")
 
 temp.factor.MDgiven <- list()
+temp.factor.MDgiven.PROPUR <- list()
+temp.factor.MDgiven.PRONEU <- list()
 temp.factor.IRI_EC <- list()
 temp.factor.IRI_PD <- list()
+temp.factor.IRI_PT <- list()
+temp.factor.IRI_FS <- list()
 temp.factor.IRI <- list()
 temp.factor.EQ <- list()
 temp.factor.Income <- list()
 temp.factor.logInc <- list()
 
+PURorNEU <- 2 # 2 (PUR) or 3(NEU)
+
 for (j in analysis.col){
   tydi.ROI <- tydi.ROI.pre[tydi.ROI.pre$ROI_try==levels(tydi.ROI.pre$ROI_try)[j],]
-  intercation.ROI.pro.pur <- cbind(tydi.ROI[tydi.ROI$cond.tag == 1,c(1:6)], value = tydi.ROI[tydi.ROI$cond.tag == 1,]$value - tydi.ROI[tydi.ROI$cond.tag == 3,]$value) 
+  intercation.ROI.pro.pur <- cbind(tydi.ROI[tydi.ROI$cond.tag == 1,c(1:6)], value = tydi.ROI[tydi.ROI$cond.tag == 1,]$value - tydi.ROI[tydi.ROI$cond.tag == PURorNEU,]$value) 
   
   sub.mean.df.inter <- aggregate(intercation.ROI.pro.pur$value, list(intercation.ROI.pro.pur$sub.tag, intercation.ROI.pro.pur$cond.tag, intercation.ROI.pro.pur$phase.tag, intercation.ROI.pro.pur$age.tag), mean)
   colnames(sub.mean.df.inter) <- c("sub.tag", "sit", "phase", "Groups", "signalvalue")
   
   Mgive.df <- aggregate(behavior.df$giveM, list(behavior.df$SubjectN, behavior.df$SITtag, behavior.df$GroupN), mean)
-  Mgive.df <- Mgive.df[Mgive.df$Group.2==1,]
+  Mgive.df.pro <- Mgive.df[Mgive.df$Group.2 == 1,]
+  colnames(Mgive.df.pro) <- c("sub.id", "situation", "age.tag", "mgive")
   colnames(Mgive.df) <- c("sub.id", "situation", "age.tag", "mgive")
-  tmp.Mgive <- Mgive.df
+  tmp.Mgive <- cbind(Mgive.df.pro ,
+                     PROmPUR = Mgive.df[Mgive.df$situation == 1,]$mgive - Mgive.df[Mgive.df$situation == 2,]$mgive,
+                     PROmNEU = Mgive.df[Mgive.df$situation == 1,]$mgive - Mgive.df[Mgive.df$situation == 3,]$mgive)
   
   corrmerge <- cbind(sub.mean.df.inter, tmp.Mgive)
   
   new.corrmerge <- corrmerge[corrmerge$sub.id %in% EQ.df$ID,]
   new.corrmerge <- new.corrmerge[order(new.corrmerge$sub.id),]
-  new.corrmerge <- cbind(new.corrmerge, IRI_EC = EQ.df$IRI_EC, IRI_PD = EQ.df$IRI_PD, IRI = EQ.df$IRI, EQ = EQ.df$EQ, Income = EQ.df$mean_gain, logIncome = log(EQ.df$mean_gain)) 
+  new.corrmerge <- cbind(new.corrmerge, IRI_EC = EQ.df$IRI_EC, IRI_PD = EQ.df$IRI_PD, IRI_PT = EQ.df$IRI_PT, IRI_FS = EQ.df$IRI_FS, IRI = EQ.df$IRI, EQ = EQ.df$EQ, Income = EQ.df$mean_gain, logIncome = log(EQ.df$mean_gain)) 
   
   ## set variables
   P.title <- c("(12, 47, -10)", "(-15, 29, -7)", "(-3, 32, -1)", "(12, 41, 8)",
-               "(18, 47, 17)", "(-15, 41, 20)", "(-6, 56, 20)", "(-9, 50, 26)",
-               "(12, 53, 29)", "(-21, -7, 41)","(-12, 17, 53)")
+               "(18, 47, 17)", "(-15, 41, 20)", "(-9, 50, 26)", "(-21, -7, 41)","(-12, 17, 53)")
   size.pro <- 6
   hjustvalue <- 300
   y.color <- "#C6922C"
   o.color <- "#3A5BA0"
   size.pro <- 10
   
-  hjustvalue <- c(400, 60, 50, 90, 90, 125000, 15)
-  select.col <- c(9:15)
-  xlab.names <- c("Mean Money Given (NTD)", "IRI EC Score", "IRI PD Score", "IRI Score", "EQ Score", "Self-report Income (NTD)", "log Self-report Income (NTD)")
+  hjustvalue <- c(400, 400, 400, 60, 50, 50, 50, 90, 90, 125000, 15)
+  select.col <- c(9:19)
+  xlab.names <- c("Mean amount of money apportion (NTD) PRO", 
+                  "Mean amount of money apportion (NTD) PRO-PUR", 
+                  "Mean amount of money apportion (NTD) PRO-NEU",
+                  "IRI EC Score", "IRI PD Score", "IRI PT Score", "IRI FS Score",
+                  "IRI Score", "EQ Score", "Self-report Income (NTD)", "log Self-report Income (NTD)")
   ##
   
   addstar <- function(num){
@@ -98,7 +110,7 @@ for (j in analysis.col){
       tempstar <- "*  "
     } else if (num <= 0.01 & num > 0.005) {
       tempstar <- "** "
-    } else if (num <= 0.005 ) {
+    } else if (num <= 0.005) {
       tempstar <- "***"
     } else {
       tempstar <- "   "
@@ -170,12 +182,16 @@ for (j in analysis.col){
   }
   
   temp.factor.MDgiven[[j]] <- pros.scatter[[1]] 
-  temp.factor.IRI_EC[[j]] <- pros.scatter[[2]]
-  temp.factor.IRI_PD[[j]] <- pros.scatter[[3]]
-  temp.factor.IRI[[j]] <- pros.scatter[[4]]
-  temp.factor.EQ[[j]] <- pros.scatter[[5]]
-  temp.factor.Income[[j]] <- pros.scatter[[6]]
-  temp.factor.logInc[[j]] <- pros.scatter[[7]]
+  temp.factor.MDgiven.PROPUR[[j]] <- pros.scatter[[2]]
+  temp.factor.MDgiven.PRONEU[[j]] <-pros.scatter[[3]]
+  temp.factor.IRI_EC[[j]] <- pros.scatter[[4]]
+  temp.factor.IRI_PD[[j]] <- pros.scatter[[5]]
+  temp.factor.IRI_PT[[j]] <- pros.scatter[[6]]
+  temp.factor.IRI_FS[[j]] <- pros.scatter[[7]]
+  temp.factor.IRI[[j]] <- pros.scatter[[8]]
+  temp.factor.EQ[[j]] <- pros.scatter[[9]]
+  temp.factor.Income[[j]] <- pros.scatter[[10]]
+  temp.factor.logInc[[j]] <- pros.scatter[[11]]
   
   temp.K <- ggarrange(pros.scatter[[1]],
                       pros.scatter[[2]],
@@ -184,8 +200,12 @@ for (j in analysis.col){
                       pros.scatter[[5]],
                       pros.scatter[[6]],
                       pros.scatter[[7]],
-                      nrow = 2, ncol = 4, 
-                      labels = c("A", "B", "C", "D", "E", "F", "G"),
+                      pros.scatter[[8]],
+                      pros.scatter[[9]],
+                      pros.scatter[[10]],
+                      pros.scatter[[11]],
+                      nrow = 2, ncol = 6, 
+                      labels = c("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"),
                       common.legend = TRUE, legend = "bottom", 
                       font.label = list(size= 40))
   
@@ -193,17 +213,19 @@ for (j in analysis.col){
                             top = text_grob(P.title[j], 
                                             color = "black", 
                                             face = "bold", 
-                                            size = 50))
+                                            size = 100))
   
-  jpeg(file = paste(P.title[j], ".jpg"), width = 2500, height = 1500)
+  jpeg(file = paste(P.title[j], ".jpg"), width = 4000, height = 1500)
   print(temp.P)
   dev.off()
 }
 
-temp.factor.list <- list(temp.factor.MDgiven, temp.factor.IRI_EC, temp.factor.IRI_PD, temp.factor.IRI, temp.factor.EQ, temp.factor.Income, temp.factor.logInc)
+temp.factor.list <- list(temp.factor.MDgiven, temp.factor.MDgiven.PROPUR, temp.factor.MDgiven.PRONEU, temp.factor.IRI_EC, temp.factor.IRI_PD, temp.factor.IRI_PT, temp.factor.IRI_FS, temp.factor.IRI, temp.factor.EQ, temp.factor.Income, temp.factor.logInc)
 
-title.factor.names <- c("Mean money given in PRO", "IRI EC Score", "IRI PD Score", "IRI Score", "EQ Score", "Self-report Income (NTD)", "log Self-report Income (NTD)")
-title.factor <- c("Mean_money_given_in_PRO", "IRIEC_Score", "IRIPD_Score", "IRI_Score", "EQ_Score", "Self-report_Income", "log Self-report Income")
+title.factor.names <- c("Mean amount of money apportion (NTD) PRO", "Mean amount of money apportion (NTD) PRO-PUR", "Mean amount of money apportion (NTD) PRO-NEU",
+                        "IRI EC Score", "IRI PD Score", "IRI PT Score", "IRI FS Score", "IRI Score", "EQ Score", "Self-report Income (NTD)", "log Self-report Income (NTD)")
+
+title.factor <- c("Mean_money_given_in_PRO", "Mean_money_given_in_PROPUR", "Mean_money_given_in_PRONEU", "IRIEC_Score", "IRIPD_Score", "IRIPT_Score", "IRIFS_Score", "IRI_Score", "EQ_Score", "Self-report_Income", "log Self-report Income")
 
 for (ii in 1:length(temp.factor.list)){
   temp.factor.K <-  ggarrange(temp.factor.list[[ii]][[1]],
@@ -215,9 +237,7 @@ for (ii in 1:length(temp.factor.list)){
                               temp.factor.list[[ii]][[7]],
                               temp.factor.list[[ii]][[8]],
                               temp.factor.list[[ii]][[9]],
-                              temp.factor.list[[ii]][[10]],
-                              temp.factor.list[[ii]][[11]],
-                              nrow = 2, ncol = 6, 
+                              nrow = 2, ncol = 5, 
                               labels = c("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"),
                               common.legend = TRUE, legend = "bottom", 
                               font.label = list(size= 40))
@@ -226,9 +246,9 @@ for (ii in 1:length(temp.factor.list)){
                                   top = text_grob(title.factor.names[ii], 
                                                   color = "black", 
                                                   face = "bold", 
-                                                  size = 100))
+                                                  size = 80))
   
-  jpeg(file = paste(title.factor[ii], ".jpg"), width = 6000, height = 2500)
+  jpeg(file = paste(title.factor[ii], ".jpg"), width = 4000, height = 1500)
   print(temp.factor.K)
   dev.off()
 }

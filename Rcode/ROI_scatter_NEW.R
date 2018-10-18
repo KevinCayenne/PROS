@@ -14,7 +14,7 @@ setwd("c:/Users/acer/Desktop/PROS/Data/fMRI_PilotData/ROI/")
 ROI_try <- read.csv("ROI_PFC.csv", header = T)
 ROI_try <- as.data.frame(ROI_try, header = T)
 
-ROI_try <- ROI_try[,1:11]
+ROI_try <- ROI_try[,1:9]
 
 setwd("c:/Users/acer/Desktop/PROS/Data/fMRI_PilotData/")
 behavior.df <- read.csv("behavior.CSV", header = T)
@@ -60,8 +60,7 @@ for (j in analysis.col){
     
     ## set variables
     P.title <- c("(12, 47, -10)", "(-15, 29, -7)", "(-3, 32, -1)", "(12, 41, 8)",
-                 "(18, 47, 17)", "(-15, 41, 20)", "(-6, 56, 20)", "(-9, 50, 26)",
-                 "(12, 53, 29)", "(-21, -7, 41)","(-12, 17, 53)")
+                 "(18, 47, 17)", "(-15, 41, 20)", "(-9, 50, 26)","(-21, -7, 41)","(-12, 17, 53)")
     size.pro <- 6
     hjustvalue <- 300
     y.color <- "#C6922C"
@@ -69,7 +68,7 @@ for (j in analysis.col){
     size.pro <- 10
     hjustvalue <- c(400, 60, 50, 90, 125000, 15)
     select.col <- c(9:14)
-    xlab.names <- c("Mean Money Given (NTD)", "IRI EC Score", "IRI PD Score", "EQ Score", "Self-report Income (NTD)", "log Self-report Income (NTD)")
+    xlab.names <- c("Mean amount of money apportion (NTD)", "IRI EC Score", "IRI PD Score", "EQ Score", "Self-report Income (NTD)", "log Self-report Income (NTD)")
     ##
     
     addstar <- function(num){

@@ -1,19 +1,21 @@
 
-select.col <- c(10:15)
-corr.names <- c("IRI EC Score", "IRI PD Score", "IRI Score", "EQ Score", "Self-report Income (NTD)", "log Self-report Income (NTD)")
+select.col <- c(12:19)
+corr.names <- c("IRI EC Score", "IRI PD Score", "IRI PT Score", "IRI FS Score", "IRI Score", "EQ Score", "Self-report Income (NTD)", "log Self-report Income (NTD)")
 MD.cor.scatter <- list()
+hjustvalue.corr <- c(60, 50, 50, 50, 90, 90, 125000, 15)
 ttt <- 1
+contrast.num <- 10 
 
 for (i in select.col){
-  Y.lm <- summary(lm(new.corrmerge[new.corrmerge$age.tag == 1,][,i] ~ new.corrmerge[new.corrmerge$age.tag == 1,]$mgive))
-  O.lm <- summary(lm(new.corrmerge[new.corrmerge$age.tag == 2,][,i] ~ new.corrmerge[new.corrmerge$age.tag == 2,]$mgive))
-  All.lm <- summary(lm(new.corrmerge[,i] ~ new.corrmerge$signalvalue))
+  Y.lm <- summary(lm(new.corrmerge[new.corrmerge$age.tag == 1,][,i] ~ new.corrmerge[new.corrmerge$age.tag == 1,][,contrast.num]))
+  O.lm <- summary(lm(new.corrmerge[new.corrmerge$age.tag == 2,][,i] ~ new.corrmerge[new.corrmerge$age.tag == 2,][,contrast.num]))
+  All.lm <- summary(lm(new.corrmerge[,i] ~ new.corrmerge$PROmPUR))
   
-  cor.test.pro.Y <- cor.test(new.corrmerge[new.corrmerge$age.tag == 1,][,i], new.corrmerge[new.corrmerge$age.tag == 1,]$mgive)
-  cor.test.pro.O <- cor.test(new.corrmerge[new.corrmerge$age.tag == 2,][,i], new.corrmerge[new.corrmerge$age.tag == 2,]$mgive)
-  cor.test.pro <- cor.test(new.corrmerge[,i], new.corrmerge$mgive)
+  cor.test.pro.Y <- cor.test(new.corrmerge[new.corrmerge$age.tag == 1,][,i], new.corrmerge[new.corrmerge$age.tag == 1,][,contrast.num])
+  cor.test.pro.O <- cor.test(new.corrmerge[new.corrmerge$age.tag == 2,][,i], new.corrmerge[new.corrmerge$age.tag == 2,][,contrast.num])
+  cor.test.pro <- cor.test(new.corrmerge[,i], new.corrmerge[,contrast.num])
   
-  MD.cor.scatter[[ttt]] <- ggscatter(new.corrmerge, x = colnames(new.corrmerge)[i], y = "mgive", 
+  MD.cor.scatter[[ttt]] <- ggscatter(new.corrmerge, x = colnames(new.corrmerge)[i], y = contrast.name[2], 
                                      color = "Groups",
                                      palette = c("#C6922C","#3A5BA0"),
                                      xlab = corr.names[ttt], ylab = "",
@@ -28,7 +30,7 @@ for (i in select.col){
           axis.text = element_text(size=20),
           axis.title = element_text(size=30,face="bold"),
           text = element_text(size=30)) +
-    annotate(geom="text", x=hjustvalue[1+ttt], y=300, col=c("#C6922C"), 
+    annotate(geom="text", x=hjustvalue.corr[ttt], y=300, col=c("#C6922C"), 
              label=paste("Young: r =", 
                          round(cor.test.pro.Y$estimate, digit = 3), 
                          addstar(round(cor.test.pro.Y$p.value, digit = 3)),
@@ -38,7 +40,7 @@ for (i in select.col){
                          round(Y.lm$coefficients[2,2], digit = 3),
                          ")"), 
              size = size.pro, hjust = 1) +
-    annotate(geom="text", x=hjustvalue[1+ttt], y=280, col=c("#3A5BA0"), 
+    annotate(geom="text", x=hjustvalue.corr[ttt], y=280, col=c("#3A5BA0"), 
              label=paste("Old: r =", 
                          round(cor.test.pro.O$estimate, digit = 3), 
                          addstar(round(cor.test.pro.O$p.value, digit = 3)),
@@ -48,7 +50,7 @@ for (i in select.col){
                          round(O.lm$coefficients[2,2], digit = 3),
                          ")"), 
              size = size.pro, hjust = 1) +
-    annotate(geom="text", x=hjustvalue[1+ttt], y=260, col="black", 
+    annotate(geom="text", x=hjustvalue.corr[ttt], y=260, col="black", 
              label=paste("All: r =", 
                          round(cor.test.pro$estimate, digit = 3), 
                          addstar(round(cor.test.pro$p.value, digit = 3)),
@@ -62,22 +64,24 @@ for (i in select.col){
   ttt <- ttt + 1
 }
 
-temp.corr.K <- ggarrange(MD.cor.scatter[[1]],
+new.corrmergetemp.corr.K <- ggarrange(MD.cor.scatter[[1]],
                          MD.cor.scatter[[2]],
                          MD.cor.scatter[[3]],
                          MD.cor.scatter[[4]],
                          MD.cor.scatter[[5]],
                          MD.cor.scatter[[6]],
-                         nrow = 2, ncol = 3, 
-                         labels = c("A", "B", "C", "D", "E", "F"),
-                         common.legend = TRUE, legend = "bottom", 
+                         MD.cor.scatter[[7]],
+                         MD.cor.scatter[[8]],
+                         nrow = 2, ncol = 4, 
+                         labels = c("A", "B", "C", "D", "E", "F", "G", "H"),
+                         common.legend = TRUE, legend = "bottom",
                          font.label = list(size= 30))
 
-temp.corr.P <- annotate_figure(temp.corr.K,
-                               left = text_grob("Mean Money Given (NTD)",
+temp.corr.P <- annotate_figure(new.corrmergetemp.corr.K,
+                               left = text_grob("Mean amount of money apportion (NTD) PRO-PUR",
                                                 color = "black", rot = 90,
                                                 size = 50))
 
-jpeg(file = paste("Corr_all.jpg"), width = 2800, height = 1500)
+jpeg(file = paste("Corr_all_PROPUR.jpg"), width = 2800, height = 1500)
 print(temp.corr.P)
 dev.off()
