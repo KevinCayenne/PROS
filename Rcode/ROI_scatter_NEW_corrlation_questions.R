@@ -1,21 +1,22 @@
+setwd("c:/Users/acer/Desktop")
 
 select.col <- c(12:19)
 corr.names <- c("IRI EC Score", "IRI PD Score", "IRI PT Score", "IRI FS Score", "IRI Score", "EQ Score", "Self-report Income (NTD)", "log Self-report Income (NTD)")
 MD.cor.scatter <- list()
 hjustvalue.corr <- c(60, 50, 50, 50, 90, 90, 125000, 15)
 ttt <- 1
-contrast.num <- 10 
+contrast.num <- 10
 
 for (i in select.col){
   Y.lm <- summary(lm(new.corrmerge[new.corrmerge$age.tag == 1,][,i] ~ new.corrmerge[new.corrmerge$age.tag == 1,][,contrast.num]))
   O.lm <- summary(lm(new.corrmerge[new.corrmerge$age.tag == 2,][,i] ~ new.corrmerge[new.corrmerge$age.tag == 2,][,contrast.num]))
-  All.lm <- summary(lm(new.corrmerge[,i] ~ new.corrmerge$PROmPUR))
+  All.lm <- summary(lm(new.corrmerge[,i] ~ new.corrmerge[,contrast.num]))
   
   cor.test.pro.Y <- cor.test(new.corrmerge[new.corrmerge$age.tag == 1,][,i], new.corrmerge[new.corrmerge$age.tag == 1,][,contrast.num])
   cor.test.pro.O <- cor.test(new.corrmerge[new.corrmerge$age.tag == 2,][,i], new.corrmerge[new.corrmerge$age.tag == 2,][,contrast.num])
   cor.test.pro <- cor.test(new.corrmerge[,i], new.corrmerge[,contrast.num])
   
-  MD.cor.scatter[[ttt]] <- ggscatter(new.corrmerge, x = colnames(new.corrmerge)[i], y = contrast.name[2], 
+  MD.cor.scatter[[ttt]] <- ggscatter(new.corrmerge, x = colnames(new.corrmerge)[i], y = "PROmPUR", 
                                      color = "Groups",
                                      palette = c("#C6922C","#3A5BA0"),
                                      xlab = corr.names[ttt], ylab = "",

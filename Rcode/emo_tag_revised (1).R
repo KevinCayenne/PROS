@@ -68,7 +68,6 @@ levels(all.emo.group.tag) <- list(Young = "Young", Old = "Old")
 levels(all.emo.tag) <- list("0" = "0", "-50" = "-50", "-20" = "-20", same = "same", "+20" = "+20", "+50" = "+50", "300" = "300")
  
 all.emo.dataf <- data.frame(all.emo.vector, all.emo.group.tag, all.emo.sit.tag, all.emo.tag, all.subject.tag)
-is.na(all.emo.vector)
 all.emo.dataf <- all.emo.dataf[!is.na(all.emo.vector),]
 
 all.emo.dataf <- rbind(all.emo.dataf, c(as.numeric(0), "Young", "NEU", "-50", 1), c(as.numeric(0), "Old", "UNC", "-50", 29))
@@ -165,7 +164,6 @@ for(i in seq(0,250,50)){
 }
 rawdf$rev_dist_tag[rawdf$rev_dist==300] <- 7
 rawdf$rev_dist_tag[rawdf$rev_dist==-300] <- -7
-
 rawdf$rev_dist_tag[rawdf$rev_dist==0] <- 0
 
 E <- tapply(rawdf$EmoTag, list(rawdf$SITtag, rawdf$rev_dist_tag, rawdf$SubjectN, rawdf$GroupN), mean)
@@ -194,12 +192,11 @@ levels(all.emo.sit.tag.R) <- list(PRO = "PRO", PUR = "PUR", NEU = "NEU", UNC = "
 levels(all.emo.group.tag.R) <- list(Young = "Young", Old = "Old")
 levels(all.emo.tag.R) <- list("-7" = "-7", "-5" = "-5", "-4" = "-4", "-3" = "-3", "-2" = "-2", "-1" = "-1", "0" = "0", "1" = "1", "2" = "2", "3" = "3", "4" = "4", "5" = "5", "6" = "6", "7" = "7")
 
-length(all.emo.group.tag.R)
-
 all.emo.dataf.R <- data.frame(T.E, all.emo.group.tag.R, all.emo.sit.tag.R, all.emo.tag.R)
 
 levels(rawdf$GroupN) <- list("Young" = "1", "Old" = "2")
 levels(rawdf$SITtag) <- list("PRO" = "1", "PUR" = "2", "NEU" = "3", "UNC" = "4")
+
 # all.emo.dataf.R[!is.na(T.E),]
 
 # ggline(all.emo.dataf.R, x = "all.emo.tag.R", y = "T.E", add = c("mean_se", "jitter"),
@@ -343,7 +340,6 @@ ggplot(data = negative.emo, aes(x = rev_dist, y = EmoTag, group = GroupN)) +
   scale_colour_manual(values = c("#0075C9","#E5BF21")) +
   ylim(c(-3,4))
 
-
 ggplot(data = rawdf, aes(x = rev_dist, y = EmoTag, colour = GroupN, group = GroupN)) +
   geom_point() +
   geom_smooth(method = 'lm') +
@@ -414,6 +410,101 @@ ggscatter(ER.temp, x = "dist", y = "emo.rate",
   labs(colour = "Groups") +
   geom_smooth(method = 'lm', formula = y ~ poly(x,2), aes(colour = age.tag), size=1) +
   scale_color_manual(values = c("#E5BF21","#0075C9"))
+
+####
+
+emo.scatter.FF <- list()
+
+for (temp.sit in 1:4){
+ER.temp.T <- ER.temp[ER.temp$sit.tag == levels(ER.temp$sit.tag)[temp.sit],]
+
+Y.lm <- summary(lm(ER.temp.T[ER.temp.T$age.tag == "Young",]$emo.rate ~ ER.temp.T[ER.temp.T$age.tag == "Young",]$dist))
+O.lm <- summary(lm(ER.temp.T[ER.temp.T$age.tag == "Old",]$emo.rate ~ ER.temp.T[ER.temp.T$age.tag == "Old",]$dist))
+All.lm <- summary(lm(ER.temp.T$emo.rate ~ ER.temp.T$dist))
+
+cor.test.pro.Y <- cor.test(ER.temp.T[ER.temp.T$age.tag == "Young",]$emo.rate, ER.temp.T[ER.temp.T$age.tag == "Young",]$dist)
+cor.test.pro.O <- cor.test(ER.temp.T[ER.temp.T$age.tag == "Old",]$emo.rate, ER.temp.T[ER.temp.T$age.tag == "Old",]$dist)
+cor.test.pro <- cor.test(ER.temp.T$emo.rate, ER.temp.T$dist)
+
+emo.scatter.F <- ggscatter(ER.temp.T, x = "dist", y = "emo.rate", 
+          color = "age.tag",
+          palette = c("#3A5BA0", "#C6922C"),
+          xlab = "", ylab = "",
+          size = 5, 
+          title = levels(ER.temp$sit.tag)[temp.sit]
+) + 
+  labs(colour = "Groups") +
+  geom_smooth(aes(color = age.tag), method = lm, se = FALSE, size = 2) +
+  geom_smooth(aes(color = age.tag), method = lm, se = FALSE, size = 2, linetype="dashed",
+              formula = y ~ poly(x,2))+
+  geom_hline(yintercept = 0, linetype = "dashed", color = "black", size = 1) +
+  geom_segment(aes(x = 0,xend = 0,y = -4,yend = 4), linetype = "dashed", size = 1) +
+  theme(plot.title = element_text(hjust = 0.5),
+        title = element_text(size=30, face="bold"),
+        legend.text = element_text(size=30),
+        legend.title = element_text(size=30),
+        axis.text = element_text(size=30),
+        axis.title = element_text(size=30,face="bold"),
+        text = element_text(size=30)) +
   
-  
-  
+  annotate(geom="text", x=300, y=6.5, col=c("#C6922C"), 
+           label=paste("Young: r =", 
+                       round(cor.test.pro.Y$estimate, digit = 3), 
+                       addstar(round(cor.test.pro.Y$p.value, digit = 3)),
+                       ";£] = ",
+                       round(Y.lm$coefficients[2,1], digit = 3),
+                       "(",
+                       round(Y.lm$coefficients[2,2], digit = 3),
+                       ")"), 
+           size = size.pro, hjust = 1) +
+  annotate(geom="text", x=300, y=6, col=c("#3A5BA0"), 
+           label=paste("Old: r =", 
+                       round(cor.test.pro.O$estimate, digit = 3), 
+                       addstar(round(cor.test.pro.O$p.value, digit = 3)),
+                       ";£] = ",
+                       round(O.lm$coefficients[2,1], digit = 3),
+                       "(",
+                       round(O.lm$coefficients[2,2], digit = 3),
+                       ")"), 
+           size = size.pro, hjust = 1) +
+  annotate(geom="text", x=300, y=5.5, col="black", 
+           label=paste("All: r =", 
+                       round(cor.test.pro$estimate, digit = 3), 
+                       addstar(round(cor.test.pro$p.value, digit = 3)),
+                       ";£] = ",
+                       round(All.lm$coefficients[2,1], digit = 3),
+                       "(",
+                       round(All.lm$coefficients[2,2], digit = 3),
+                       ")"), 
+           size = size.pro, hjust = 1)
+
+
+emo.scatter.FF[[temp.sit]] <- emo.scatter.F
+}
+
+print(emo.scatter.FF[[2]])
+new.emo.scatter.TT <- ggarrange(emo.scatter.FF[[1]],
+                                      emo.scatter.FF[[2]],
+                                      emo.scatter.FF[[3]],
+                                      emo.scatter.FF[[4]],
+                                      nrow = 1, ncol = 4,
+                                      common.legend = TRUE, legend = "bottom",
+                                      font.label = list(size= 30))
+
+temp.emo.P <- annotate_figure(new.emo.scatter.TT,
+                               left = text_grob("Emotion reaction",
+                                                color = "black", rot = 90,
+                                                size = 40, face="bold"),
+                               bottom = text_grob("Amout of money for regulation (NTD)",
+                                                color = "black",
+                                                size = 40, face="bold")
+                               )
+temp.emo.PP <- ggarrange(temp.emo.P, labels = c("C"), font.label = list(size= 50))
+
+merge.MDEMO <- ggarrange(ggarrange.MDplot, temp.emo.PP, nrow = 2, ncol = 1)
+
+jpeg(file = paste("EmoP.jpg"), width = 2800, height = 1800)
+print(merge.MDEMO)
+dev.off()
+
+

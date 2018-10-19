@@ -30,13 +30,13 @@ p <- ggplot(dd.pros, aes(x=`total.boxplot$total.boxplot.sit.vector`,
             scale_color_manual("Groups", values = c("Young" = y.color, "Old" = o.color)) +
             scale_fill_manual("Groups", values = c("Young" = y.color, "Old" = o.color)) +
             
-            labs(x = "Situations", y = "Mean Money Given (NTD)", colour = "Groups") +   
+            labs(x = "Situations", y = "Mean amount of money apportion (NTD)", colour = "Groups") +   
             theme(plot.title = element_text(hjust = 0.5, face="bold"),
                   title = element_text(size=30),
                   legend.text = element_text(size=30),
                   legend.title = element_text(size=30),
                   axis.text = element_text(size=30),
-                  axis.title = element_text(size=30,face="bold")
+                  axis.title = element_text(size=35,face="bold")
             ) +
             ylim(c(0,165)) +
             geom_signif(y_position=c(150, 100), xmin=c(0.8, 2.8), xmax=c(1.2, 3.2),
@@ -54,20 +54,23 @@ print(a <- ggplot(inter.total.money, aes(x=inter.tag, y=inter.mean, fill=inter.g
         scale_color_manual("Groups", values = c("Young" = y.color, "Old" = o.color)) +
         scale_fill_manual("Groups", values = c("Young" = y.color, "Old" = o.color)) +
         
-        labs(x = "Interaction", y = "Mean Money Given (NTD)", colour = "Groups") +   
+        labs(x = "Interaction", y = "", colour = "Groups") +   
         theme(plot.title = element_text(hjust = 0.5, face="bold"),
               title = element_text(size=30),
               legend.text = element_text(size=30),
               legend.title = element_text(size=30),
               axis.text = element_text(size=30),
-              axis.title = element_text(size=30,face="bold")
+              axis.title = element_text(size=40, face="bold")
         ) +
         ylim(c(0,165)) +
         geom_signif(y_position=c(150, 100), xmin=c(0.8, 1.8), xmax=c(1.2, 2.2),
                     annotation=c("**", "**"), textsize=15, tip_length=0)
 )
 
+ggarrange.MDplot <- ggarrange(p, a, ncol=2, labels = c("A", "B"), 
+                              common.legend = TRUE, legend = "right", font.label = list(size= 50))
+
 png(sprintf("Mean_money_giving_ggline_by_situations.png"), width = 1800, height = 800)
-ggarrange(p, a, ncol=2, labels = c("A", "B"), common.legend = TRUE, legend = "right", font.label = list(size= 50))
+ggarrange.MDplot
 dev.off()
 
