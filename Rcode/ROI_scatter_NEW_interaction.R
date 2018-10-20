@@ -24,7 +24,6 @@ setwd("c:/Users/acer/Desktop/")
 young.num <- 26
 old.num <- 20
 
-analysis.col <- c(1:ncol(ROI_try))
 total.num <- young.num + old.num
 cond.num <- 11
 timec <- 12
@@ -51,6 +50,7 @@ tydi.ROI.pre$cond.tag <- as.factor(tydi.ROI.pre$cond.tag)
 levels(tydi.ROI.pre$phase.tag) <- list(Money_Decision = "Money_Decision", Emotion_Decision = "Emotion_Decision")
 levels(tydi.ROI.pre$age.tag) <- list(Young = "Young", Old = "Old")
 
+analysis.col <- c(1:ncol(ROI_try))
 temp.factor.MDgiven <- list()
 temp.factor.MDgiven.PROPUR <- list()
 temp.factor.MDgiven.PRONEU <- list()
@@ -108,9 +108,9 @@ for (j in analysis.col){
     tempstar <- c()
     if (num <= 0.05 & num > 0.01){
       tempstar <- "*  "
-    } else if (num <= 0.01 & num > 0.005) {
+    } else if (num <= 0.01 & num > 0.001) {
       tempstar <- "** "
-    } else if (num <= 0.005) {
+    } else if (num <= 0.001) {
       tempstar <- "***"
     } else {
       tempstar <- "   "
@@ -135,7 +135,7 @@ for (j in analysis.col){
     pros.scatter[[itera]] <- ggscatter(new.corrmerge, x = colnames(new.corrmerge)[i], y = "signalvalue", 
                                        color = "Groups",
                                        palette = c("#C6922C","#3A5BA0"),
-                                       xlab = xlab.names[itera], ylab = "Parameter Estimate",
+                                       xlab = xlab.names[itera], ylab = "Parameter Estimate (a.u.)",
                                        size = 5
     ) + 
       geom_smooth(aes(color = Groups),method = lm, se = FALSE, size = 2) +
@@ -326,7 +326,7 @@ temp.signal.MD.inter.F <- annotate_figure(temp.signal.ROI.inter,
                                                     size = 30),
                                     bottom = text_grob("ROIs", 
                                                        color = "black", size = 30),
-                                    left = text_grob("Parameter Estimate", color = "black", size = 30, rot = 90)
+                                    left = text_grob("Parameter Estimate (a.u.)", color = "black", size = 30, rot = 90)
 )
 
 jpeg(file = paste("PE_ROI.jpg"), width = 1200, height = 1200)
@@ -360,7 +360,7 @@ gg.PE.ROI <- ggplot(aggre.ROI.MD, aes(x = ROI_try,
                 width = 0.9, 
                 position = position_dodge2(0.9, padding = 0.8)) +
   
-  labs(x = "ROIs", y = "Parameter Estimate", colour = "Groups") +   
+  labs(x = "ROIs", y = "Parameter Estimate (a.u.)", colour = "Groups") +   
   theme(plot.title = element_text(hjust = 0.5, face="bold"),
         title = element_text(size=30),
         legend.text = element_text(size=30),

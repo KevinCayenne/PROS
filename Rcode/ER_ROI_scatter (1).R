@@ -47,6 +47,7 @@ tydi.ROI <- gather(ROI_try, ROI_try, value, -age.tag, -cond.tag, -tc.tag, -phase
 
 levels(tydi.ROI$phase.tag) <- list(PRO = "PRO", PUR = "PUR")
 levels(tydi.ROI$age.tag) <- list(Young = "Young", Old = "Old")
+
 palette.p <- c("#0073C2", "#EFC000")
 
 print(ggline(tydi.ROI, x = "tc.tag", y = "value", add = "mean_se",

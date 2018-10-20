@@ -25,6 +25,7 @@ table(subject.info$`Gender_(M:1_ F:2)`)
 table(subject.info$`Gender_(M:1_ F:2)`, subject.info$`Group_(Y:1_O:2)`)
 
 nona.subinfo <- subject.info[is.na(subject.info$mean_gain) == FALSE,]
+
 File.list = mixedsort(list.files("behaviorD"))
 #list.files命令將behavior文件夾下所有文件名輸入File.list
 

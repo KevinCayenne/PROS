@@ -495,7 +495,7 @@ temp.emo.P <- annotate_figure(new.emo.scatter.TT,
                                left = text_grob("Emotion reaction",
                                                 color = "black", rot = 90,
                                                 size = 40, face="bold"),
-                               bottom = text_grob("Amout of money for regulation (NTD)",
+                               bottom = text_grob("Adjustment for amount of money (NTD)",
                                                 color = "black",
                                                 size = 40, face="bold")
                                )

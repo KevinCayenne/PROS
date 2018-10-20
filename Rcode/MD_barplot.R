@@ -74,3 +74,5 @@ png(sprintf("Mean_money_giving_ggline_by_situations.png"), width = 1800, height 
 ggarrange.MDplot
 dev.off()
 
+
+summary(aov(total.boxplot$total.boxplot.mean_money.vector ~ total.boxplot$total.boxplot.sit.vector*total.boxplot$total.boxplot.group.vector))
