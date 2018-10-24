@@ -273,18 +273,18 @@ for (lm.iter in 1:length(levels(beta.corr$question_type))){
   }
 }
 
-sum.beta <- data.frame()
+sum.beta.pur <- data.frame()
 fac.rep <- rep(1:10, each = 2)
 for (lm.iter in 1:length(sum.lm.beta)){
-  sum.beta <- rbind(sum.beta, data.frame(sum.lm.beta[[lm.iter]]$coefficients[2,1], 
+  sum.beta.pur <- rbind(sum.beta.pur, data.frame(sum.lm.beta[[lm.iter]]$coefficients[2,1], 
                                 (lm.iter+1)%%2+1, 
                                 levels(beta.corr$question_type)[fac.rep[lm.iter]]
                                 ))
 }
-colnames(sum.beta) <- c("beta", "Groups", "type")
+colnames(sum.beta.pur) <- c("beta", "Groups", "type")
 sum.beta
 
 jpeg(file = paste("ER_behavior_PUR_beta.jpeg"), width = 600, height = 600)
-print(ggbarplot(sum.beta, x = "Groups", y = "beta", fill = "Groups", facet.by = "type"))
+print(ggbarplot(sum.beta.pur, x = "Groups", y = "beta", fill = "Groups", facet.by = "type"))
 dev.off()
 
