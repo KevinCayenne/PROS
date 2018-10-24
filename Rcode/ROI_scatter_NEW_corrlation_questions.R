@@ -1,9 +1,9 @@
 setwd("c:/Users/acer/Desktop")
 
-select.col <- c(12:19)
-corr.names <- c("IRI EC Score", "IRI PD Score", "IRI PT Score", "IRI FS Score", "IRI Score", "EQ Score", "Self-report Income (NTD)", "log Self-report Income (NTD)")
+select.col <- c(12:19, 21)
+corr.names <- c("IRI EC Score", "IRI PD Score", "IRI PT Score", "IRI FS Score", "IRI Score", "EQ Score", "Self-report Income (NTD)", "log Self-report Income (NTD)", "Self-report Income - spend (NTD)")
 MD.cor.scatter <- list()
-hjustvalue.corr <- c(60, 50, 50, 50, 90, 90, 125000, 15)
+hjustvalue.corr <- c(60, 50, 50, 50, 90, 90, 125000, 15, 100000)
 ttt <- 1
 contrast.num <- 10
 
@@ -73,8 +73,9 @@ new.corrmergetemp.corr.K <- ggarrange(MD.cor.scatter[[1]],
                          MD.cor.scatter[[6]],
                          MD.cor.scatter[[7]],
                          MD.cor.scatter[[8]],
-                         nrow = 2, ncol = 4, 
-                         labels = c("A", "B", "C", "D", "E", "F", "G", "H"),
+                         MD.cor.scatter[[9]],
+                         nrow = 2, ncol = 5, 
+                         labels = c("A", "B", "C", "D", "E", "F", "G", "H", "I"),
                          common.legend = TRUE, legend = "bottom",
                          font.label = list(size= 30))
 
@@ -83,6 +84,6 @@ temp.corr.P <- annotate_figure(new.corrmergetemp.corr.K,
                                                 color = "black", rot = 90,
                                                 size = 50))
 
-jpeg(file = paste("Corr_all_PROPUR.jpg"), width = 2800, height = 1500)
+jpeg(file = paste("Corr_all_PROPUR.jpg"), width = 4000, height = 1500)
 print(temp.corr.P)
 dev.off()
