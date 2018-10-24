@@ -215,7 +215,7 @@ for (er.factor.iter in c(1:7)){
                                             left = text_grob("Parameter Estimate (a.u.)", color = "black", size = 30, rot = 90)
   )
   
-  jpeg(file = paste("factor_", fac.title[er.factor.iter], "_PURNEU_EmoRating_ROI.jpg"), width = 5000, height = 1300)
+  jpeg(file = paste("factor_", fac.title[er.factor.iter], "_PUR_EmoRating_ROI.jpg"), width = 5000, height = 1300)
   print(EMO.temp.K)
   dev.off()
   
@@ -249,15 +249,42 @@ temp.beta.plot.arrange <- ggarrange(temp.beta.plot[[1]],
                                     temp.beta.plot[[3]],
                                     temp.beta.plot[[4]],
                                     temp.beta.plot[[5]],
-                                    temp.beta.plot[[7]],
+                                    temp.beta.plot[[6]],
                                     temp.beta.plot[[8]],
                                     temp.beta.plot[[9]],
                                     temp.beta.plot[[10]],
-                                    nrow = 2, ncol = 6,
+                                    nrow = 2, ncol = 5,
                                     common.legend = TRUE, legend = "bottom", 
                                     font.label = list(size= 40))
 
 jpeg(file = paste("PUR_Ques2ER_beta.jpg"), width = 2000, height = 800)
 print(temp.beta.plot.arrange)
+dev.off()
+
+
+lm.out.iter <- 1
+sum.lm.beta <- list()
+for (lm.iter in 1:length(levels(beta.corr$question_type))){
+  for (agenum in 1:length(levels(beta.corr$Groups))){
+    lm.beta <- beta.corr[beta.corr$question_type == levels(beta.corr$question_type)[lm.iter] & beta.corr$Groups == levels(beta.corr$Groups)[agenum],]
+    lm.beta$reg.tag <- as.numeric(as.character(lm.beta$reg.tag))
+    sum.lm.beta[[lm.out.iter]] <- summary(lm(lm.beta$beta ~ lm.beta$reg.tag))
+    lm.out.iter <- lm.out.iter + 1
+  }
+}
+
+sum.beta <- data.frame()
+fac.rep <- rep(1:10, each = 2)
+for (lm.iter in 1:length(sum.lm.beta)){
+  sum.beta <- rbind(sum.beta, data.frame(sum.lm.beta[[lm.iter]]$coefficients[2,1], 
+                                (lm.iter+1)%%2+1, 
+                                levels(beta.corr$question_type)[fac.rep[lm.iter]]
+                                ))
+}
+colnames(sum.beta) <- c("beta", "Groups", "type")
+sum.beta
+
+jpeg(file = paste("ER_behavior_PUR_beta.jpeg"), width = 600, height = 600)
+print(ggbarplot(sum.beta, x = "Groups", y = "beta", fill = "Groups", facet.by = "type"))
 dev.off()
 
