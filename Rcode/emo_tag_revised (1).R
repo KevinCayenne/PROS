@@ -218,8 +218,8 @@ levels(rawdf$SITtag) <- list("PRO" = "1", "PUR" = "2", "NEU" = "3", "UNC" = "4")
 # levels(rawdf$GroupN) <- list(Young = "Young", Old = "Old")
 # levels(rawdf$SITtag) <- list(PRO = "PROS", PUR = "PUR", NEU = "NEU", UNC = "UCN")
 #   
-# emo.lmer.qua <- lmer(EmoTag ~ GroupN*SITtag*poly(rev_dist, 2, raw = TRUE) +
-#                        (1+SITtag+rev_dist+poly(rev_dist, 2, raw = TRUE)|SubjectN), data = rawdf)
+ emo.lmer.qua <- lmer(EmoTag ~ GroupN*SITtag*poly(rev_dist, 2, raw = TRUE) +
+                        (1+SITtag|SubjectN), data = rawdf)
 # 
 # emo.lmer.qua.slope <- lmer(EmoTag ~ GroupN*SITtag*poly(rev_dist, 2, raw = TRUE) +
 #                        (1+SITtag+rev_dist|SubjectN), data = rawdf)
@@ -418,9 +418,9 @@ emo.scatter.FF <- list()
 for (temp.sit in 1:4){
 ER.temp.T <- ER.temp[ER.temp$sit.tag == levels(ER.temp$sit.tag)[temp.sit],]
 
-Y.lm <- summary(lm(ER.temp.T[ER.temp.T$age.tag == "Young",]$emo.rate ~ ER.temp.T[ER.temp.T$age.tag == "Young",]$dist))
-O.lm <- summary(lm(ER.temp.T[ER.temp.T$age.tag == "Old",]$emo.rate ~ ER.temp.T[ER.temp.T$age.tag == "Old",]$dist))
-All.lm <- summary(lm(ER.temp.T$emo.rate ~ ER.temp.T$dist))
+Y.lm <- summary(lmer(ER.temp.T[ER.temp.T$age.tag == "Young",]$emo.rate ~ ER.temp.T[ER.temp.T$age.tag == "Young",]$dist + (1|ER.temp.T[ER.temp.T$age.tag == "Young",]$sub.tag)))
+O.lm <- summary(lmer(ER.temp.T[ER.temp.T$age.tag == "Old",]$emo.rate ~ ER.temp.T[ER.temp.T$age.tag == "Old",]$dist + (1|ER.temp.T[ER.temp.T$age.tag == "Old",]$sub.tag)))
+All.lm <- summary(lmer(ER.temp.T$emo.rate ~ ER.temp.T$dist + (1|ER.temp.T$sub.tag)))
 
 cor.test.pro.Y <- cor.test(ER.temp.T[ER.temp.T$age.tag == "Young",]$emo.rate, ER.temp.T[ER.temp.T$age.tag == "Young",]$dist)
 cor.test.pro.O <- cor.test(ER.temp.T[ER.temp.T$age.tag == "Old",]$emo.rate, ER.temp.T[ER.temp.T$age.tag == "Old",]$dist)
@@ -506,5 +506,3 @@ merge.MDEMO <- ggarrange(ggarrange.MDplot, temp.emo.PP, nrow = 2, ncol = 1)
 jpeg(file = paste("EmoP.jpg"), width = 2800, height = 1800)
 print(merge.MDEMO)
 dev.off()
-
-
