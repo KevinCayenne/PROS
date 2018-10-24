@@ -20,7 +20,8 @@ addstar <- function(num){
 }
 
 setwd("c:/Users/acer/Desktop/PROS/Data/fMRI_PilotData/ROI/ER_final_ROI")
-ROI_try <- read.csv("ER_diff_roi_final_old_pro.csv", header = T)
+ROI_try <- read.csv("ER_diff_roi_final_OPRO_YPRO.csv", header = T)
+ROI_try <- ROI_try$A
 ROI_try <- as.data.frame(ROI_try, header = T)
 
 setwd("c:/Users/acer/Desktop/PROS/Data/fMRI_PilotData")
@@ -64,7 +65,7 @@ Y.pur.er.list.g <- list()
 PROorPUR <- c("PRO", "PUR")
 
 title.ER <- c("
-              (-57, -43, 2)")
+              (-24, -46, -10)")
 
 for (j in 1:length(levels(tydi.ROI$ROI_try))){
   Y.pur.er.list <- list()
@@ -180,6 +181,6 @@ for (j in 1:length(levels(tydi.ROI$ROI_try))){
                                                            size = 50, rot = 90))
 }
 
-jpeg(file = "o_PRO_ER.jpg", width = 2500, height = 1500)
+jpeg(file = "OPRO_YPRO_ER.jpg", width = 2500, height = 1500)
 print(Y.pur.er.list.g)
 dev.off()

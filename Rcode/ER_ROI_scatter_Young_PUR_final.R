@@ -110,10 +110,10 @@ for (j in 1:length(levels(tydi.ROI$ROI_try))){
       cor.test.pro <- cor.test(ER.ROI.final[,i], ER.ROI.final$signal_value)
       
       Y.pur.er.list[[out.iter]] <- ggscatter(ER.ROI.final, x = colnames(ER.ROI.final)[i], y = "signal_value", 
-                                         color = "age.tag",
-                                         palette = c("#C6922C","#3A5BA0"),
-                                         xlab = xlab.names.em[iter], ylab = "",
-                                         size = 5
+                                             color = "age.tag",
+                                             palette = c("#C6922C","#3A5BA0"),
+                                             xlab = xlab.names.em[iter], ylab = "",
+                                             size = 5
       ) + labs(color = "Groups") +
         geom_smooth(aes(color = age.tag),method = lm, se = FALSE, size = 2) +
         geom_hline(yintercept=0, linetype="dashed", color = "black", size=1) +
