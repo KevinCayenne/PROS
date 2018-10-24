@@ -50,7 +50,6 @@ tydi.ROI.pre$cond.tag <- as.factor(tydi.ROI.pre$cond.tag)
 levels(tydi.ROI.pre$phase.tag) <- list(Money_Decision = "Money_Decision", Emotion_Decision = "Emotion_Decision")
 levels(tydi.ROI.pre$age.tag) <- list(Young = "Young", Old = "Old")
 
-analysis.col <- c(1:ncol(ROI_try))
 temp.factor.MDgiven <- list()
 temp.factor.MDgiven.PROPUR <- list()
 temp.factor.MDgiven.PRONEU <- list()
@@ -63,6 +62,7 @@ temp.factor.EQ <- list()
 temp.factor.Income <- list()
 temp.factor.logInc <- list()
 
+analysis.col <- c(1:ncol(ROI_try))
 PURorNEU <- 2 # 2 (PUR) or 3(NEU)
 
 for (j in analysis.col){
@@ -84,7 +84,17 @@ for (j in analysis.col){
   
   new.corrmerge <- corrmerge[corrmerge$sub.id %in% EQ.df$ID,]
   new.corrmerge <- new.corrmerge[order(new.corrmerge$sub.id),]
-  new.corrmerge <- cbind(new.corrmerge, IRI_EC = EQ.df$IRI_EC, IRI_PD = EQ.df$IRI_PD, IRI_PT = EQ.df$IRI_PT, IRI_FS = EQ.df$IRI_FS, IRI = EQ.df$IRI, EQ = EQ.df$EQ, Income = EQ.df$mean_gain, logIncome = log(EQ.df$mean_gain)) 
+  new.corrmerge <- cbind(new.corrmerge, IRI_EC = EQ.df$IRI_EC, 
+                                        IRI_PD = EQ.df$IRI_PD, 
+                                        IRI_PT = EQ.df$IRI_PT, 
+                                        IRI_FS = EQ.df$IRI_FS, 
+                                        IRI = EQ.df$IRI, 
+                                        EQ = EQ.df$EQ, 
+                                        Income = EQ.df$mean_gain, 
+                                        logIncome = log(EQ.df$mean_gain),
+                                        Mean_emotion_rating = ER.PRO.id.aggre[ER.PRO.id.aggre$sub.id %in% EQ.df$ID,]$mean.em,
+                                        Income_Spend = EQ.df$mean_gain - EQ.df$mean_spend
+                         ) 
   
   ## set variables
   P.title <- c("(12, 47, -10)", "(-15, 29, -7)", "(-3, 32, -1)", "(12, 41, 8)",
@@ -376,4 +386,145 @@ jpeg(file = paste("gg_PE_ROI.jpg"), width = 1500, height = 800)
 print(gg.PE.ROI)
 dev.off()
 
+#### ER correlations with questionarries ####
+
+ER_Q_iter_col <- c(9:19)
+emo.pros.scatter <- list()
+itera <- 1
+
+for (i in ER_Q_iter_col){
+  
+  Y.lm <- summary(lm(new.corrmerge[new.corrmerge$age.tag == 1,][,i] ~ new.corrmerge[new.corrmerge$age.tag == 1,]$Mean_emotion_rating))
+  O.lm <- summary(lm(new.corrmerge[new.corrmerge$age.tag == 2,][,i] ~ new.corrmerge[new.corrmerge$age.tag == 2,]$Mean_emotion_rating))
+  All.lm <- summary(lm(new.corrmerge[,i] ~ new.corrmerge$Mean_emotion_rating))
+  
+  cor.test.pro.Y <- cor.test(new.corrmerge[new.corrmerge$age.tag == 1,][,i], new.corrmerge[new.corrmerge$age.tag == 1,]$Mean_emotion_rating)
+  cor.test.pro.O <- cor.test(new.corrmerge[new.corrmerge$age.tag == 2,][,i], new.corrmerge[new.corrmerge$age.tag == 2,]$Mean_emotion_rating)
+  cor.test.pro <- cor.test(new.corrmerge[,i], new.corrmerge$Mean_emotion_rating)
+  
+  emo.pros.scatter[[itera]] <- ggscatter(new.corrmerge, x = colnames(new.corrmerge)[i], y = "Mean_emotion_rating", 
+                                     color = "Groups",
+                                     palette = c("#C6922C","#3A5BA0"),
+                                     xlab = xlab.names[itera], ylab = "Mean emotion reaction",
+                                     size = 5
+  ) + 
+    geom_smooth(aes(color = Groups),method = lm, se = FALSE, size = 2) +
+    geom_hline(yintercept=0, linetype="dashed", color = "black", size=1) +
+    theme(plot.title = element_text(hjust = 0.5),
+          title = element_text(size=30, face="bold"),
+          legend.text = element_text(size=30),
+          legend.title = element_text(size=30),
+          axis.text = element_text(size=20),
+          axis.title = element_text(size=30,face="bold"),
+          text = element_text(size=30)) +
+    annotate(geom="text", x=hjustvalue[itera], y=4.5, col=c("#C6922C"), 
+             label=paste("Young: r =", 
+                         round(cor.test.pro.Y$estimate, digit = 3), 
+                         addstar(round(cor.test.pro.Y$p.value, digit = 3)),
+                         ";£] = ",
+                         round(Y.lm$coefficients[2,1], digit = 3),
+                         "(",
+                         round(Y.lm$coefficients[2,2], digit = 3),
+                         ")"), 
+             size = size.pro, hjust = 1) +
+    annotate(geom="text", x=hjustvalue[itera], y=4, col=c("#3A5BA0"), 
+             label=paste("Old: r =", 
+                         round(cor.test.pro.O$estimate, digit = 3), 
+                         addstar(round(cor.test.pro.O$p.value, digit = 3)),
+                         ";£] = ",
+                         round(O.lm$coefficients[2,1], digit = 3),
+                         "(",
+                         round(O.lm$coefficients[2,2], digit = 3),
+                         ")"), 
+             size = size.pro, hjust = 1) +
+    annotate(geom="text", x=hjustvalue[itera], y=3.5, col="black", 
+             label=paste("All: r =", 
+                         round(cor.test.pro$estimate, digit = 3), 
+                         addstar(round(cor.test.pro$p.value, digit = 3)),
+                         ";£] = ",
+                         round(All.lm$coefficients[2,1], digit = 3),
+                         "(",
+                         round(All.lm$coefficients[2,2], digit = 3),
+                         ")"), 
+             size = size.pro, hjust = 1)
+  
+  itera <- itera + 1
+}
+
+ERQ.temp.factor.K <-  ggarrange(emo.pros.scatter[[1]],
+                                emo.pros.scatter[[2]],
+                                emo.pros.scatter[[3]],
+                                emo.pros.scatter[[4]],
+                                emo.pros.scatter[[5]],
+                                emo.pros.scatter[[6]],
+                                emo.pros.scatter[[7]],
+                                emo.pros.scatter[[8]],
+                                emo.pros.scatter[[9]],
+                                emo.pros.scatter[[10]],
+                                emo.pros.scatter[[11]],
+                            nrow = 2, ncol = 6, 
+                            common.legend = TRUE, legend = "bottom", 
+                            font.label = list(size= 40))
+
+jpeg(file = paste("ER_Q_PUR.jpg"), width = 5000, height = 1500)
+print(ERQ.temp.factor.K)
+dev.off()
+
+####
+
+# pp.new.corrmerge<- cbind(new.corrmerge, pur_give = new.corrmerge$mgive - new.corrmerge$PROmPUR)
+# 
+# Y.lm <- summary(lm(pp.new.corrmerge[pp.new.corrmerge$age.tag == 1,]$pur_give ~ pp.new.corrmerge[pp.new.corrmerge$age.tag == 1,]$Mean_emotion_rating))
+# O.lm <- summary(lm(pp.new.corrmerge[new.corrmerge$age.tag == 2,]$pur_give ~ pp.new.corrmerge[pp.new.corrmerge$age.tag == 2,]$Mean_emotion_rating))
+# All.lm <- summary(lm(pp.new.corrmerge$pur_give ~ pp.new.corrmerge$Mean_emotion_rating))
+# 
+# cor.test.pro.Y <- cor.test(pp.new.corrmerge[new.corrmerge$age.tag == 1,]$pur_give, pp.new.corrmerge[pp.new.corrmerge$age.tag == 1,]$Mean_emotion_rating)
+# cor.test.pro.O <- cor.test(pp.new.corrmerge[new.corrmerge$age.tag == 2,]$pur_give, pp.new.corrmerge[pp.new.corrmerge$age.tag == 2,]$Mean_emotion_rating)
+# cor.test.pro <- cor.test(pp.new.corrmerge$pur_give, pp.new.corrmerge$Mean_emotion_rating)
+# 
+# ggscatter(pp.new.corrmerge, x = "pur_give", y = "Mean_emotion_rating", 
+#                                        color = "Groups",
+#                                        palette = c("#C6922C","#3A5BA0"),
+#                                        xlab = "Mean money apportion (PUR)", ylab = "Mean emotion reaction",
+#                                        size = 5
+# ) + 
+#   geom_smooth(aes(color = Groups),method = lm, se = FALSE, size = 2) +
+#   geom_hline(yintercept=0, linetype="dashed", color = "black", size=1) +
+#   theme(plot.title = element_text(hjust = 0.5),
+#         title = element_text(size=30, face="bold"),
+#         legend.text = element_text(size=30),
+#         legend.title = element_text(size=30),
+#         axis.text = element_text(size=20),
+#         axis.title = element_text(size=30,face="bold"),
+#         text = element_text(size=30)) +
+#   annotate(geom="text", x=400, y=4.5, col=c("#C6922C"), 
+#            label=paste("Young: r =", 
+#                        round(cor.test.pro.Y$estimate, digit = 3), 
+#                        addstar(round(cor.test.pro.Y$p.value, digit = 3)),
+#                        ";£] = ",
+#                        round(Y.lm$coefficients[2,1], digit = 3),
+#                        "(",
+#                        round(Y.lm$coefficients[2,2], digit = 3),
+#                        ")"), 
+#            size = size.pro, hjust = 1) +
+#   annotate(geom="text", x=400, y=4, col=c("#3A5BA0"), 
+#            label=paste("Old: r =", 
+#                        round(cor.test.pro.O$estimate, digit = 3), 
+#                        addstar(round(cor.test.pro.O$p.value, digit = 3)),
+#                        ";£] = ",
+#                        round(O.lm$coefficients[2,1], digit = 3),
+#                        "(",
+#                        round(O.lm$coefficients[2,2], digit = 3),
+#                        ")"), 
+#            size = size.pro, hjust = 1) +
+#   annotate(geom="text", x=400, y=3.5, col="black", 
+#            label=paste("All: r =", 
+#                        round(cor.test.pro$estimate, digit = 3), 
+#                        addstar(round(cor.test.pro$p.value, digit = 3)),
+#                        ";£] = ",
+#                        round(All.lm$coefficients[2,1], digit = 3),
+#                        "(",
+#                        round(All.lm$coefficients[2,2], digit = 3),
+#                        ")"), 
+#            size = size.pro, hjust = 1)
 
