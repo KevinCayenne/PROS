@@ -5,18 +5,19 @@ corr.names <- c("IRI EC Score", "IRI PD Score", "IRI PT Score", "IRI FS Score", 
 MD.cor.scatter <- list()
 hjustvalue.corr <- c(60, 50, 50, 50, 90, 90, 125000, 15, 100000)
 ttt <- 1
-contrast.num <- 10
+contrast.num <- 11
+All.lm.md.quest <- list()
 
 for (i in select.col){
   Y.lm <- summary(lm(new.corrmerge[new.corrmerge$age.tag == 1,][,i] ~ new.corrmerge[new.corrmerge$age.tag == 1,][,contrast.num]))
   O.lm <- summary(lm(new.corrmerge[new.corrmerge$age.tag == 2,][,i] ~ new.corrmerge[new.corrmerge$age.tag == 2,][,contrast.num]))
-  All.lm <- summary(lm(new.corrmerge[,i] ~ new.corrmerge[,contrast.num]))
+  All.lm <- summary(lm(new.corrmerge[,contrast.num]~ new.corrmerge$Groups*new.corrmerge[,i]))
   
   cor.test.pro.Y <- cor.test(new.corrmerge[new.corrmerge$age.tag == 1,][,i], new.corrmerge[new.corrmerge$age.tag == 1,][,contrast.num])
   cor.test.pro.O <- cor.test(new.corrmerge[new.corrmerge$age.tag == 2,][,i], new.corrmerge[new.corrmerge$age.tag == 2,][,contrast.num])
   cor.test.pro <- cor.test(new.corrmerge[,i], new.corrmerge[,contrast.num])
   
-  MD.cor.scatter[[ttt]] <- ggscatter(new.corrmerge, x = colnames(new.corrmerge)[i], y = "PROmPUR", 
+  MD.cor.scatter[[ttt]] <- ggscatter(new.corrmerge, x = colnames(new.corrmerge)[i], y = "PROmNEU", 
                                      color = "Groups",
                                      palette = c("#C6922C","#3A5BA0"),
                                      xlab = corr.names[ttt], ylab = "",
@@ -52,16 +53,17 @@ for (i in select.col){
                          ")"), 
              size = size.pro, hjust = 1) +
     annotate(geom="text", x=hjustvalue.corr[ttt], y=260, col="black", 
-             label=paste("All: r =", 
-                         round(cor.test.pro$estimate, digit = 3), 
-                         addstar(round(cor.test.pro$p.value, digit = 3)),
-                         ";£] = ",
-                         round(All.lm$coefficients[2,1], digit = 3),
+             label=paste("Interaction: ",
+                         "£] = ",
+                         round(All.lm$coefficients[4,1], digit = 3),
                          "(",
-                         round(All.lm$coefficients[2,2], digit = 3),
-                         ")"), 
+                         round(All.lm$coefficients[4,2], digit = 3),
+                         ")",
+                         addstar(round(All.lm$coefficients[4,4], digit = 3))), 
              size = size.pro, hjust = 1)
   
+  All.lm.md.quest[[ttt]] <- All.lm
+
   ttt <- ttt + 1
 }
 
@@ -80,10 +82,10 @@ new.corrmergetemp.corr.K <- ggarrange(MD.cor.scatter[[1]],
                          font.label = list(size= 30))
 
 temp.corr.P <- annotate_figure(new.corrmergetemp.corr.K,
-                               left = text_grob("Mean amount of money apportion (NTD) PRO-PUR",
+                               left = text_grob("Mean amount of money apportion (NTD) PRO-NEU",
                                                 color = "black", rot = 90,
                                                 size = 50))
 
-jpeg(file = paste("Corr_all_PROPUR.jpg"), width = 4000, height = 1500)
+jpeg(file = paste("Corr_all_PRONEU.jpg"), width = 4000, height = 1500)
 print(temp.corr.P)
 dev.off()

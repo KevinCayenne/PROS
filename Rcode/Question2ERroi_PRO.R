@@ -52,7 +52,9 @@ levels(tydi.ROI.pre$age.tag) <- list(Young = "Young", Old = "Old")
 
 addstar <- function(num){
   tempstar <- c()
-  if (num <= 0.05 & num > 0.01){
+  if (num <= 0.06 & num > 0.05){
+    tempstar <- "'  "
+  } else if (num <= 0.05 & num > 0.01){
     tempstar <- "*  "
   } else if (num <= 0.01 & num > 0.001) {
     tempstar <- "** "
@@ -76,6 +78,9 @@ xlab.names <- c("Mean amount of money apportion (NTD) PRO",
                 "Mean amount of money apportion (NTD) PRO-NEU",
                 "IRI EC Score", "IRI PD Score", "IRI PT Score", "IRI FS Score",
                 "IRI Score", "EQ Score", "Self-report Income (NTD)", "log Self-report Income (NTD)")
+
+FS.list.emo <- list()
+
 ##
 
 for (er.factor.iter in c(1:7)){
@@ -134,7 +139,7 @@ for (er.factor.iter in c(1:7)){
     ####
     Y.lm <- summary(lm(new.corrmerge[new.corrmerge$age.tag == 1,]$Mean_emotion_rating ~ new.corrmerge[new.corrmerge$age.tag == 1,][,j]))
     O.lm <- summary(lm(new.corrmerge[new.corrmerge$age.tag == 2,]$Mean_emotion_rating ~ new.corrmerge[new.corrmerge$age.tag == 2,][,j]))
-    All.lm <- summary(lm(new.corrmerge$Mean_emotion_rating ~ new.corrmerge[,j]))
+    All.lm <- summary(lm(new.corrmerge$Mean_emotion_rating ~ new.corrmerge$Groups*new.corrmerge[,j]))
     
     cor.test.pro.Y <- cor.test(new.corrmerge[new.corrmerge$age.tag == 1,]$Mean_emotion_rating, new.corrmerge[new.corrmerge$age.tag == 1,][,j])
     cor.test.pro.O <- cor.test(new.corrmerge[new.corrmerge$age.tag == 2,]$Mean_emotion_rating, new.corrmerge[new.corrmerge$age.tag == 2,][,j])
@@ -178,15 +183,17 @@ for (er.factor.iter in c(1:7)){
                            ")"), 
                size = size.pro, hjust = 1) +
       annotate(geom="text", x=hjustvalue[itera], y=3.5, col="black", 
-               label=paste("All: r =", 
-                           round(cor.test.pro$estimate, digit = 3), 
-                           addstar(round(cor.test.pro$p.value, digit = 3)),
-                           ";£] = ",
-                           round(All.lm$coefficients[2,1], digit = 3),
+               label=paste("Interaction:", 
+                           " £] = ",
+                           round(All.lm$coefficients[4,1], digit = 3),
                            "(",
-                           round(All.lm$coefficients[2,2], digit = 3),
-                           ")"), 
+                           round(All.lm$coefficients[4,2], digit = 3),
+                           ")",
+                           addstar(round(All.lm$coefficients[4,4], digit = 3))), 
                size = size.pro, hjust = 1)
+    
+    Y.beta.cor
+    Y.beta.cor
     
     Y.beta.cor <- rbind(Y.beta.cor, c(er.factor.iter, colnames(new.corrmerge)[j], 1, Y.lm$coefficients[2,1]))
     O.beta.cor <- rbind(O.beta.cor, c(er.factor.iter, colnames(new.corrmerge)[j], 2, O.lm$coefficients[2,1]))
@@ -194,17 +201,20 @@ for (er.factor.iter in c(1:7)){
     itera <- itera + 1
   }
   
+  FS.list.emo[[er.factor.iter]] <- pros.emo.rating.scatter[[7]]
+  
   EMO.temp.K <- ggarrange(pros.emo.rating.scatter[[1]],
                           pros.emo.rating.scatter[[2]],
                           pros.emo.rating.scatter[[3]],
                           pros.emo.rating.scatter[[4]],
                           pros.emo.rating.scatter[[5]],
                           pros.emo.rating.scatter[[6]],
+                          pros.emo.rating.scatter[[7]],
                           pros.emo.rating.scatter[[8]],
                           pros.emo.rating.scatter[[9]],
                           pros.emo.rating.scatter[[10]],
                           pros.emo.rating.scatter[[11]],
-                          nrow = 2, ncol = 5,
+                          nrow = 2, ncol = 6,
                           common.legend = TRUE, legend = "bottom", 
                           font.label = list(size= 40))
   

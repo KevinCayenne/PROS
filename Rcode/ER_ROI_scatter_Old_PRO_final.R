@@ -7,7 +7,9 @@ library(gridExtra)
 
 addstar <- function(num){
   tempstar <- c()
-  if (num <= 0.05 & num > 0.01){
+  if (num <= 0.06 & num > 0.05){
+    tempstar <- "'  "
+  } else if (num <= 0.05 & num > 0.01){
     tempstar <- "*  "
   } else if (num <= 0.01 & num > 0.001) {
     tempstar <- "** "

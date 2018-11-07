@@ -9,6 +9,7 @@ library(ggforce)
 library(ggpmisc)
 library(data.table)
 library(devtools)
+library(ggsignif)
 
 setwd("c:/Users/acer/Desktop/PROS/Data/fMRI_PilotData/ROI/")
 ROI_try <- read.csv("ROI_PFC.csv", header = T)
@@ -73,7 +74,9 @@ for (j in analysis.col){
     
     addstar <- function(num){
       tempstar <- c()
-      if (num <= 0.05 & num > 0.01){
+      if (num <= 0.06 & num > 0.05){
+        tempstar <- "'  "
+      } else if(num <= 0.05 & num > 0.01) {
         tempstar <- "*  "
       } else if (num <= 0.01 & num > 0.005) {
         tempstar <- "** "
@@ -192,7 +195,7 @@ tydi.ROI.pre.MD <- tydi.ROI.pre[tydi.ROI.pre$cond.tag %in% c(1:4),]
 gg.MD.title <- c("PRO", "PUR", "NEU", "UNC")
 gg.MD.signal <- list()
 
-for (MDnum in 1:4){
+for (MDnum in 1:3){
     
   tydi.ROI.pre.pros <- tydi.ROI.pre[tydi.ROI.pre$cond.tag == MDnum,]
   
@@ -227,16 +230,16 @@ for (MDnum in 1:4){
     
     labs(title = gg.MD.title[MDnum], x = "", y = "",colour = "Groups") +   
     theme(plot.title = element_text(hjust = 0.5, face="bold"),
-          title = element_text(size=20),
-          legend.text = element_text(size=20),
-          legend.title = element_text(size=20),
-          axis.text = element_text(size=10),
-          axis.title = element_text(size=20,face="bold"),
-          strip.text.x = element_text(size=20, face="bold"),
+          title = element_text(size=30),
+          legend.text = element_text(size=30),
+          legend.title = element_text(size=30),
+          axis.text = element_text(size=30),
+          axis.title = element_text(size=40,face="bold"),
+          strip.text.x = element_text(size=40, face="bold"),
           strip.background = element_rect(colour="black", fill="white")
     ) +
     facet_wrap(~ age.tag) +
-    ylim(c(-0.8, 1)) +
+    ylim(c(-0.8, 0.8)) +
     geom_hline(yintercept = 0, color = "black", size = 1) +     
     geom_smooth(data = aggre.ROI.pros, aes(x = as.numeric(ROI_try), y=mean), color = "black", size = 1.3, se = FALSE, method = "lm") +
     geom_smooth(data = aggre.ROI.pros, aes(x = as.numeric(ROI_try), y=mean), color = "black", size = 1.3, se = FALSE, linetype="dashed", method = "lm", formula = y ~ poly(x,2))
@@ -246,8 +249,7 @@ for (MDnum in 1:4){
 temp.signal.MD <- ggarrange(gg.MD.signal[[1]],
                             gg.MD.signal[[2]],
                             gg.MD.signal[[3]],
-                            gg.MD.signal[[4]],
-                            nrow = 1, ncol = 4,
+                            nrow = 1, ncol = 3,
                             common.legend = TRUE, legend = "bottom", 
                             font.label = list(size= 40))
 
@@ -258,10 +260,10 @@ temp.signal.MD.F <- annotate_figure(temp.signal.MD,
                                                     size = 30),
                                     bottom = text_grob("ROIs", 
                                                        color = "black", size = 30),
-                                    left = text_grob("Parameter Estimate", color = "black", size = 30, rot = 90)
+                                    left = text_grob("Parameter Estimate (a.u.)", color = "black", size = 50, rot = 90)
                                     )
 
-jpeg(file = paste("PE_ROI.jpg"), width = 1500, height = 800)
+jpeg(file = paste("PE_ROI.jpg"), width = 1700, height = 700)
 print(temp.signal.MD.F)
 dev.off()
 

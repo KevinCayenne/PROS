@@ -549,14 +549,20 @@ levels(all.emo.tag) <- list("0" = "0", "-50" = "-50", "-20" = "-20", same = "sam
 
 all.emo.dataf.o <- data.frame(all.emo.vector, all.emo.group.tag, all.emo.sit.tag, all.emo.tag, all.subject.tag)
 fs <- 40
-png(sprintf("Emo_ggline_by_situations.png"), width = 3000, height =1550)
-ggline(all.emo.dataf.o, x = "all.emo.tag", y = "all.emo.vector", add = c("mean_se", "jitter"),
-          color = "all.emo.group.tag", palette = "jco", facet.by = "all.emo.sit.tag", size=3, point.size =3) +
+png(sprintf("Emo_ggline_by_situations.png"), width = 3000, height = 900)
+ggline(all.emo.dataf.o, x = "all.emo.tag", y = "all.emo.vector", add = c("mean_se"),
+          color = "all.emo.group.tag", palette = "jco",
+          add.params = list(group = "all.emo.group.tag"),
+          facet.by = "all.emo.sit.tag", size=3, point.size =3) +
+          
           labs(x = "Money Regulation Type", y = "Emotion Reaction", colour = "Group") +   
+          
           theme(plot.title = element_text(hjust = 0.5, size= fs)) +
+          
           stat_compare_means(aes(group = all.emo.group.tag), label = "p.signif", 
                              label.y = 4.5, size = 15) +
           geom_hline(yintercept = 0) +
+  
           facet_wrap( ~ all.emo.sit.tag, nrow=1, ncol=4) +
           theme(plot.title = element_text(hjust = 0.5),
           title = element_text(size=fs, face="bold"),
@@ -595,7 +601,7 @@ inter.O.PRO.PUR <- O.PRO.vec$total.boxplot.mean_money.vector - O.PUR.vec$total.b
 inter.O.PRO.NEU <- O.PRO.vec$total.boxplot.mean_money.vector - O.NEU.vec$total.boxplot.mean_money.vector
 
 t.test(inter.O.PRO.PUR, inter.Y.PRO.PUR)
-t.test(inter.O.PRO.NEU, inter.Y.PRO.NEU)
+  t.test(inter.O.PRO.NEU, inter.Y.PRO.NEU)
 
 inter.Y.PRO.PUR.mean <- mean(inter.Y.PRO.PUR)
 inter.Y.PRO.PUR.se <- sd(inter.Y.PRO.PUR)/sqrt(length(inter.Y.PRO.PUR))

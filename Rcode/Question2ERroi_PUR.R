@@ -52,7 +52,9 @@ levels(tydi.ROI.pre$age.tag) <- list(Young = "Young", Old = "Old")
 
 addstar <- function(num){
   tempstar <- c()
-  if (num <= 0.05 & num > 0.01){
+  if (num <= 0.06 & num > 0.05){
+    tempstar <- "'  "
+  } else if (num <= 0.05 & num > 0.01){
     tempstar <- "*  "
   } else if (num <= 0.01 & num > 0.001) {
     tempstar <- "** "
@@ -91,14 +93,14 @@ for (er.factor.iter in c(1:7)){
   itera <- 1
   for (j in select.col){
     tydi.ROI <- tydi.ROI.pre[tydi.ROI.pre$ROI_try==levels(tydi.ROI.pre$ROI_try)[1],]
-    intercation.ROI.pro.pur <- cbind(tydi.ROI[tydi.ROI$cond.tag == 1, c(1:6)], 
+    intercation.ROI.pro.pur <- cbind(tydi.ROI[tydi.ROI$cond.tag == 2, c(1:6)],
                                      value = tydi.ROI[tydi.ROI$cond.tag == PROPURorPURNEU[[PROPURorPURNEU.set]][1],]$value - tydi.ROI[tydi.ROI$cond.tag == PROPURorPURNEU[[PROPURorPURNEU.set]][2],]$value) 
     
     sub.mean.df.inter <- aggregate(intercation.ROI.pro.pur$value, list(intercation.ROI.pro.pur$sub.tag, intercation.ROI.pro.pur$cond.tag, intercation.ROI.pro.pur$phase.tag, intercation.ROI.pro.pur$age.tag), mean)
     colnames(sub.mean.df.inter) <- c("sub.tag", "sit", "phase", "Groups", "signalvalue")
     
     Mgive.df <- aggregate(behavior.df$giveM, list(behavior.df$SubjectN, behavior.df$SITtag, behavior.df$GroupN), mean)
-    Mgive.df.pro <- Mgive.df[Mgive.df$Group.2 == 1,]
+    Mgive.df.pro <- Mgive.df[Mgive.df$Group.2 == 2,]
     colnames(Mgive.df.pro) <- c("sub.id", "situation", "age.tag", "mgive")
     colnames(Mgive.df) <- c("sub.id", "situation", "age.tag", "mgive")
     tmp.Mgive <- cbind(Mgive.df.pro ,

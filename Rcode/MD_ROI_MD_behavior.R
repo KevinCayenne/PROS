@@ -61,13 +61,14 @@ temp.factor.IRI <- list()
 temp.factor.EQ <- list()
 temp.factor.Income <- list()
 temp.factor.logInc <- list()
+temp.factor.Eom <- list()
 
 analysis.col <- c(1:ncol(ROI_try))
 PURorNEU <- 2 # 2 (PUR) or 3(NEU)
 
 for (j in analysis.col){
   tydi.ROI <- tydi.ROI.pre[tydi.ROI.pre$ROI_try==levels(tydi.ROI.pre$ROI_try)[j],]
-  intercation.ROI.pro.pur <- cbind(tydi.ROI[tydi.ROI$cond.tag == 1,c(1:6)], value = tydi.ROI[tydi.ROI$cond.tag == 1,]$value - tydi.ROI[tydi.ROI$cond.tag == PURorNEU,]$value) 
+  intercation.ROI.pro.pur <- cbind(tydi.ROI[tydi.ROI$cond.tag == 1, c(1:6)], value = tydi.ROI[tydi.ROI$cond.tag == 1,]$value - tydi.ROI[tydi.ROI$cond.tag == PURorNEU,]$value) 
   
   sub.mean.df.inter <- aggregate(intercation.ROI.pro.pur$value, list(intercation.ROI.pro.pur$sub.tag, intercation.ROI.pro.pur$cond.tag, intercation.ROI.pro.pur$phase.tag, intercation.ROI.pro.pur$age.tag), mean)
   colnames(sub.mean.df.inter) <- c("sub.tag", "sit", "phase", "Groups", "signalvalue")
@@ -82,19 +83,11 @@ for (j in analysis.col){
   
   corrmerge <- cbind(sub.mean.df.inter, tmp.Mgive)
   
-  new.corrmerge <- corrmerge[corrmerge$sub.id %in% EQ.df$ID,]
+  new.corrmerge <- corrmerge
   new.corrmerge <- new.corrmerge[order(new.corrmerge$sub.id),]
-  new.corrmerge <- cbind(new.corrmerge, IRI_EC = EQ.df$IRI_EC, 
-                                        IRI_PD = EQ.df$IRI_PD, 
-                                        IRI_PT = EQ.df$IRI_PT, 
-                                        IRI_FS = EQ.df$IRI_FS, 
-                                        IRI = EQ.df$IRI, 
-                                        EQ = EQ.df$EQ, 
-                                        Income = EQ.df$mean_gain, 
-                                        logIncome = log(EQ.df$mean_gain),
-                                        Mean_emotion_rating = ER.PRO.id.aggre[ER.PRO.id.aggre$sub.id %in% EQ.df$ID,]$mean.em,
-                                        Income_Spend = EQ.df$mean_gain - EQ.df$mean_spend
-                         ) 
+  new.corrmerge <- cbind(new.corrmerge,
+                         Mean_emotion_rating = ER.PRO.id.aggre$mean.em
+  ) 
   
   ## set variables
   P.title <- c("(12, 47, -10)", "(-15, 29, -7)", "(-3, 32, -1)", "(12, 41, 8)",
@@ -105,13 +98,12 @@ for (j in analysis.col){
   o.color <- "#3A5BA0"
   size.pro <- 10
   
-  hjustvalue <- c(400, 400, 400, 60, 50, 50, 50, 90, 90, 125000, 15)
-  select.col <- c(9:19)
+  hjustvalue <- c(400, 400, 400, 4)
+  select.col <- c(9:12)
   xlab.names <- c("Mean amount of money apportion (NTD) PRO", 
                   "Mean amount of money apportion (NTD) PRO-PUR", 
                   "Mean amount of money apportion (NTD) PRO-NEU",
-                  "IRI EC Score", "IRI PD Score", "IRI PT Score", "IRI FS Score",
-                  "IRI Score", "EQ Score", "Self-report Income (NTD)", "log Self-report Income (NTD)")
+                  "Mean emotion reaction")
   ##
   
   addstar <- function(num){
@@ -178,7 +170,7 @@ for (j in analysis.col){
                            ")"), 
                size = size.pro, hjust = 1) +
       annotate(geom="text", x=hjustvalue[itera], y=3.5, col="black", 
-               label=paste("Interaction: ", 
+               label=paste("Interaction: ",
                            "£] = ",
                            round(All.lm$coefficients[4,1], digit = 3),
                            "(",
@@ -193,28 +185,14 @@ for (j in analysis.col){
   temp.factor.MDgiven[[j]] <- pros.scatter[[1]] 
   temp.factor.MDgiven.PROPUR[[j]] <- pros.scatter[[2]]
   temp.factor.MDgiven.PRONEU[[j]] <-pros.scatter[[3]]
-  temp.factor.IRI_EC[[j]] <- pros.scatter[[4]]
-  temp.factor.IRI_PD[[j]] <- pros.scatter[[5]]
-  temp.factor.IRI_PT[[j]] <- pros.scatter[[6]]
-  temp.factor.IRI_FS[[j]] <- pros.scatter[[7]]
-  temp.factor.IRI[[j]] <- pros.scatter[[8]]
-  temp.factor.EQ[[j]] <- pros.scatter[[9]]
-  temp.factor.Income[[j]] <- pros.scatter[[10]]
-  temp.factor.logInc[[j]] <- pros.scatter[[11]]
+  temp.factor.Eom[[j]] <- pros.scatter[[4]]
   
   temp.K <- ggarrange(pros.scatter[[1]],
                       pros.scatter[[2]],
                       pros.scatter[[3]],
                       pros.scatter[[4]],
-                      pros.scatter[[5]],
-                      pros.scatter[[6]],
-                      pros.scatter[[7]],
-                      pros.scatter[[8]],
-                      pros.scatter[[9]],
-                      pros.scatter[[10]],
-                      pros.scatter[[11]],
-                      nrow = 2, ncol = 6, 
-                      labels = c("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"),
+                      nrow = 1, ncol = 4, 
+                      labels = c("A", "B", "C", "D"),
                       common.legend = TRUE, legend = "bottom", 
                       font.label = list(size= 40))
   
@@ -224,17 +202,19 @@ for (j in analysis.col){
                                             face = "bold", 
                                             size = 100))
   
-  jpeg(file = paste(P.title[j], ".jpg"), width = 4000, height = 1500)
+  jpeg(file = paste(P.title[j], ".jpg"), width = 3000, height = 800)
   print(temp.P)
   dev.off()
 }
 
-temp.factor.list <- list(temp.factor.MDgiven, temp.factor.MDgiven.PROPUR, temp.factor.MDgiven.PRONEU, temp.factor.IRI_EC, temp.factor.IRI_PD, temp.factor.IRI_PT, temp.factor.IRI_FS, temp.factor.IRI, temp.factor.EQ, temp.factor.Income, temp.factor.logInc)
+temp.factor.list <- list(temp.factor.MDgiven, temp.factor.MDgiven.PROPUR, temp.factor.MDgiven.PRONEU, temp.factor.Eom)
 
-title.factor.names <- c("Mean amount of money apportion (NTD) PRO", "Mean amount of money apportion (NTD) PRO-PUR", "Mean amount of money apportion (NTD) PRO-NEU",
-                        "IRI EC Score", "IRI PD Score", "IRI PT Score", "IRI FS Score", "IRI Score", "EQ Score", "Self-report Income (NTD)", "log Self-report Income (NTD)")
+title.factor.names <- c("Mean amount of money apportion (NTD) PRO", 
+                        "Mean amount of money apportion (NTD) PRO-PUR", 
+                        "Mean amount of money apportion (NTD) PRO-NEU",
+                        "Mean emotion reaction")
 
-title.factor <- c("Mean_money_given_in_PRO", "Mean_money_given_in_PROPUR", "Mean_money_given_in_PRONEU", "IRIEC_Score", "IRIPD_Score", "IRIPT_Score", "IRIFS_Score", "IRI_Score", "EQ_Score", "Self-report_Income", "log Self-report Income")
+title.factor <- c("Mean_money_given_in_PRO", "Mean_money_given_in_PROPUR", "Mean_money_given_in_PRONEU", "Mean emotion reaction")
 
 for (ii in 1:length(temp.factor.list)){
   temp.factor.K <-  ggarrange(temp.factor.list[[ii]][[1]],
@@ -252,10 +232,10 @@ for (ii in 1:length(temp.factor.list)){
                               font.label = list(size= 40))
   
   temp.factor.K <- annotate_figure(temp.factor.K,
-                                  top = text_grob(title.factor.names[ii], 
-                                                  color = "black", 
-                                                  face = "bold", 
-                                                  size = 80))
+                                   top = text_grob(title.factor.names[ii], 
+                                                   color = "black", 
+                                                   face = "bold", 
+                                                   size = 80))
   
   jpeg(file = paste(title.factor[ii], ".jpg"), width = 4000, height = 1500)
   print(temp.factor.K)
@@ -269,27 +249,9 @@ tydi.ROI.pre.MD <- tydi.ROI.pre[tydi.ROI.pre$cond.tag %in% c(1:4),]
 tydi.ROI.MD.pro.pur.interact <- cbind(tydi.ROI.pre.MD[tydi.ROI.pre.MD$cond.tag == 1, c(1:6)], value = tydi.ROI.pre.MD[tydi.ROI.pre.MD$cond.tag == 1,]$value - tydi.ROI.pre.MD[tydi.ROI.pre.MD$cond.tag == 2,]$value)
 tydi.ROI.MD.pro.neu.interact <- cbind(tydi.ROI.pre.MD[tydi.ROI.pre.MD$cond.tag == 1, c(1:6)], value = tydi.ROI.pre.MD[tydi.ROI.pre.MD$cond.tag == 1,]$value - tydi.ROI.pre.MD[tydi.ROI.pre.MD$cond.tag == 3,]$value)
 
-summary(aov(tydi.ROI.MD.pro.pur.interact$value ~ tydi.ROI.MD.pro.pur.interact$age.tag*tydi.ROI.MD.pro.pur.interact$ROI_try))
-summary(aov(tydi.ROI.MD.pro.neu.interact$value ~ tydi.ROI.MD.pro.neu.interact$age.tag*tydi.ROI.MD.pro.neu.interact$ROI_try))
-
 gg.MD.title.inter <- c("PRO-PUR", "PRO-NEU")
 gg.MD.signal.interact <- list()
-gg.MD.signal.interact.ttest <- list()
 
-p.ttt <- c()
-for(kk in 1:length(levels(tydi.ROI.MD.pro.neu.interact$ROI_try))){
-  temp.tydi.ROI.MD.pro.neu.interact <- tydi.ROI.MD.pro.neu.interact[tydi.ROI.MD.pro.neu.interact$ROI_try == levels(tydi.ROI.MD.pro.neu.interact$ROI_try)[kk],]
-  gg.MD.signal.interact.ttest[[kk]] <- t.test(temp.tydi.ROI.MD.pro.neu.interact$value ~ temp.tydi.ROI.MD.pro.neu.interact$age.tag)
-  p.ttt[kk] <- gg.MD.signal.interact.ttest[[kk]]$p.value
-}
-p.adjust(p.ttt, method = "bonferroni")
-
-gg.MD.signal.interact.ttest[[kk]]$p.value
-
-t.test(tydi.ROI.MD.pro.pur.interact$age.tag ~ tydi.ROI.MD.pro.pur.interact$value)
-
-pairwise.t.test(tydi.ROI.MD.pro.pur.interact$value, tydi.ROI.MD.pro.pur.interact$ROI_try, p.adj = "bonferroni")
-  
 tydi.ROI.MD.pro.pur.interact <- ddply(tydi.ROI.MD.pro.pur.interact, 
                                       c("age.tag", "ROI_try"),
                                       summarise,
@@ -297,7 +259,7 @@ tydi.ROI.MD.pro.pur.interact <- ddply(tydi.ROI.MD.pro.pur.interact,
                                       mean = mean(value),
                                       sd = sd(value),
                                       se = sd / sqrt(N)
-                                      )
+)
 
 tydi.ROI.MD.pro.neu.interact <- ddply(tydi.ROI.MD.pro.neu.interact, 
                                       c("age.tag", "ROI_try"),
@@ -306,16 +268,14 @@ tydi.ROI.MD.pro.neu.interact <- ddply(tydi.ROI.MD.pro.neu.interact,
                                       mean = mean(value),
                                       sd = sd(value),
                                       se = sd / sqrt(N)
-                                      )
-
-write.csv(rbind(tydi.ROI.MD.pro.pur.interact, tydi.ROI.MD.pro.neu.interact), "temp_ROI.csv")
+)
 
 data.ROI.inter.list <- list(tydi.ROI.MD.pro.pur.interact, tydi.ROI.MD.pro.neu.interact)
 
 for (i in 1:2){
   gg.MD.signal.interact[[i]] <- ggplot(data.ROI.inter.list[[i]], aes(x = ROI_try, 
-                                                      y = mean, 
-                                                      fill = age.tag)) + 
+                                                                     y = mean, 
+                                                                     fill = age.tag)) + 
     geom_bar(stat="identity", position = position_dodge2(preserve = "single")) +
     theme(panel.background = element_rect(fill = "white", colour = "black")) +
     geom_errorbar(aes(ymin = mean - se, ymax = mean + se, color = age.tag), 
@@ -326,39 +286,39 @@ for (i in 1:2){
     
     labs(title = gg.MD.title.inter[i], x = "", y = "",colour = "Groups") +   
     theme(plot.title = element_text(hjust = 0.5, face="bold"),
-          title = element_text(size=30),
-          legend.text = element_text(size=30),
-          legend.title = element_text(size=30),
-          axis.text = element_text(size=30),
-          axis.title = element_text(size=40,face="bold"),
-          strip.text.x = element_text(size=40, face="bold"),
+          title = element_text(size=20),
+          legend.text = element_text(size=20),
+          legend.title = element_text(size=20),
+          axis.text = element_text(size=10),
+          axis.title = element_text(size=20,face="bold"),
+          strip.text.x = element_text(size=20, face="bold"),
           strip.background = element_rect(colour="black", fill="white")
     ) +
     facet_wrap(~ age.tag) +
-    ylim(c(-0.6, 0.8)) +
+    ylim(c(-1, 1.4)) +
     geom_hline(yintercept = 0, color = "black", size = 1) +     
     geom_smooth(data = data.ROI.inter.list[[i]], aes(x = as.numeric(ROI_try), y=mean), color = "black", size = 1.3, se = FALSE, method = "lm") +
     geom_smooth(data = data.ROI.inter.list[[i]], aes(x = as.numeric(ROI_try), y=mean), color = "black", size = 1.3, se = FALSE, linetype="dashed", method = "lm", formula = y ~ poly(x,2))
-
+  
 }
 
 temp.signal.ROI.inter <- ggarrange(gg.MD.signal.interact[[1]],
-                            gg.MD.signal.interact[[2]],
-                            nrow = 1, ncol = 2,
-                            common.legend = TRUE, legend = "bottom", 
-                            font.label = list(size= 40))
+                                   gg.MD.signal.interact[[2]],
+                                   nrow = 1, ncol = 2,
+                                   common.legend = TRUE, legend = "bottom", 
+                                   font.label = list(size= 40))
 
 temp.signal.MD.inter.F <- annotate_figure(temp.signal.ROI.inter,
-                                    top = text_grob("", 
-                                                    color = "black", 
-                                                    face = "bold", 
-                                                    size = 50),
-                                    bottom = text_grob("ROIs", 
-                                                       color = "black", size = 30),
-                                    left = text_grob("Parameter Estimate (a.u.)", color = "black", size = 50, rot = 90)
+                                          top = text_grob("", 
+                                                          color = "black", 
+                                                          face = "bold", 
+                                                          size = 30),
+                                          bottom = text_grob("ROIs", 
+                                                             color = "black", size = 30),
+                                          left = text_grob("Parameter Estimate (a.u.)", color = "black", size = 30, rot = 90)
 )
 
-jpeg(file = paste("PE_ROI.jpg"), width = 1200, height = 800)
+jpeg(file = paste("PE_ROI.jpg"), width = 1200, height = 1200)
 print(temp.signal.MD.inter.F)
 dev.off()
 
@@ -422,10 +382,10 @@ for (i in ER_Q_iter_col){
   cor.test.pro <- cor.test(new.corrmerge[,i], new.corrmerge$Mean_emotion_rating)
   
   emo.pros.scatter[[itera]] <- ggscatter(new.corrmerge, x = colnames(new.corrmerge)[i], y = "Mean_emotion_rating", 
-                                     color = "Groups",
-                                     palette = c("#C6922C","#3A5BA0"),
-                                     xlab = xlab.names[itera], ylab = "Mean emotion reaction",
-                                     size = 5
+                                         color = "Groups",
+                                         palette = c("#C6922C","#3A5BA0"),
+                                         xlab = xlab.names[itera], ylab = "Mean emotion reaction",
+                                         size = 5
   ) + 
     geom_smooth(aes(color = Groups),method = lm, se = FALSE, size = 2) +
     geom_hline(yintercept=0, linetype="dashed", color = "black", size=1) +
@@ -481,9 +441,9 @@ ERQ.temp.factor.K <-  ggarrange(emo.pros.scatter[[1]],
                                 emo.pros.scatter[[9]],
                                 emo.pros.scatter[[10]],
                                 emo.pros.scatter[[11]],
-                            nrow = 2, ncol = 6, 
-                            common.legend = TRUE, legend = "bottom", 
-                            font.label = list(size= 40))
+                                nrow = 2, ncol = 6, 
+                                common.legend = TRUE, legend = "bottom", 
+                                font.label = list(size= 40))
 
 jpeg(file = paste("ER_Q_PUR.jpg"), width = 5000, height = 1500)
 print(ERQ.temp.factor.K)
@@ -546,4 +506,51 @@ dev.off()
 #                        round(All.lm$coefficients[2,2], digit = 3),
 #                        ")"), 
 #            size = size.pro, hjust = 1)
+
+MD_PRONEU_ROI_A <- temp.factor.list[[3]][[1]]
+
+MD_IRIEC_ROI_H <- temp.factor.list[[4]][[8]]
+MD_IRIPD_ROI_A <- temp.factor.list[[5]][[1]]
+MD_IRIPD_ROI_B <- temp.factor.list[[5]][[2]]
+MD_LOGINCOME_ROI_F <- temp.factor.list[[11]][[6]]
+
+MD_BE_Quest_IRI_EC <- MD.cor.scatter[[1]]
+MD_BE_Quest_IRI_PD <- MD.cor.scatter[[2]]
+
+MD_BE_Quest <- ggarrange(MD_BE_Quest_IRI_EC, MD_BE_Quest_IRI_PD,
+                        font.label = list(size= 50),
+                        common.legend = TRUE, legend = "bottom",
+                        nrow = 1, ncol = 2)
+
+MD_BE_Quest <- annotate_figure(MD_BE_Quest,
+                               left = text_grob("Mean amount of money apportion (NTD) PRO-NEU", 
+                                                color = "black", face="bold", size = 30, rot = 90))
+
+MD_ROI_Quest <- ggarrange(MD_IRIPD_ROI_A, MD_IRIPD_ROI_B, MD_LOGINCOME_ROI_F, MD_IRIEC_ROI_H,
+                          font.label = list(size= 50),
+                          labels = c("   A","   B","   F","   H"),
+                          common.legend = TRUE, legend = "bottom",
+                          nrow = 2, ncol = 2)
+
+MD_PRONEU_ROI_A.f <- ggarrange(MD_PRONEU_ROI_A,
+                              font.label = list(size= 50),
+                              labels = c("   A"),
+                              legend = "bottom",
+                              nrow = 1, ncol = 1)
+
+MD_PRONEU_ROI_A.f.be <- grid.arrange(MD_PRONEU_ROI_A.f, black.gg,  MD_BE_Quest,
+                                     layout_matrix = rbind(c(1,1,1,2,2), c(3,3,3,3,3)), nrow = 2, ncol = 5)
+
+jpeg(file = paste("Fig4.jpg"), width = 1500, height = 1000)
+print(MD_ROI_Quest)
+dev.off()
+
+black.gg <- ggplot() + theme_classic()
+temp.MD_ROI.plot <- grid.arrange(MD_PRONEU_ROI_A.f.be ,black.gg, MD_ROI_Quest, 
+                                layout_matrix = matrix(c(1,1,1,1,1,2,3,3,3,3,3,3,3,3), ncol = 14))
+
+jpeg(file = paste("Fig4.jpg"), width = 2700, height = 1200)
+print(grid.arrange(MD_PRONEU_ROI_A.f.be , MD_ROI_Quest, 
+                   layout_matrix = matrix(c(1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2), ncol = 24)))
+dev.off()
 

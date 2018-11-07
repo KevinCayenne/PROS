@@ -54,13 +54,16 @@ print(a <- ggplot(inter.total.money, aes(x=inter.tag, y=inter.mean, fill=inter.g
         scale_color_manual("Groups", values = c("Young" = y.color, "Old" = o.color)) +
         scale_fill_manual("Groups", values = c("Young" = y.color, "Old" = o.color)) +
         
-        labs(x = "Interaction", y = "", colour = "Groups") +   
+        labs(x = "Interaction", y = "Mean amount of money apportion (NTD)", colour = "Groups") +   
         theme(plot.title = element_text(hjust = 0.5, face="bold"),
+              
               title = element_text(size=30),
               legend.text = element_text(size=30),
               legend.title = element_text(size=30),
-              axis.text = element_text(size=30),
-              axis.title = element_text(size=40, face="bold")
+              axis.text.y = element_text(size=30),
+              axis.text.x = element_text(size=30),
+              axis.title.x = element_text(size=40, face="bold"),
+              axis.title.y = element_text(size=30, face="bold")
         ) +
         ylim(c(0,165)) +
         geom_signif(y_position=c(150, 100), xmin=c(0.8, 1.8), xmax=c(1.2, 2.2),
